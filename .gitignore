@@ -1,0 +1,17 @@
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+# vendor/
+.env
+main
+supervisor.log
+worker.log
+test.go
+testJpg.go
+compay
+vendor
+build
