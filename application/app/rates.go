@@ -1,6 +1,7 @@
 package app
 
 import (
+	controller "compay/application/http/controllers/rates"
 	"compay/application/service/rates"
 	"compay/common/config"
 	"compay/core/eslog"
@@ -12,9 +13,11 @@ import (
 var ratesServer *http.Server
 
 func StartRates() {
-	router := generateRouter("api")
+	go rates.Initialize()
+	router := generateRouter("rates")
 
-	rates.Initialize()
+	router.GET("/get-rates", controller.GetRates)
+	router.GET("/get-rate", controller.GetRate)
 
 	ratesServer = &http.Server{Addr: ":" + config.AppPort, Handler: router.Handler()}
 	go func() {

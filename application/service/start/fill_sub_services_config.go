@@ -12,6 +12,7 @@ func fillSubServicesConfig() {
 	config.DbUser = os.Getenv("DB_USER")
 	config.DbPort = os.Getenv("DB_PORT")
 	config.DbPassword = os.Getenv("DB_PASSWORD")
+	config.DbDisabled = os.Getenv("DB_DISABLED") == "true"
 
 	// CDN
 	config.CdnUploaderDisabled = true

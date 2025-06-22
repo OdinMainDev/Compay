@@ -15,3 +15,4 @@ testJpg.go
 compay
 vendor
 build
+cmd/rates/compayrates

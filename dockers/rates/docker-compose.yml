@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/compay.one.conf:/etc/nginx/conf.d/compay.one.conf
+    ports:
+      - "80:80"
+    networks:
+      - appnet
+
+  alpine:
+    image: alpine:latest
+    container_name: alpine
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    command: ["./compayrates"]
+    restart: always
+    env_file:
+      - ./app/.env
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge

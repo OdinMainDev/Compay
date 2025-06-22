@@ -20,6 +20,7 @@ type RequestHelper struct {
 	IsProxyCheck  bool
 	Body          []byte
 	Headers       map[string]string
+	DisableLog    bool
 }
 
 func Request(data RequestHelper) ([]byte, int, error) {
@@ -47,7 +48,7 @@ func Request(data RequestHelper) ([]byte, int, error) {
 func doRequest(req *http.Request, data RequestHelper) ([]byte, int, error) {
 	logMessage := ""
 	defer func() {
-		if logMessage == "" {
+		if logMessage == "" || data.DisableLog {
 			return
 		}
 		if data.IsProxyCheck {

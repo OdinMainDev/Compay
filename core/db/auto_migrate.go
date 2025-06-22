@@ -14,6 +14,10 @@ import (
 )
 
 func Migrate(Conn *gorm.DB) {
+	if config.DbDisabled {
+		return
+	}
+
 	srcDriver, err := iofs.New(database.MigrationsDir, "migrations")
 	if err != nil {
 		eslog.PanicLog("Error: " + err.Error())

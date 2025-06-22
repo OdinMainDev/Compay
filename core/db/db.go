@@ -13,6 +13,10 @@ import (
 )
 
 func CreateInstance() *gorm.DB {
+	if config.DbDisabled {
+		return nil
+	}
+
 	godotenv.Load()
 
 	dsn := fmt.Sprintf(

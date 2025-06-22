@@ -4,75 +4,14 @@ go 1.24.2
 
 toolchain go1.24.3
 
-require (
-	github.com/LightningDev1/go-privnote v0.1.1
-	github.com/bogdanfinn/fhttp v0.5.24
-	github.com/bogdanfinn/tls-client v1.6.1
-	github.com/fbsobreira/gotron-sdk v0.0.0-20250609155157-fff6a96c1514
-	github.com/gin-gonic/gin v1.10.0
-	github.com/tyler-smith/go-bip32 v1.0.0
-)
+require github.com/gin-gonic/gin v1.10.0
 
-require (
-	github.com/FactomProject/basen v0.0.0-20150613233007-fe3947df716e // indirect
-	github.com/FactomProject/btcutilecc v0.0.0-20130527213604-d3a63a5752ec // indirect
-	github.com/andybalholm/brotli v1.0.6 // indirect
-	github.com/bogdanfinn/utls v1.5.16 // indirect
-	github.com/dchest/siphash v1.2.3 // indirect
-	github.com/deckarep/golang-set v1.8.0 // indirect
-	github.com/gcash/bchd v0.21.1-0.20250514010404-ccedcae68ea6 // indirect
-	github.com/gcash/bchlog v0.0.0-20180913005452-b4f036f92fa6 // indirect
-	github.com/gcash/bchutil v0.0.0-20250514010653-ef9bffba99e1 // indirect
-	github.com/klauspost/compress v1.18.0 // indirect
-	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/pborman/uuid v1.2.1 // indirect
-	github.com/rjeczalik/notify v0.9.3 // indirect
-	github.com/rs/cors v1.11.1 // indirect
-	github.com/shengdoushi/base58 v1.0.0 // indirect
-	github.com/tam7t/hpkp v0.0.0-20160821193359-2b70b4024ed5 // indirect
-	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.0 // indirect
-)
+require github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 
 require (
 	github.com/JGLTechnologies/gin-rate-limit v1.5.6
-	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/StackExchange/wmi v1.2.1 // indirect
-	github.com/bits-and-blooms/bitset v1.20.0 // indirect
-	github.com/boombuler/barcode v1.0.1 // indirect
-	github.com/btcsuite/btcd v0.24.2
-	github.com/btcsuite/btcd/btcec/v2 v2.3.5
-	github.com/btcsuite/btcd/btcutil v1.1.5
-	github.com/btcsuite/btcd/chaincfg/chainhash v1.1.0 // indirect
-	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
-	github.com/btcsuite/go-socks v0.0.0-20170105172521-4720035b7bfd // indirect
-	github.com/btcsuite/websocket v0.0.0-20150119174127-31079b680792 // indirect
-	github.com/consensys/bavard v0.1.27 // indirect
-	github.com/consensys/gnark-crypto v0.16.0 // indirect
-	github.com/crate-crypto/go-eth-kzg v1.3.0 // indirect
-	github.com/crate-crypto/go-ipa v0.0.0-20240724233137-53bbb0ceb27a // indirect
-	github.com/deckarep/golang-set/v2 v2.6.0 // indirect
-	github.com/decred/dcrd/crypto/blake256 v1.1.0 // indirect
-	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect
-	github.com/ethereum/c-kzg-4844/v2 v2.1.0 // indirect
-	github.com/ethereum/go-ethereum v1.15.11
-	github.com/ethereum/go-verkle v0.2.2 // indirect
 	github.com/gin-contrib/cors v1.7.5
-	github.com/go-ole/go-ole v1.3.0 // indirect
-	github.com/go-telegram/bot v1.15.0
-	github.com/golang-jwt/jwt/v5 v5.2.2
-	github.com/holiman/uint256 v1.3.2 // indirect
-	github.com/miguelmota/go-ethereum-hdwallet v0.1.3
-	github.com/mmcloughlin/addchain v0.4.0 // indirect
-	github.com/pquerna/otp v1.5.0
-	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
 	github.com/shopspring/decimal v1.4.0
-	github.com/supranational/blst v0.3.14 // indirect
-	github.com/tklauser/go-sysconf v0.3.12 // indirect
-	github.com/tklauser/numcpus v0.6.1 // indirect
-	github.com/tyler-smith/go-bip39 v1.1.0
-	rsc.io/tmplfunc v0.0.3 // indirect
 )
 
 require (

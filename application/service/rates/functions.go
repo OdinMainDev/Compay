@@ -2,7 +2,6 @@ package rates
 
 import (
 	"compay/core/esrequest"
-	"slices"
 )
 
 func doRequest(url string) ([]byte, error) {
@@ -15,14 +14,11 @@ func doRequest(url string) ([]byte, error) {
 			"Pragma":          "no-cache",
 			"User-Agent":      "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6400.0 Safari/537.36",
 		},
+		DisableLog: true,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return resp, nil
-}
-
-func inList(symbol string) bool {
-	return slices.Contains(currencies, symbol)
 }

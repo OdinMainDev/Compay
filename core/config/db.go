@@ -7,3 +7,5 @@ var DbPassword = "NULL"
 var DbPort = "5432"
 var DbSSLMode = "disable"
 var DbTimezone = "Europe/Moscow"
+
+var DbDisabled = false
