@@ -32,6 +32,8 @@ func Request(data RequestHelper) ([]byte, int, error) {
 	if err != nil {
 		return []byte{}, 0, err
 	}
+	req.Close = true
+
 	if data.IsJson {
 		req.Header.Set("Content-Type", "application/json")
 	} else {
