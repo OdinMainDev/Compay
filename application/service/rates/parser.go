@@ -27,7 +27,7 @@ func Initialize() {
 		data, err := UpdateRates()
 		if err != nil {
 			log.Println("Failed to update rates:", err)
-			return
+			continue
 		}
 		ratesMu.Lock()
 		rates = data
