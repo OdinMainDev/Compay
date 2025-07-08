@@ -10,6 +10,10 @@ func (parentModel *BaseModel) Delete(value any) {
 	parentModel.deleteFromDb(value)
 }
 
+func (parentModel *BaseCacheModel) Delete(value any) {
+	parentModel.deleteFromCache(value)
+}
+
 func (parentModel *BaseModel) deleteFromDb(value any) {
 	tx := core.GetInstance().GetDB().Delete(value)
 	if tx.Error != nil {
@@ -21,5 +25,9 @@ func (parentModel *BaseModel) deleteFromDb(value any) {
 		return
 	}
 
+	escache.Delete(value)
+}
+
+func (parentModel *BaseModel) deleteFromCache(value any) {
 	escache.Delete(value)
 }

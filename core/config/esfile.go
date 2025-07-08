@@ -1,3 +1,3 @@
 package config
 
-var CdnUploaderDisabled bool = false
+var CdnUploaderDisabled bool = true

@@ -14,18 +14,12 @@ func fillSubServicesConfig() {
 	config.DbPassword = os.Getenv("DB_PASSWORD")
 	config.DbDisabled = os.Getenv("DB_DISABLED") == "true"
 
-	// CDN
-	config.CdnUploaderDisabled = true
-
 	// REDIS
-	config.RedisEnable = false
+	config.RedisEnable = os.Getenv("REDIS_ENABLE") == "true"
 
 	// RABBITMQ
-	config.RabbitmqEnable = false
+	config.RabbitmqEnable = os.Getenv("RABBITMQ_ENABLE") == "true"
 
 	// METRICS
 	config.TelemetryCollectorHost = os.Getenv("TELEMETRY_COLLECTOR_HOST")
-
-	//  TELEGRAM NOTIFY
-	config.TelegramNotifyEnable = false
 }

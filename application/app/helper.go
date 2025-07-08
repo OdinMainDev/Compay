@@ -16,9 +16,15 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
-func CreateAppInstance(startApps []func(), shutdownApps []func(context.Context)) {
+func CreateAppInstance(appType string, startApps []func(), shutdownApps []func(context.Context)) {
+	envVariables := config.AppEnvVariablesBasic
+
+	if appType == "wallet" {
+		envVariables = config.AppEnvVariablesAll
+	}
+
 	core.CreateInstance(core.InitData{
-		EnvCheckKeys: config.AppEnvVariables,
+		EnvCheckKeys: envVariables,
 		EnvCallbacks: start.StartupApplication(),
 	})
 	start.StartupServices()
@@ -62,12 +68,12 @@ func generateRouter(service string) *gin.Engine {
 	corsConfig.AllowAllOrigins = true
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "X-Forwarded-For")
-	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "C-Token")
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "X-Telegram-Bot-Api-Secret-Token")
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Referer")
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Origin")
-	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "C-Language")
-	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "C-Totp")
+	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "U-token")
+	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "A-token")
+
 	router.Use(cors.New(corsConfig))
 
 	// trust proxies

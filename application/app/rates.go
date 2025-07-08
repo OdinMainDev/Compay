@@ -31,7 +31,7 @@ func StartRates() {
 func ShutdownRates(ctx context.Context) {
 	err := ratesServer.Shutdown(ctx)
 	if err != nil {
-		eslog.LogError("Server forced to shutdown:", err)
+		eslog.LogError("Rates Server forced to shutdown:", err)
 	} else {
 		eslog.Log("Rates Server stopped")
 	}

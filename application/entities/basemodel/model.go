@@ -6,6 +6,12 @@ type BaseModel struct {
 	UpdatedAt int64 `json:"updated_at" gorm:"column:updated_at"`
 }
 
+type BaseCacheModel struct {
+	BaseModel
+}
+
+// Общие функции
+
 func (parentModel *BaseModel) GetId() int64 {
 	return parentModel.Id
 }

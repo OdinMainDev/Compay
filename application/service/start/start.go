@@ -6,8 +6,6 @@ func StartupApplication() []func() {
 	return []func(){
 		fillAppConfig,
 		fillSubServicesConfig,
-		fillTelegramBotConfig,
-		fillCryptoConfig,
 	}
 }
 

@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	app.CreateAppInstance([]func(){app.StartRates}, []func(context.Context){app.ShutdownRates})
+	app.CreateAppInstance("rates", []func(){app.StartRates}, []func(context.Context){app.ShutdownRates})
 }

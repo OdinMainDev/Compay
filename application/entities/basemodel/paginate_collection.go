@@ -10,9 +10,6 @@ func PaginateModels[T any](items []T, page int) []T {
 	if start >= len(items) {
 		return []T{}
 	}
-	end := start + perPage
-	if end > len(items) {
-		end = len(items)
-	}
+	end := min(start+perPage, len(items))
 	return items[start:end]
 }

@@ -1,7 +1,6 @@
 package esvalidator
 
 import (
-	"compay/core/utils"
 	"encoding/json"
 	"errors"
 	"reflect"
@@ -20,7 +19,8 @@ func Initialize() {
 			}
 			return name
 		})
-		v.RegisterValidation("cryptonetworks", cryptonetworks)
+		v.RegisterValidation("pinCode", pinCode)
+		v.RegisterValidation("seedPhrase", seedPhrase)
 	}
 }
 
@@ -43,12 +43,4 @@ func ValidatorResponse(err error) map[string][]string {
 		}
 	}
 	return ret
-}
-
-var cryptonetworks validator.Func = func(fl validator.FieldLevel) bool {
-	data, ok := fl.Field().Interface().(string)
-	if ok {
-		return utils.InArray(data, []string{"btc", "eth"})
-	}
-	return false
 }

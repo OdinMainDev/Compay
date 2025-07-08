@@ -13,9 +13,13 @@ func (parentModel *BaseModel) Save(value any) {
 	parentModel.saveToDb(value)
 }
 
+func (parentModel *BaseCacheModel) Save(value any) {
+	parentModel.saveToCache(value)
+}
+
 func (parentModel *BaseModel) saveToDb(value any) {
 	currentTime := time.Now().Unix()
-	if parentModel.GetId() == 0 {
+	if parentModel.CreatedAt == 0 {
 		parentModel.CreatedAt = currentTime
 	}
 	parentModel.UpdatedAt = currentTime
@@ -29,6 +33,16 @@ func (parentModel *BaseModel) saveToDb(value any) {
 	if !escache.IsCachableModel(value) {
 		return
 	}
+
+	escache.Update(value)
+}
+
+func (parentModel *BaseModel) saveToCache(value any) {
+	currentTime := time.Now().Unix()
+	if parentModel.GetId() == 0 {
+		parentModel.CreatedAt = currentTime
+	}
+	parentModel.UpdatedAt = currentTime
 
 	escache.Update(value)
 }
