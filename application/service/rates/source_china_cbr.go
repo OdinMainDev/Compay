@@ -3,8 +3,6 @@ package rates
 import (
 	"encoding/xml"
 	"fmt"
-	"io"
-	"net/http"
 )
 
 type Chart struct {
@@ -36,15 +34,9 @@ type GValue struct {
 }
 
 func getUsdToCnyRateFromChCbr() (rate float64, err error) {
-	resp, err := http.Get("https://www.chinamoney.com.cn/r/cms/www/chinamoney/data/fx/ccpr-chrt-usd.xml")
+	body, err := doRequest("https://www.chinamoney.com.cn/r/cms/www/chinamoney/data/fx/ccpr-chrt-usd.xml")
 	if err != nil {
-		return 0, fmt.Errorf("http error: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return 0, fmt.Errorf("read error: %w", err)
+		return 0, fmt.Errorf("request error: %w", err)
 	}
 
 	var chart Chart
