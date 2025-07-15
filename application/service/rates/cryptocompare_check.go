@@ -10,7 +10,7 @@ import (
 )
 
 // ФУНКЦИЯ ИСПОЛЬЗУЕТСЯ В ТЕСТАХ
-func checkValues(response map[string]map[string]float64) {
+func CheckValues(response map[string]map[string]float64) {
 	for currencyFrom, pairs := range response {
 		for currencyTo, value := range pairs {
 			if currencyTo == currencyFrom {
@@ -21,7 +21,7 @@ func checkValues(response map[string]map[string]float64) {
 				continue
 			}
 			time.Sleep(time.Millisecond * 100)
-			check, _, val2, err := compareRate(currencyFrom, currencyTo, value)
+			check, _, val2, err := CompareRate(currencyFrom, currencyTo, value)
 			fmt.Println("---------------------------")
 			fmt.Println("CHECK PAIR: ", currencyFrom, currencyTo)
 			if err != nil {
@@ -38,7 +38,7 @@ func checkValues(response map[string]map[string]float64) {
 	}
 }
 
-func compareRate(baseCurrency, targetCurrency string, givenRate float64) (bool, float64, float64, error) {
+func CompareRate(baseCurrency, targetCurrency string, givenRate float64) (bool, float64, float64, error) {
 	apiKey := "c8a318211fea04ed9627e5e437c98a7d00d75bb2137f98229b1cb01af2258f05"
 
 	url := fmt.Sprintf("https://min-api.cryptocompare.com/data/pricemulti?api_key=%s&fsyms=%s&tsyms=%s",
