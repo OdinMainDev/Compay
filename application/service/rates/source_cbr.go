@@ -8,23 +8,22 @@ import (
 )
 
 type ValCurs struct {
-	XMLName xml.Name `xml:"ValCurs"`
+	// XMLName xml.Name `xml:"ValCurs"`
 	Valutes []Valute `xml:"Valute"`
 }
 
 type Valute struct {
-	ID       string `xml:"ID,attr"`
-	NumCode  string `xml:"NumCode"`
+	// ID       string `xml:"ID,attr"`
+	// NumCode  string `xml:"NumCode"`
 	CharCode string `xml:"CharCode"`
-	Nominal  int    `xml:"Nominal"`
-	Name     string `xml:"Name"`
-	Value    string `xml:"Value"`
+	// Nominal  int    `xml:"Nominal"`
+	// Name     string `xml:"Name"`
+	Value string `xml:"Value"`
 }
 
 func getUsdToRubRateFromCbr() (float64, error) {
 	body, err := doRequest(parserCfg["cbr"])
 	if err != nil {
-		fmt.Println(err)
 		return 0, fmt.Errorf("cbr request error: %w", err)
 	}
 

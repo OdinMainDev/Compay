@@ -24,6 +24,7 @@ func doRequest(url string) ([]byte, error) {
 			"sec-fetch-user":            "?1",
 			"upgrade-insecure-requests": "1",
 		},
+		// DisableLog: true,
 	})
 	if err != nil {
 		return nil, err
