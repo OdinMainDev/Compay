@@ -2,17 +2,16 @@ package rates
 
 import (
 	"encoding/json"
-	"errors"
 )
 
 func getUsdToRubRateFromRapira() (float64, error) {
 	body, err := doRequest(parserCfg["rapira"])
 	if err != nil {
-		return 0, err
+		return getUsdToRubRateFromCbr()
 	}
 	var data []map[string]interface{}
 	if err := json.Unmarshal(body, &data); err != nil {
-		return 0, err
+		return getUsdToRubRateFromCbr()
 	}
 	for _, d := range data {
 		if d["symbol"] == "USDT/RUB" {
@@ -30,5 +29,5 @@ func getUsdToRubRateFromRapira() (float64, error) {
 			}
 		}
 	}
-	return 0, errors.New("RUB not found")
+	return getUsdToRubRateFromCbr()
 }
