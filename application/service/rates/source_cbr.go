@@ -1,10 +1,15 @@
 package rates
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
+
+	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/text/transform"
 )
 
 type ValCurs struct {
@@ -27,14 +32,24 @@ func getUsdToRubRateFromCbr() (float64, error) {
 		return 0, fmt.Errorf("cbr request error: %w", err)
 	}
 
+	decoder := xml.NewDecoder(bytes.NewReader(body))
+	decoder.CharsetReader = func(charset string, input io.Reader) (io.Reader, error) {
+		switch charset {
+		case "windows-1251":
+			return transform.NewReader(input, charmap.Windows1251.NewDecoder()), nil
+		default:
+			return nil, fmt.Errorf("unsupported charset: %s", charset)
+		}
+	}
+
 	var valCurs ValCurs
-	if err := xml.Unmarshal(body, &valCurs); err != nil {
+	if err := decoder.Decode(&valCurs); err != nil {
 		return 0, fmt.Errorf("cbr xml parse error: %w", err)
 	}
 	for _, valute := range valCurs.Valutes {
 		if strings.ToUpper(valute.CharCode) == "USD" {
 
-			valueStr := strings.Replace(valute.Value, ",", ".", -1)
+			valueStr := strings.ReplaceAll(valute.Value, ",", ".")
 			rate, err := strconv.ParseFloat(valueStr, 64)
 			if err != nil {
 				return 0, fmt.Errorf("cbr rate parse error: %w", err)
