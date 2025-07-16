@@ -13,6 +13,7 @@ var (
 		"commex": "https://api.commex.com/api/v1/ticker/bookTicker?symbol=USDTRUB",
 		"rapira": "https://api.rapira.net/market/symbol-thumb",
 		"cbr":    "https://www.cbr.ru/scripts/XML_daily.asp",
+		"grinex": "https://grinex.io/api/v2/k?market=usdtrub",
 	}
 
 	rates   map[string]map[string]float64

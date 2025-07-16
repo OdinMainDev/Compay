@@ -7,11 +7,11 @@ import (
 func getUsdToRubRateFromRapira() (float64, error) {
 	body, err := doRequest(parserCfg["rapira"])
 	if err != nil {
-		return getUsdToRubRateFromCbr()
+		return getUsdToRubRateFromGrinex()
 	}
 	var data []map[string]interface{}
 	if err := json.Unmarshal(body, &data); err != nil {
-		return getUsdToRubRateFromCbr()
+		return getUsdToRubRateFromGrinex()
 	}
 	for _, d := range data {
 		if d["symbol"] == "USDT/RUB" {
@@ -29,5 +29,5 @@ func getUsdToRubRateFromRapira() (float64, error) {
 			}
 		}
 	}
-	return getUsdToRubRateFromCbr()
+	return getUsdToRubRateFromGrinex()
 }

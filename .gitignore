@@ -17,3 +17,4 @@ vendor
 build
 cmd/rates/compayrates
 .claude
+compayrates
