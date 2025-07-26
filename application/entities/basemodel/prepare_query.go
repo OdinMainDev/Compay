@@ -1,0 +1,5 @@
+package basemodel
+
+func prepareQuery() {
+
+}
