@@ -19,7 +19,7 @@ import (
 func CreateAppInstance(appType string, startApps []func(), shutdownApps []func(context.Context)) {
 	envVariables := config.AppEnvVariablesBasic
 
-	if appType == "wallet" {
+	if appType == "wallet" || appType == "merchant" {
 		envVariables = config.AppEnvVariablesAll
 	}
 
@@ -73,6 +73,7 @@ func generateRouter(service string) *gin.Engine {
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Origin")
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "U-token")
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "A-token")
+	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "C-totp")
 
 	router.Use(cors.New(corsConfig))
 

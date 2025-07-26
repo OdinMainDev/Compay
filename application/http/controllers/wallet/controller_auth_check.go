@@ -1,45 +1,32 @@
 package wallet
 
-import (
-	"compay/application/entities/basemodel"
-	"compay/application/entities/user"
-	"compay/application/helpers"
-	"compay/application/service/esvalidator"
-	"compay/application/service/jwt"
-	"compay/common/constants"
-	"compay/common/cperrors"
+// func AuthCheckUser(context *gin.Context) {
+// 	helpers.GinSuccessResponse(context, nil)
+// }
 
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
-)
+// func AuthCheckToken(context *gin.Context) {
+// 	helpers.GinSuccessResponse(context, nil)
+// }
 
-func AuthCheckUser(context *gin.Context) {
-	helpers.GinSuccessResponse(context, nil)
-}
+// func AuthCheckPinCode(context *gin.Context) {
+// 	var input requestAuth
+// 	if err := context.ShouldBindBodyWith(&input, binding.JSON); err != nil {
+// 		helpers.GinErrorResponse(context, esvalidator.ValidatorResponse(err))
+// 		return
+// 	}
 
-func AuthCheckToken(context *gin.Context) {
-	helpers.GinSuccessResponse(context, nil)
-}
+// 	userModel := context.MustGet(constants.GinUser).(*user.Model)
 
-func AuthCheckPinCode(context *gin.Context) {
-	var input requestAuth
-	if err := context.ShouldBindBodyWith(&input, binding.JSON); err != nil {
-		helpers.GinErrorResponse(context, esvalidator.ValidatorResponse(err))
-		return
-	}
+// 	if userModel.PinCode != basemodel.EncryptedString(input.PinCode) {
+// 		helpers.GinErrorResponse(context, cperrors.ErrorAuthJwtTokenMismatchPinCodes)
+// 		return
+// 	}
 
-	userModel := context.MustGet(constants.GinUser).(*user.Model)
+// 	authToken, err := jwt.GenerateAuthToken(userModel)
+// 	if err != nil {
+// 		helpers.GinErrorResponse(context, err)
+// 		return
+// 	}
 
-	if userModel.PinCode != basemodel.EncryptedString(input.PinCode) {
-		helpers.GinErrorResponse(context, cperrors.ErrorAuthJwtTokenMismatchPinCodes)
-		return
-	}
-
-	authToken, err := jwt.GenerateAuthToken(userModel)
-	if err != nil {
-		helpers.GinErrorResponse(context, err)
-		return
-	}
-
-	helpers.GinSuccessResponse(context, gin.H{"auth_token": authToken})
-}
+// 	helpers.GinSuccessResponse(context, gin.H{"auth_token": authToken})
+// }

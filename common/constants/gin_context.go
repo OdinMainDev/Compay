@@ -1,6 +1,7 @@
 package constants
 
 const (
-	GinUserId = "user_id"
-	GinUser   = "user"
+	GinSecretToken = "secret_token"
+	GinUserId      = "user_id"
+	GinUser        = "user"
 )

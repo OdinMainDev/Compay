@@ -18,7 +18,7 @@ func Migrate(Conn *gorm.DB) {
 		return
 	}
 
-	srcDriver, err := iofs.New(database.MigrationsDir, "migrations")
+	srcDriver, err := iofs.New(database.GetMigrationsDir())
 	if err != nil {
 		eslog.PanicLog("Error: " + err.Error())
 	}

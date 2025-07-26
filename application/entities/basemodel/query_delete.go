@@ -6,15 +6,7 @@ import (
 	"compay/core/eslog"
 )
 
-func (parentModel *BaseModel) Delete(value any) {
-	parentModel.deleteFromDb(value)
-}
-
-func (parentModel *BaseCacheModel) Delete(value any) {
-	parentModel.deleteFromCache(value)
-}
-
-func (parentModel *BaseModel) deleteFromDb(value any) {
+func (parentModel *BaseModel) deleteFromDb(value any, withMerchantId bool) {
 	tx := core.GetInstance().GetDB().Delete(value)
 	if tx.Error != nil {
 		// TODO: улучшить логирование ошибок
@@ -25,9 +17,17 @@ func (parentModel *BaseModel) deleteFromDb(value any) {
 		return
 	}
 
-	escache.Delete(value)
+	if !withMerchantId {
+		escache.Delete(value)
+	}
+
+	escache.Delete(value, *value.(modelWithMerchantId).GetMerchantId())
 }
 
-func (parentModel *BaseModel) deleteFromCache(value any) {
-	escache.Delete(value)
+func (parentModel *BaseModel) deleteFromCache(value any, withMerchantId bool) {
+	if !withMerchantId {
+		escache.Delete(value)
+	}
+
+	escache.Delete(value, *value.(modelWithMerchantId).GetMerchantId())
 }

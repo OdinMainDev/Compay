@@ -9,15 +9,7 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (parentModel *BaseModel) Save(value any) {
-	parentModel.saveToDb(value)
-}
-
-func (parentModel *BaseCacheModel) Save(value any) {
-	parentModel.saveToCache(value)
-}
-
-func (parentModel *BaseModel) saveToDb(value any) {
+func (parentModel *BaseModel) saveToDb(value any, withMerchantId bool) {
 	currentTime := time.Now().Unix()
 	if parentModel.CreatedAt == 0 {
 		parentModel.CreatedAt = currentTime
@@ -34,15 +26,23 @@ func (parentModel *BaseModel) saveToDb(value any) {
 		return
 	}
 
-	escache.Update(value)
+	if !withMerchantId {
+		escache.Update(value)
+	}
+
+	escache.Update(value, *value.(modelWithMerchantId).GetMerchantId())
 }
 
-func (parentModel *BaseModel) saveToCache(value any) {
+func (parentModel *BaseModel) saveToCache(value any, withMerchantId bool) {
 	currentTime := time.Now().Unix()
 	if parentModel.GetId() == 0 {
 		parentModel.CreatedAt = currentTime
 	}
 	parentModel.UpdatedAt = currentTime
 
-	escache.Update(value)
+	if !withMerchantId {
+		escache.Update(value)
+	}
+
+	escache.Update(value, *value.(modelWithMerchantId).GetMerchantId())
 }

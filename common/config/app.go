@@ -1,8 +1,17 @@
 package config
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 var AppPort string = ""
+var AppAdminDomain = ""
+var AppTelegramToken = ""
+var AppTelegramDomain = ""
+var AppTelegramSecretToken = uuid.NewString()
+var AppRouterTelegramPath = "tgwebhook"
 
 var AppSecret string = ""
 var AppDebug bool = false
@@ -19,6 +28,9 @@ var AppEnvVariablesAll = []string{
 	// APP
 	"APP_PORT",
 	"APP_SECRET",
+	"APP_ADMIN_DOMAIN",
+	"APP_TELEGRAM_DOMAIN",
+	"APP_TELEGRAM_TOKEN",
 
 	// DB
 	"DB_HOST",
