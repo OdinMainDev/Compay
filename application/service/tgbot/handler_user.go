@@ -15,7 +15,7 @@ func (tgBot *EsTgBot) ValidateUser() (bool, error) {
 		return false, fmt.Errorf("BadRequestFromTelegram")
 	}
 
-	userModel := merchantuser.GetModel(merchantuser.QueryUserHelper{
+	userModel := merchantuser.GetModel(merchantuser.QueryHelper{
 		TelegramId: tgUser.ID,
 	})
 

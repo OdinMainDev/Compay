@@ -8,12 +8,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type QueryUserHelper struct {
+type QueryHelper struct {
 	Id         int64
 	TelegramId int64
 }
 
-func GetModel(data QueryUserHelper) *Model {
+func GetModel(data QueryHelper) *Model {
 	var model *Model
 	query := prepareUserQuery(data)
 	tx := query.First(&model)
@@ -29,7 +29,7 @@ func GetModel(data QueryUserHelper) *Model {
 	return &Model{}
 }
 
-func GetModels(data QueryUserHelper) []*Model {
+func GetModels(data QueryHelper) []*Model {
 	var model []*Model
 	query := prepareUserQuery(data)
 
@@ -46,7 +46,7 @@ func GetModels(data QueryUserHelper) []*Model {
 	return []*Model{}
 }
 
-func prepareUserQuery(data QueryUserHelper) *gorm.DB {
+func prepareUserQuery(data QueryHelper) *gorm.DB {
 	query := core.GetInstance().GetDB()
 
 	if data.Id != 0 {
@@ -72,7 +72,7 @@ func GetCount() int64 {
 	return result
 }
 
-func GetModelById(userId int64, data QueryUserHelper) *Model {
+func GetModelById(userId int64, data QueryHelper) *Model {
 	data.Id = userId
 	var model *Model
 	query := prepareUserQuery(data)

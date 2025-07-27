@@ -36,7 +36,7 @@ func AuthLogin(context *gin.Context) {
 		return
 	}
 
-	userModel := merchantuser.GetModel(merchantuser.QueryUserHelper{
+	userModel := merchantuser.GetModel(merchantuser.QueryHelper{
 		Id: userId,
 	})
 

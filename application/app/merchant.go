@@ -33,6 +33,7 @@ func StartMerchant() {
 
 	merchantAdminCurrencyRoutes(adminGroup)
 	merchantAdminMerchantRoutes(adminGroup)
+	merchantAdminUserRoutes(adminGroup)
 
 	// apiGroup := router.Group("/v1")
 
@@ -80,6 +81,16 @@ func merchantAdminMerchantRoutes(group *gin.RouterGroup) {
 	merchantsGroup.POST("/process", controller.MerchantProcess)
 
 	merchantsGroup.GET("/get", controller.GetMerchants)
+}
+
+func merchantAdminUserRoutes(group *gin.RouterGroup) {
+	usersGroup := group.Group("/users")
+
+	usersGroup.GET("/list", controller.UsersList)
+	usersGroup.GET("/list/filters", controller.UsersListFilters)
+	usersGroup.GET("/get/:id", controller.UserGet)
+	usersGroup.POST("/process", controller.UserProcess)
+
 }
 
 func ShutdownMerchant(ctx context.Context) {

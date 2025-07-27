@@ -2,13 +2,14 @@ package start
 
 import (
 	"compay/application/entities/currency"
-	// "compay/application/entities/user"
-	// "compay/application/entities/wallet"
+	"compay/application/entities/merchant"
+
 	"compay/core/escache"
 )
 
 var cachableModels = []any{
 	(*currency.Model)(nil),
+	(*merchant.Model)(nil),
 }
 
 func registerCachableTypes() {
