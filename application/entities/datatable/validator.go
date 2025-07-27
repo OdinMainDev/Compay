@@ -30,7 +30,7 @@ type RequestDatatable struct {
 	OrderDirection         string   `json:"order_direction" form:"order_direction" binding:"required,eq=desc|eq=asc"`
 	FilterName             []string `json:"filter_name" form:"filter_name[]" binding:"max=255"`
 	FilterValue            []string `json:"filter_value" form:"filter_value[]" binding:"max=255"`
-	CasinoId               int64    `json:"-" form:"-"`
+	MerchantId             int64    `json:"-" form:"-"`
 	UserVerificationStatus *int     `json:"-" form:"-"`
 	CheckUpdatedAtMore     int64    `json:"-" form:"-"`
 	CheckUpdatedAtLess     int64    `json:"-" form:"-"`

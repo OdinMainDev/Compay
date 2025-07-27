@@ -115,3 +115,7 @@ func CurrencyImport(context *gin.Context) {
 	}()
 	helpers.GinSuccessResponse(context, nil)
 }
+
+func GetCurrencies(context *gin.Context) {
+	helpers.GinSuccessResponse(context, gin.H{"data": currency.GetModels(currency.QueryHelper{})})
+}

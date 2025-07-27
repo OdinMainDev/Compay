@@ -6,7 +6,8 @@ import (
 )
 
 type QueryHelper struct {
-	Id int64
+	Id    int64
+	Token string
 }
 
 func getAndSort(data QueryHelper) []*Model {
@@ -19,6 +20,10 @@ func getAndSort(data QueryHelper) []*Model {
 	for _, item := range rows {
 
 		if data.Id != 0 && item.Id != data.Id {
+			continue
+		}
+
+		if data.Token != "" && item.Token != data.Token {
 			continue
 		}
 

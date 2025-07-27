@@ -29,7 +29,7 @@ func DatatableResponse[T any](
 		req.FilterName = append(req.FilterName, key)
 		req.FilterValue = append(req.FilterValue, value)
 	}
-	countRecords := getCount(req.CasinoId)
+	countRecords := getCount(req.MerchantId)
 	if req.Start > countRecords {
 		helpers.GinSuccessResponse(context, gin.H{"data": req.ResponseEmpty(countRecords)})
 		return

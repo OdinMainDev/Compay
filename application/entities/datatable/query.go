@@ -4,7 +4,6 @@ import (
 	"compay/core"
 	"compay/core/eslog"
 	"errors"
-	"reflect"
 	"strings"
 
 	"gorm.io/gorm"
@@ -30,19 +29,12 @@ func prepareBaseQuery(db *gorm.DB, request RequestDatatable) *gorm.DB {
 }
 
 func applySpecialQueries(tx *gorm.DB, _ *gorm.DB, model interface{}, request RequestDatatable) (interface{}, error) {
-	switch reflect.TypeOf(model).String() {
-	// case "[]*chatsession.Model":
-	// 	return queryChatSessions(tx, req)
-	// case "[]*userverification.Model":
-	// 	return queryUserVerifications(tx, req)
-	}
-
 	return defaultQuery(tx, model, request)
 }
 
 func defaultQuery(tx *gorm.DB, model interface{}, request RequestDatatable) (interface{}, error) {
-	if request.CasinoId != 0 {
-		tx = tx.Where("casino_id", request.CasinoId)
+	if request.MerchantId != 0 {
+		tx = tx.Where("merchant_id", request.MerchantId)
 	}
 
 	if resp := tx.Find(&model); resp.Error != nil {
