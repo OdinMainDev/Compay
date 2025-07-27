@@ -71,8 +71,6 @@ func generateRouter(service string) *gin.Engine {
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "X-Telegram-Bot-Api-Secret-Token")
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Referer")
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Origin")
-	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "U-token")
-	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "A-token")
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "C-totp")
 
 	router.Use(cors.New(corsConfig))

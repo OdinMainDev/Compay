@@ -14,7 +14,7 @@ import (
 
 type EsTgBot struct {
 	TgBot     *bot.Bot
-	UserModel *merchantuser.UserModel
+	UserModel *merchantuser.Model
 
 	Message       *models.Message
 	CallbackQuery *models.CallbackQuery

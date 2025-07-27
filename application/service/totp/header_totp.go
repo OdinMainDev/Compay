@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GenerateHeaderToken(userModel *merchantuser.UserModel) (string, error) {
+func GenerateHeaderToken(userModel *merchantuser.Model) (string, error) {
 	now := time.Now().Unix()
 	rawToken := fmt.Sprintf("%d-%d", userModel.GetId(), now)
 
@@ -31,7 +31,7 @@ func ValidateRequest(context *gin.Context) error {
 		return cperrors.ErrorAuthTotpBadRequest
 	}
 
-	userModel := userModelData.(*merchantuser.UserModel)
+	userModel := userModelData.(*merchantuser.Model)
 	if !userModel.IsTwofaEnabled {
 		return nil
 	}

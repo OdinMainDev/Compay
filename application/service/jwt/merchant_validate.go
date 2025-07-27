@@ -49,7 +49,7 @@ func ValidateMerchantJWT(context *gin.Context) error {
 		return cperrors.ErrorJwtBadMerchantTokenUserId3
 	}
 
-	userModel := merchantuser.GetUserModel(merchantuser.QueryUserHelper{
+	userModel := merchantuser.GetModel(merchantuser.QueryUserHelper{
 		Id: userId,
 	})
 	if userModel == nil || userModel.GetId() == 0 || userModel.SecretToken != basemodel.EncryptedString(secretToken) {

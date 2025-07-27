@@ -11,11 +11,11 @@ import (
 	jwtLib "github.com/golang-jwt/jwt/v5"
 )
 
-func userDataToEncryptedString(userModel *merchantuser.UserModel, data any) (string, error) {
+func userDataToEncryptedString(userModel *merchantuser.Model, data any) (string, error) {
 	return utils.EncryptString(fmt.Sprint(data, "-", userModel.SecretToken))
 }
 
-func GenerateMerchantJWT(userModel *merchantuser.UserModel, tokenTTL int) (string, error) {
+func GenerateMerchantJWT(userModel *merchantuser.Model, tokenTTL int) (string, error) {
 	userIdEncrypted, err := userDataToEncryptedString(userModel, userModel.Id)
 	if err != nil {
 		return "", cperrors.ErrorJwtBadMerchantEncryption

@@ -1,6 +1,6 @@
 package merchantuser
 
-func (that *UserModel) GetUserUsername() string {
+func (that *Model) GetUserUsername() string {
 	if that.Username != "" {
 		return that.Username
 	}

@@ -13,8 +13,8 @@ type QueryUserHelper struct {
 	TelegramId int64
 }
 
-func GetUserModel(data QueryUserHelper) *UserModel {
-	var model *UserModel
+func GetModel(data QueryUserHelper) *Model {
+	var model *Model
 	query := prepareUserQuery(data)
 	tx := query.First(&model)
 	if tx.Error == nil {
@@ -22,15 +22,15 @@ func GetUserModel(data QueryUserHelper) *UserModel {
 	}
 
 	if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-		return &UserModel{}
+		return &Model{}
 	}
 
 	eslog.LogError(tx.Error)
-	return &UserModel{}
+	return &Model{}
 }
 
-func GetUserModels(data QueryUserHelper) []*UserModel {
-	var model []*UserModel
+func GetModels(data QueryUserHelper) []*Model {
+	var model []*Model
 	query := prepareUserQuery(data)
 
 	tx := query.Find(&model)
@@ -39,11 +39,11 @@ func GetUserModels(data QueryUserHelper) []*UserModel {
 	}
 
 	if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-		return []*UserModel{}
+		return []*Model{}
 	}
 
 	eslog.LogError(tx.Error)
-	return []*UserModel{}
+	return []*Model{}
 }
 
 func prepareUserQuery(data QueryUserHelper) *gorm.DB {
@@ -63,7 +63,7 @@ func prepareUserQuery(data QueryUserHelper) *gorm.DB {
 
 func GetCount() int64 {
 	var result int64 = 0
-	tx := core.GetInstance().GetDB().Model(&UserModel{}).Count(&result)
+	tx := core.GetInstance().GetDB().Model(&Model{}).Count(&result)
 
 	if tx.Error != nil {
 		eslog.LogError(tx.Error)
@@ -72,9 +72,9 @@ func GetCount() int64 {
 	return result
 }
 
-func GetUserModelById(userId int64, data QueryUserHelper) *UserModel {
+func GetModelById(userId int64, data QueryUserHelper) *Model {
 	data.Id = userId
-	var model *UserModel
+	var model *Model
 	query := prepareUserQuery(data)
 	tx := query.First(&model)
 	if tx.Error == nil {
@@ -82,9 +82,9 @@ func GetUserModelById(userId int64, data QueryUserHelper) *UserModel {
 	}
 
 	if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-		return &UserModel{}
+		return &Model{}
 	}
 
 	eslog.LogError(tx.Error)
-	return &UserModel{}
+	return &Model{}
 }

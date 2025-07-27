@@ -36,7 +36,7 @@ func AuthLogin(context *gin.Context) {
 		return
 	}
 
-	userModel := merchantuser.GetUserModel(merchantuser.QueryUserHelper{
+	userModel := merchantuser.GetModel(merchantuser.QueryUserHelper{
 		Id: userId,
 	})
 
@@ -45,7 +45,8 @@ func AuthLogin(context *gin.Context) {
 		return
 	}
 
-	token, err := jwt.GenerateMerchantJWT(userModel, 3600)
+	// TODO: вернуть 1800
+	token, err := jwt.GenerateMerchantJWT(userModel, 3600000000)
 	if err != nil {
 		helpers.GinErrorResponse(context, err)
 		return

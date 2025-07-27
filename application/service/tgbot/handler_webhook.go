@@ -60,6 +60,6 @@ func SetWebHook() error {
 }
 
 func constructWebHookUrl() string {
-	path := strings.ReplaceAll(config.AppTelegramDomain+"/"+config.AppRouterTelegramPath, "//", "/")
+	path := strings.ReplaceAll(config.AppDomain+"/"+config.AppRouterTelegramPath, "//", "/")
 	return "https://" + path
 }

@@ -28,6 +28,7 @@ func (parentModel *BaseModel) saveToDb(value any, withMerchantId bool) {
 
 	if !withMerchantId {
 		escache.Update(value)
+		return
 	}
 
 	escache.Update(value, *value.(modelWithMerchantId).GetMerchantId())
@@ -42,6 +43,7 @@ func (parentModel *BaseModel) saveToCache(value any, withMerchantId bool) {
 
 	if !withMerchantId {
 		escache.Update(value)
+		return
 	}
 
 	escache.Update(value, *value.(modelWithMerchantId).GetMerchantId())

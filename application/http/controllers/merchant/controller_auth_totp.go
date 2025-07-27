@@ -22,7 +22,7 @@ func AuthTotp(context *gin.Context) {
 		return
 	}
 
-	userModel := context.MustGet(constants.GinUser).(*merchantuser.UserModel)
+	userModel := context.MustGet(constants.GinUser).(*merchantuser.Model)
 	if userModel.TotpToken == "" {
 		helpers.GinErrorResponse(context, "NotConfigured")
 		return

@@ -28,6 +28,11 @@ func StartMerchant() {
 
 	merchantProfileRoutes(privateGroup)
 
+	adminGroup := privateGroup.Group("/admin")
+	adminGroup.Use(middleware.CheckMerchantIsAdmin())
+
+	merchantAdminCurrencyRoutes(adminGroup)
+
 	// apiGroup := router.Group("/v1")
 
 	tgbot.SetWebHook()
@@ -50,6 +55,17 @@ func merchantProfileRoutes(group *gin.RouterGroup) {
 	group.GET("/get/my/has-2-fa", controller.GetMyHas2Fa)
 	group.POST("/get/my/2-fa-uri", controller.GetMy2FaUri)
 	group.POST("/set/my/2-fa", controller.SetMy2Fa)
+}
+
+func merchantAdminCurrencyRoutes(group *gin.RouterGroup) {
+	currenciesGroup := group.Group("/currencies")
+
+	currenciesGroup.GET("/list", controller.CurrenciesList)
+	currenciesGroup.GET("/list/filters", controller.CurrenciesListFilters)
+	currenciesGroup.GET("/get/:id", controller.CurrencyGet)
+	currenciesGroup.POST("/process", controller.CurrencyProcess)
+	currenciesGroup.POST("/delete/:id", controller.CurrencyDelete)
+	currenciesGroup.POST("/import", controller.CurrencyImport)
 }
 
 func ShutdownMerchant(ctx context.Context) {

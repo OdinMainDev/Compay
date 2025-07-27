@@ -9,7 +9,7 @@ import (
 var AppPort string = ""
 var AppAdminDomain = ""
 var AppTelegramToken = ""
-var AppTelegramDomain = ""
+var AppDomain = ""
 var AppTelegramSecretToken = uuid.NewString()
 var AppRouterTelegramPath = "tgwebhook"
 
@@ -29,7 +29,7 @@ var AppEnvVariablesAll = []string{
 	"APP_PORT",
 	"APP_SECRET",
 	"APP_ADMIN_DOMAIN",
-	"APP_TELEGRAM_DOMAIN",
+	"APP_DOMAIN",
 	"APP_TELEGRAM_TOKEN",
 
 	// DB

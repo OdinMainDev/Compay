@@ -17,12 +17,12 @@ func GetMe(context *gin.Context) {
 }
 
 func GetMyHas2Fa(context *gin.Context) {
-	userModel := context.MustGet(constants.GinUser).(*merchantuser.UserModel)
+	userModel := context.MustGet(constants.GinUser).(*merchantuser.Model)
 	helpers.GinSuccessResponse(context, gin.H{"result": userModel.IsTwofaEnabled})
 }
 
 func GetMy2FaUri(context *gin.Context) {
-	userModel := context.MustGet(constants.GinUser).(*merchantuser.UserModel)
+	userModel := context.MustGet(constants.GinUser).(*merchantuser.Model)
 
 	if userModel.IsTwofaEnabled {
 		helpers.GinErrorResponse(context, "AlreadyConfigured")
@@ -55,7 +55,7 @@ func SetMy2Fa(context *gin.Context) {
 		return
 	}
 
-	userModel := context.MustGet(constants.GinUser).(*merchantuser.UserModel)
+	userModel := context.MustGet(constants.GinUser).(*merchantuser.Model)
 	if userModel.TotpToken == "" {
 		helpers.GinErrorResponse(context, "NotConfigured")
 		return

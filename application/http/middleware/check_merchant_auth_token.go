@@ -12,7 +12,7 @@ import (
 func CheckMerchantAuth(args ...bool) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		if err := jwt.ValidateMerchantJWT(context); err != nil {
-			helpers.GinErrorResponse(context, err, http.StatusUnauthorized)
+			helpers.GinErrorResponse(context, nil, http.StatusUnauthorized)
 			context.Abort()
 			return
 		}

@@ -19,6 +19,7 @@ func (parentModel *BaseModel) deleteFromDb(value any, withMerchantId bool) {
 
 	if !withMerchantId {
 		escache.Delete(value)
+		return
 	}
 
 	escache.Delete(value, *value.(modelWithMerchantId).GetMerchantId())
@@ -27,6 +28,7 @@ func (parentModel *BaseModel) deleteFromDb(value any, withMerchantId bool) {
 func (parentModel *BaseModel) deleteFromCache(value any, withMerchantId bool) {
 	if !withMerchantId {
 		escache.Delete(value)
+		return
 	}
 
 	escache.Delete(value, *value.(modelWithMerchantId).GetMerchantId())
