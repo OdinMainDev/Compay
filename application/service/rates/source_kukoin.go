@@ -3,6 +3,7 @@ package rates
 import (
 	"compay/core/utils"
 	"encoding/json"
+	"fmt"
 	"strconv"
 )
 
@@ -19,11 +20,11 @@ type KucoinResp struct {
 func getKucoin() (map[string]map[string]float64, error) {
 	body, err := doRequest(parserCfg["kucoin"])
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("kucoin 1: %s", err.Error())
 	}
 	var obj KucoinResp
 	if err := json.Unmarshal(body, &obj); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("kucoin 1.1: %s", err.Error())
 	}
 	response := map[string]map[string]float64{}
 	for _, ticker := range obj.Data.Ticker {
@@ -39,7 +40,7 @@ func getKucoin() (map[string]map[string]float64, error) {
 
 		rate, err := strconv.ParseFloat(ticker.Last, 64)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("kucoin 2: %s", err.Error())
 		}
 		if _, ok := response[currencyFrom]; !ok {
 			response[currencyFrom] = map[string]float64{}

@@ -2,16 +2,18 @@ package rates
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 func getUsdToRubRateFromRapira() (float64, error) {
+	return 0, fmt.Errorf("notWorking")
 	body, err := doRequest(parserCfg["rapira"])
 	if err != nil {
-		return getUsdToRubRateFromGrinex()
+		return 0, fmt.Errorf("rapira 1: %s", err.Error())
 	}
 	var data []map[string]interface{}
 	if err := json.Unmarshal(body, &data); err != nil {
-		return getUsdToRubRateFromGrinex()
+		return 0, fmt.Errorf("rapira 2: %s | body: %s", err.Error(), string(body))
 	}
 	for _, d := range data {
 		if d["symbol"] == "USDT/RUB" {
@@ -29,5 +31,6 @@ func getUsdToRubRateFromRapira() (float64, error) {
 			}
 		}
 	}
-	return getUsdToRubRateFromGrinex()
+
+	return 0, fmt.Errorf("rapira 3: %s | body: %s", "not avail pairs", string(body))
 }

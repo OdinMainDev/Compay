@@ -1,5 +1,10 @@
 package rates
 
+import (
+	"compay/core/eslog"
+	"fmt"
+)
+
 func UpdateRates() (map[string]map[string]float64, error) {
 	var err error
 	kucoinRates, err := getKucoin()
@@ -9,8 +14,21 @@ func UpdateRates() (map[string]map[string]float64, error) {
 
 	rubRate, err := getUsdToRubRateFromGrinex()
 	if err != nil {
-		return nil, err
+		eslog.LogError(err.Error())
+		rubRate, err = getUsdToRubRateFromRapira()
+		if err != nil {
+			eslog.LogError(err.Error())
+			rubRate, err = getUsdToRubRateFromCbr()
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
+
+	if rubRate == 0 {
+		return nil, fmt.Errorf("%s", "badRubRate")
+	}
+
 	eurRate, err := getUsdToEurRate(kucoinRates)
 	if err != nil {
 		return nil, err

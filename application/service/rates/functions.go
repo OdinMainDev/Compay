@@ -13,7 +13,7 @@ func doRequest(url string) ([]byte, error) {
 			"Cache-Control":   "no-cache",
 			"Pragma":          "no-cache",
 			"accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-			"User-Agent":      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+			"User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
 
 			"sec-ch-ua":                 `"Chromium";v="137", "Not/A)Brand";v="24"`,
 			"sec-ch-ua-mobile":          "?0",
@@ -24,7 +24,7 @@ func doRequest(url string) ([]byte, error) {
 			"sec-fetch-user":            "?1",
 			"upgrade-insecure-requests": "1",
 		},
-		DisableLog: true,
+		DisableLog: parserCfg["bestchange"] == url,
 	})
 	if err != nil {
 		return nil, err

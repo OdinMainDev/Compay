@@ -26,10 +26,24 @@ type Valute struct {
 	Value string `xml:"Value"`
 }
 
-func getUsdToRubRateFromCbr() (float64, error) {
+var cbrRubVal = 0.
+var cbrRubCnt = 0
+
+func getUsdToRubRateFromCbr() (rV float64, rE error) {
+	if cbrRubVal > 0 {
+		if cbrRubCnt < 120 {
+			cbrRubCnt++
+			return cbrRubVal, nil
+		} else {
+			cbrRubCnt = 0
+			cbrRubVal = 0
+		}
+	}
+
+	defer func() { cbrRubVal = rV }()
 	body, err := doRequest(parserCfg["cbr"])
 	if err != nil {
-		return 0, fmt.Errorf("cbr request error: %w", err)
+		return 0, fmt.Errorf("cbr 1: cbr request error: %w", err)
 	}
 
 	decoder := xml.NewDecoder(bytes.NewReader(body))
@@ -38,13 +52,13 @@ func getUsdToRubRateFromCbr() (float64, error) {
 		case "windows-1251":
 			return transform.NewReader(input, charmap.Windows1251.NewDecoder()), nil
 		default:
-			return nil, fmt.Errorf("unsupported charset: %s", charset)
+			return nil, fmt.Errorf("cbr 2: unsupported charset: %s", charset)
 		}
 	}
 
 	var valCurs ValCurs
 	if err := decoder.Decode(&valCurs); err != nil {
-		return 0, fmt.Errorf("cbr xml parse error: %w", err)
+		return 0, fmt.Errorf("cbr 3: cbr xml parse error: %w", err)
 	}
 	for _, valute := range valCurs.Valutes {
 		if strings.ToUpper(valute.CharCode) == "USD" {
@@ -52,10 +66,10 @@ func getUsdToRubRateFromCbr() (float64, error) {
 			valueStr := strings.ReplaceAll(valute.Value, ",", ".")
 			rate, err := strconv.ParseFloat(valueStr, 64)
 			if err != nil {
-				return 0, fmt.Errorf("cbr rate parse error: %w", err)
+				return 0, fmt.Errorf("cbr 4: cbr rate parse error: %w", err)
 			}
 			return rate, nil
 		}
 	}
-	return 0, fmt.Errorf("USD not found in CBR data")
+	return 0, fmt.Errorf("cbr 5: USD not found in CBR data")
 }
