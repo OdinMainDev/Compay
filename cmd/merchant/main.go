@@ -1,12 +1,7 @@
 package main
 
-import (
-	"compay/application/app"
-	"compay/common/database"
-	"context"
-)
+import "fmt"
 
 func main() {
-	database.SetMigrationsType(false)
-	app.CreateAppInstance("merchant", []func(){app.StartMerchant}, []func(context.Context){app.ShutdownMerchant})
+	fmt.Println("Hello world")
 }

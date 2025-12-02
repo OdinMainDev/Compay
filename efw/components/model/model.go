@@ -1,0 +1,26 @@
+package model
+
+import (
+	"efw/components/entity"
+
+	"gorm.io/gorm"
+)
+
+// Model это абстрактный класс для определения является ли вложение моделью или нет
+type Model interface {
+	GetId() int64
+	GetCreatedAt() int64
+	GetUpdatedAt() int64
+	CacheArgs() []int64
+	GetSaveType() entity.SaveType
+	Lock()
+	Unlock()
+	UpdateTimestamps()
+}
+
+// Filter это абстрактный класс который наследуется от Model. Служит для фильтрации в базе/кеш данных для получения моделей
+type Filter[T Model] interface {
+	CacheAdditionalKeys() []int64
+	ApplyDBFilters(gorm.ChainInterface[T]) gorm.ChainInterface[T]
+	ApplyCacheFilters(T) bool
+}
