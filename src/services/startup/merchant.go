@@ -14,8 +14,16 @@ func registerMerchantAdminAccounts() {
 		Username: "test1",
 	})
 
-	fmt.Println(userModel)
-	fmt.Println(userModel == nil)
+	// fmt.Println(userModel)
+	// fmt.Println(userModel == nil)
+
+	userModel = &user.Entity{
+		Username: "test",
+	}
+
+	fmt.Printf("Ссылка 0: %p\n", &userModel)
+	user.Save(userModel)
+
 	// "vioriel@developer.com"
 	// check := user.GetModel(user.QueryHelper{
 	// 	Id:                constants.DevIds[i],

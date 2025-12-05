@@ -37,7 +37,8 @@ func GetModels[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) []*
 	return r
 }
 
-func Save[T Model](model T, additionalCacheKeys ...int64) {
+func Save[T Model](model *T, additionalCacheKeys ...int64) {
+	fmt.Printf("Ссылка 1: %p\n", &model)
 	err := save(model, additionalCacheKeys...)
 	if err != nil {
 		efwlog.LogError(ErrorModelMethod("Save", err.Error()))

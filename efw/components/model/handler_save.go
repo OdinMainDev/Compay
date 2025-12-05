@@ -9,26 +9,29 @@ import (
 
 var ErrorModelIsNilOnSave = fmt.Errorf("%s", "[EFW: MODEL] ModelIsNilOnSave")
 
-func save[T Model](model T, additionalCacheKeys ...int64) error {
+func save[T Model](model *T, additionalCacheKeys ...int64) error {
+	fmt.Printf("Ссылка 2: %p\n", &model)
 	if isNil(model) {
 		return ErrorModelIsNilOnSave
 	}
 
-	model.Lock()
-	model.UpdateTimestamps()
-	model.Unlock()
+	return nil
 
-	if isDatabaseModel(model) {
-		if err := saveToDb(model); err != nil {
-			return err
-		}
-	}
+	// model.Lock()
+	// model.UpdateTimestamps()
+	// model.Unlock()
 
-	if isCacheModel(model) {
-		if err := updateCache(model, additionalCacheKeys...); err != nil {
-			return err
-		}
-	}
+	// if isDatabaseModel(model) {
+	// 	if err := saveToDb(model); err != nil {
+	// 		return err
+	// 	}
+	// }
+
+	// if isCacheModel(model) {
+	// 	if err := updateCache(model, additionalCacheKeys...); err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	return nil
 }
