@@ -8,7 +8,7 @@ import (
 
 // Model это абстрактный класс для определения является ли вложение моделью или нет
 type Model interface {
-	GetId() int64
+	GetIdInt64() int64
 	GetCreatedAt() int64
 	GetUpdatedAt() int64
 	CacheArgs() []int64

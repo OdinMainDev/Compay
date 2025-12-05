@@ -41,7 +41,7 @@ func Set[T CacheableModel](models []T, args ...int64) error {
 
 	for i, model := range models {
 		items[i] = CacheItem{
-			Id:   model.GetId(),
+			Id:   model.GetIdInt64(),
 			Data: model,
 		}
 	}
@@ -63,7 +63,7 @@ func Update[T CacheableModel](model T, args ...int64) error {
 
 	key := constructKeyFromModel(model, args...)
 	item := CacheItem{
-		Id:   model.GetId(),
+		Id:   model.GetIdInt64(),
 		Data: model,
 	}
 
@@ -81,5 +81,5 @@ func Delete[T CacheableModel](model T, args ...int64) error {
 	RegisterType(model)
 
 	key := constructKeyFromModel(model, args...)
-	return instance.delete(key, model.GetId())
+	return instance.delete(key, model.GetIdInt64())
 }

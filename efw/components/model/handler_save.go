@@ -35,12 +35,12 @@ func save[T Model](model T, additionalCacheKeys ...int64) error {
 
 func saveToDb[T Model](model T) error {
 	query := efw.DBTransaction[T]()
-	if model.GetId() == 0 {
+	if model.GetIdInt64() == 0 {
 		return query.Create(context.Background(), &model)
 	}
 
 	chain := query.Scopes()
-	_, err := chain.Where("id = ?", model.GetId()).Updates(context.Background(), model)
+	_, err := chain.Where("id = ?", model.GetIdInt64()).Updates(context.Background(), model)
 	return err
 }
 

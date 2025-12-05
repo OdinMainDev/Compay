@@ -11,7 +11,7 @@ func StartMerchant() {
 
 func registerMerchantAdminAccounts() {
 	userModel := user.GetModel(user.QueryHelper{
-		Username: "test",
+		Username: "test1",
 	})
 
 	fmt.Println(userModel)

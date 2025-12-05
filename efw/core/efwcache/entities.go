@@ -26,7 +26,7 @@ type Shard struct {
 }
 
 type CacheableModel interface {
-	GetId() int64
+	GetIdInt64() int64
 }
 
 type CacheItem struct {

@@ -30,13 +30,13 @@ func delete[T Model](model T, additionalCacheKeys ...int64) error {
 }
 
 func deleteFromDb[T Model](model T) error {
-	if model.GetId() == 0 {
+	if model.GetIdInt64() == 0 {
 		return nil
 	}
 
 	query := efw.DBTransaction[T]()
 	chain := query.Scopes()
-	_, err := chain.Where("id = ?", model.GetId()).Delete(context.Background())
+	_, err := chain.Where("id = ?", model.GetIdInt64()).Delete(context.Background())
 	return err
 }
 
