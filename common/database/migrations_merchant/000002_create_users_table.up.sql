@@ -1,6 +1,8 @@
 CREATE TABLE "users" (
     "id" bigserial,
     "merchant_id" int,
+    "username" varchar(255) NOT NULL,
+    "password" varchar(255) NOT NULL,
     "secret_token" varchar(255) NOT NULL,
     "totp_token" varchar(255) NOT NULL,
     "is_twofa_enabled" boolean DEFAULT false,
@@ -10,4 +12,5 @@ CREATE TABLE "users" (
 );
 
 CREATE INDEX idx_users_merchant_id ON "users" ("merchant_id");
+CREATE INDEX idx_users_username ON "users" ("username");
 CREATE INDEX idx_users_is_twofa_enabled ON "users" ("is_twofa_enabled");
