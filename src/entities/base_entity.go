@@ -42,8 +42,7 @@ func (b *BaseEntity[ID]) Unlock() {
 	b.mu.Unlock()
 }
 
-// TouchTimestamps updates CreatedAt/UpdatedAt prior to persisting a record.
-func (b *BaseEntity[ID]) TouchTimestamps() {
+func (b *BaseEntity[ID]) UpdateTimestamps() {
 	now := time.Now().Unix()
 	if b.CreatedAt == 0 {
 		b.CreatedAt = now
