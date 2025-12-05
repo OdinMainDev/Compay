@@ -1,13 +1,11 @@
 package startup
 
-import "compay/src/entities/user"
-
 func StartMerchant() {
 	registerMerchantAdminAccounts()
 }
 
 func registerMerchantAdminAccounts() {
-	userModel := user.GetModel(user.QueryHelper{})
+	// userModel := user.GetModel(user.QueryHelper{})
 	// "vioriel@developer.com"
 	// check := user.GetModel(user.QueryHelper{
 	// 	Id:                constants.DevIds[i],

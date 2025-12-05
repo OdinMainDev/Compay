@@ -14,7 +14,7 @@ func getModels[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) ([]
 
 	result := make([]T, 0, len(records))
 	for _, record := range records {
-		if filter.ApplyCacheFilters(record) {
+		if filter.ApplyCacheFilters(&record) {
 			result = append(result, record)
 		}
 	}

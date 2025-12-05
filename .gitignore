@@ -18,3 +18,4 @@ build
 cmd/rates/compayrates
 .claude
 compayrates
+.gocache

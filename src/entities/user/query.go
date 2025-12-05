@@ -12,11 +12,11 @@ type QueryHelper struct {
 	MerchantId          types.MerchantId
 }
 
-func (helper QueryHelper) BucketArgs() []int64 {
+func (helper QueryHelper) CacheAdditionalKeys() []int64 {
 	return nil
 }
 
-func (helper QueryHelper) ApplyBucketQuery(chain gorm.ChainInterface[*Entity]) gorm.ChainInterface[*Entity] {
+func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[Entity]) gorm.ChainInterface[Entity] {
 	if helper.Id != 0 {
 		chain = chain.Where("id = ?", helper.Id)
 	}
@@ -26,6 +26,12 @@ func (helper QueryHelper) ApplyBucketQuery(chain gorm.ChainInterface[*Entity]) g
 	return chain.Order("id DESC")
 }
 
-func (helper QueryHelper) Matches(entity *Entity) bool {
-	return false
+func (helper QueryHelper) ApplyCacheFilters(entity *Entity) bool {
+	if helper.Id != 0 && entity.ID != helper.Id {
+		return false
+	}
+	if !helper.DontCheckMerchantId && helper.MerchantId != 0 && entity.MerchantId != helper.MerchantId {
+		return false
+	}
+	return true
 }
