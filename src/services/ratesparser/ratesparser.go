@@ -28,7 +28,7 @@ func Initialize() {
 
 		if err != nil {
 			// отправка в телегу всякой хуйни
-			efwnotify.Notify("RATES ERROR: "+err.Error(), efwnotify.Options{})
+			efwnotify.Notify("RATES ERROR @v1oriel: "+err.Error(), efwnotify.Options{})
 			time.Sleep(sleepTime * time.Second)
 			continue
 		}
