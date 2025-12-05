@@ -10,12 +10,12 @@ func StartMerchant() {
 }
 
 func registerMerchantAdminAccounts() {
-	userModel, err := user.GetModel(user.QueryHelper{
+	userModel := user.GetModel(user.QueryHelper{
 		Username: "test",
 	})
 
-	fmt.Println(err)
 	fmt.Println(userModel)
+	fmt.Println(userModel == nil)
 	// "vioriel@developer.com"
 	// check := user.GetModel(user.QueryHelper{
 	// 	Id:                constants.DevIds[i],
