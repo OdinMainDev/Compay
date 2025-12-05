@@ -13,6 +13,7 @@ type Model interface {
 	GetUpdatedAt() int64
 	CacheArgs() []int64
 	GetSaveType() entity.SaveType
+
 	Lock()
 	Unlock()
 	UpdateTimestamps()

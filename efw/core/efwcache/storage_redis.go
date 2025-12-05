@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
+	"github.com/redis/go-redis/v9/maintnotifications"
 )
 
 type RedisStorage struct {
@@ -20,6 +21,9 @@ func newRedisStorage() (*RedisStorage, error) {
 		Addr:     config.RedisHost,
 		Username: config.RedisUsername,
 		Password: config.RedisPassword,
+		MaintNotificationsConfig: &maintnotifications.Config{
+			Mode: maintnotifications.ModeDisabled,
+		},
 	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
