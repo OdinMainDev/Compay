@@ -2,6 +2,7 @@ package startup
 
 import (
 	"compay/src/entities/user"
+	"fmt"
 )
 
 func StartMerchant() {
@@ -18,6 +19,7 @@ func registerMerchantAdminAccounts() {
 		if userModel.MerchantId != 0 {
 			panic("BAD ROOT ADMIN MODEL")
 		}
+		fmt.Println("ВСЕ НАЙДЕНО ЗБС")
 		return
 	}
 
@@ -26,6 +28,7 @@ func registerMerchantAdminAccounts() {
 		MerchantId: 0,
 	}
 
+	userModel.SetId(1)
 	user.Save(userModel)
 	// user.ResetSequence()
 }

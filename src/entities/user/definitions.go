@@ -10,7 +10,7 @@ func (Entity) TableName() string {
 }
 
 func (Entity) GetSaveType() entity.SaveType {
-	return entity.SAVE_TYPE_DB
+	return entity.SAVE_TYPE_DB_CACHE
 }
 
 func (Entity) CacheArgs() []int64 {
