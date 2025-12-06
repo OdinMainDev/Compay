@@ -47,8 +47,14 @@ func saveToDb[T Model](model T) error {
 	}
 
 	chain := query.Scopes()
-	_, err := chain.Where("id = ?", model.GetIdInt64()).Updates(context.Background(), model)
-	return err
+	rows, err := chain.Updates(context.Background(), model)
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return query.Create(context.Background(), &model)
+	}
+	return nil
 }
 
 func updateCache[T Model](model T, additionalCacheKeys ...int64) error {

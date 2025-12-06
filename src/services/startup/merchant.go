@@ -1,7 +1,7 @@
 package startup
 
 import (
-	"compay/src/entities/user"
+	"compay/src/models/user"
 	"fmt"
 )
 
@@ -23,11 +23,9 @@ func registerMerchantAdminAccounts() {
 		return
 	}
 
-	userModel = &user.Entity{
-		Username:   "vioriel@developer.com",
-		MerchantId: 0,
-	}
-
+	userModel = &user.Model{}
+	userModel.Username = "vioriel@developer.com"
+	userModel.MerchantId = 0
 	userModel.SetId(1)
 	user.Save(userModel)
 	// user.ResetSequence()

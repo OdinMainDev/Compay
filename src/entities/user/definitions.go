@@ -2,7 +2,6 @@ package user
 
 import (
 	"efw/components/entity"
-	"efw/components/model"
 )
 
 func (*Entity) TableName() string {
@@ -16,9 +15,3 @@ func (*Entity) GetSaveType() entity.SaveType {
 func (*Entity) CacheArgs() []int64 {
 	return nil
 }
-
-var (
-	GetModel = model.GetModel[*Entity, QueryHelper]
-	Save     = model.Save[*Entity]
-	Delete   = model.Delete[*Entity]
-)
