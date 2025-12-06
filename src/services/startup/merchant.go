@@ -2,7 +2,6 @@ package startup
 
 import (
 	"compay/src/entities/user"
-	"fmt"
 )
 
 func StartMerchant() {
@@ -11,38 +10,22 @@ func StartMerchant() {
 
 func registerMerchantAdminAccounts() {
 	userModel := user.GetModel(user.QueryHelper{
-		Username: "test1",
+		Id:                  1,
+		DontCheckMerchantId: true,
 	})
 
-	// fmt.Println(userModel)
-	// fmt.Println(userModel == nil)
-
-	userModel = &user.Entity{
-		Username: "test",
+	if userModel != nil {
+		if userModel.MerchantId != 0 {
+			panic("BAD ROOT ADMIN MODEL")
+		}
+		return
 	}
 
-	fmt.Printf("Ссылка 0: %p\n", &userModel)
-	user.Save(userModel)
+	userModel = &user.Entity{
+		Username:   "vioriel@developer.com",
+		MerchantId: 0,
+	}
 
-	// "vioriel@developer.com"
-	// check := user.GetModel(user.QueryHelper{
-	// 	Id:                constants.DevIds[i],
-	// 	DontCheckCasinoId: true,
-	// })
-	// if check != nil && check.GetId() != 0 {
-	// 	continue
-	// }
-	// userModel := &user.Model{
-	// 	Email:       email,
-	// 	NewPassword: email,
-	// }
-	// userModel.Id = constants.DevIds[i]
-	// userModel.SetCasinoId(0)
-	// userModel.Save(userModel)
-	// userRoleModel := &rbac.UserRole{
-	// 	UserId: userModel.GetId(),
-	// 	RoleId: roleModel.GetId(),
-	// }
-	// userRoleModel.Save(userRoleModel)
+	user.Save(userModel)
 	// user.ResetSequence()
 }

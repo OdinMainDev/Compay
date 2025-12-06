@@ -20,4 +20,5 @@ func (Entity) CacheArgs() []int64 {
 var (
 	GetModel = model.GetModel[Entity, QueryHelper]
 	Save     = model.Save[Entity]
+	Delete   = model.Delete[Entity]
 )
