@@ -23,5 +23,5 @@ type Model interface {
 type Filter[T Model] interface {
 	CacheAdditionalKeys() []int64
 	ApplyDBFilters(gorm.ChainInterface[T]) gorm.ChainInterface[T]
-	ApplyCacheFilters(*T) bool
+	ApplyCacheFilters(T) bool
 }

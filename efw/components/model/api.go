@@ -29,7 +29,7 @@ var ErrorModelMethod = func(method, err string) error {
 // 	return getCount(filter, additionalCacheKeys...)
 // }
 
-func GetModels[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) []*T {
+func GetModels[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) []T {
 	r, err := getModels(filter, additionalCacheKeys...)
 	if err != nil {
 		efwlog.LogError(ErrorModelMethod("GetModels", err.Error()))
@@ -37,21 +37,31 @@ func GetModels[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) []*
 	return r
 }
 
-func Save[T Model](model *T, additionalCacheKeys ...int64) {
+func Save[T Model](model T, additionalCacheKeys ...int64) {
+	if isNil(model) {
+		efwlog.LogError(ErrorModelMethod("Save", "model is nil"))
+		return
+	}
+
 	err := save(model, additionalCacheKeys...)
 	if err != nil {
 		efwlog.LogError(ErrorModelMethod("Save", err.Error()))
 	}
 }
 
-func Delete[T Model](model *T, additionalCacheKeys ...int64) {
+func Delete[T Model](model T, additionalCacheKeys ...int64) {
+	if isNil(model) {
+		efwlog.LogError(ErrorModelMethod("Delete", "model is nil"))
+		return
+	}
+
 	err := delete(model, additionalCacheKeys...)
 	if err != nil {
 		efwlog.LogError(ErrorModelMethod("Delete", err.Error()))
 	}
 }
 
-func GetModel[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) *T {
+func GetModel[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) T {
 	r, err := getModel(filter, additionalCacheKeys...)
 	if err != nil {
 		efwlog.LogError(ErrorModelMethod("GetModel", err.Error()))

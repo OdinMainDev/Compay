@@ -10,24 +10,24 @@ import (
 
 var ErrorModelIsNilOnSave = fmt.Errorf("%s", "[EFW: MODEL] ModelIsNilOnSave")
 
-func save[T Model](model *T, additionalCacheKeys ...int64) error {
-	if model == nil || isNil(*model) {
+func save[T Model](model T, additionalCacheKeys ...int64) error {
+	if isNil(model) {
 		return ErrorModelIsNilOnSave
 	}
 
 	ensureBaseEntity(model)
 
-	(*model).Lock()
-	(*model).UpdateTimestamps()
-	(*model).Unlock()
+	model.Lock()
+	model.UpdateTimestamps()
+	model.Unlock()
 
-	if isDatabaseModel(*model) {
+	if isDatabaseModel(model) {
 		if err := saveToDb(model); err != nil {
 			return err
 		}
 	}
 
-	if isCacheModel(*model) {
+	if isCacheModel(model) {
 		if err := updateCache(model, additionalCacheKeys...); err != nil {
 			return err
 		}
@@ -36,23 +36,23 @@ func save[T Model](model *T, additionalCacheKeys ...int64) error {
 	return nil
 }
 
-func saveToDb[T Model](model *T) error {
-	if model == nil {
+func saveToDb[T Model](model T) error {
+	if isNil(model) {
 		return ErrorModelIsNilOnSave
 	}
 
 	query := efw.DBTransaction[T]()
-	if (*model).GetIdInt64() == 0 {
-		return query.Create(context.Background(), model)
+	if model.GetIdInt64() == 0 {
+		return query.Create(context.Background(), &model)
 	}
 
 	chain := query.Scopes()
-	_, err := chain.Where("id = ?", (*model).GetIdInt64()).Updates(context.Background(), *model)
+	_, err := chain.Where("id = ?", model.GetIdInt64()).Updates(context.Background(), model)
 	return err
 }
 
-func updateCache[T Model](model *T, additionalCacheKeys ...int64) error {
-	if model == nil {
+func updateCache[T Model](model T, additionalCacheKeys ...int64) error {
+	if isNil(model) {
 		return ErrorModelIsNilOnSave
 	}
 
@@ -68,11 +68,7 @@ func updateCache[T Model](model *T, additionalCacheKeys ...int64) error {
 	return nil
 }
 
-func ensureBaseEntity[T any](model *T) {
-	if model == nil {
-		return
-	}
-
+func ensureBaseEntity[T any](model T) {
 	val := reflect.ValueOf(model)
 	if val.Kind() != reflect.Pointer || val.IsNil() {
 		return

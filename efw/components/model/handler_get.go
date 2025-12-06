@@ -2,20 +2,20 @@ package model
 
 import "efw/core/efwcache"
 
-func getModels[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) ([]*T, error) {
+func getModels[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) ([]T, error) {
 	records, err := doGetModels(filter, additionalCacheKeys...)
 	if err != nil {
 		return nil, err
 	}
 
 	if len(records) == 0 {
-		return []*T{}, nil
+		return []T{}, nil
 	}
 
-	result := make([]*T, 0, len(records))
+	result := make([]T, 0, len(records))
 	for i := range records {
-		if filter.ApplyCacheFilters(&records[i]) {
-			result = append(result, &records[i])
+		if filter.ApplyCacheFilters(records[i]) {
+			result = append(result, records[i])
 		}
 	}
 	return result, nil
@@ -49,13 +49,14 @@ func doGetModels[T Model](filter Filter[T], additionalCacheKeys ...int64) ([]T, 
 	return records, nil
 }
 
-func getModel[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) (*T, error) {
+func getModel[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) (T, error) {
 	records, err := getModels(filter, additionalCacheKeys...)
 	if len(records) > 0 && err == nil {
 		return records[0], nil
 	}
 
-	return nil, err
+	var zero T
+	return zero, err
 }
 
 func getCount[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) (int64, error) {

@@ -17,7 +17,7 @@ func (helper QueryHelper) CacheAdditionalKeys() []int64 {
 	return nil
 }
 
-func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[Entity]) gorm.ChainInterface[Entity] {
+func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Entity]) gorm.ChainInterface[*Entity] {
 	if helper.Id != 0 {
 		chain = chain.Where("id = ?", helper.Id)
 	}

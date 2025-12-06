@@ -10,7 +10,7 @@ func (*Entity) TableName() string {
 }
 
 func (*Entity) GetSaveType() entity.SaveType {
-	return entity.SAVE_TYPE_DB_CACHE
+	return entity.SAVE_TYPE_DB
 }
 
 func (*Entity) CacheArgs() []int64 {
@@ -18,7 +18,7 @@ func (*Entity) CacheArgs() []int64 {
 }
 
 var (
-	GetModel = model.GetModel[Entity, QueryHelper]
-	Save     = model.Save[Entity]
-	Delete   = model.Delete[Entity]
+	GetModel = model.GetModel[*Entity, QueryHelper]
+	Save     = model.Save[*Entity]
+	Delete   = model.Delete[*Entity]
 )

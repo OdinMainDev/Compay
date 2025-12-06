@@ -9,18 +9,18 @@ import (
 
 var ErrorModelIsNilOnDelete = fmt.Errorf("%s", "[EFW: MODEL] ModelIsNilOnDelete")
 
-func delete[T Model](model *T, additionalCacheKeys ...int64) error {
+func delete[T Model](model T, additionalCacheKeys ...int64) error {
 	if isNil(model) {
 		return ErrorModelIsNilOnDelete
 	}
 
-	if isDatabaseModel(*model) {
-		if err := deleteFromDb(*model); err != nil {
+	if isDatabaseModel(model) {
+		if err := deleteFromDb(model); err != nil {
 			return err
 		}
 	}
 
-	if isCacheModel(*model) {
+	if isCacheModel(model) {
 		if err := deleteFromCache(model, additionalCacheKeys...); err != nil {
 			return err
 		}
@@ -40,8 +40,8 @@ func deleteFromDb[T Model](model T) error {
 	return err
 }
 
-func deleteFromCache[T Model](model *T, additionalCacheKeys ...int64) error {
-	if model == nil {
+func deleteFromCache[T Model](model T, additionalCacheKeys ...int64) error {
+	if isNil(model) {
 		return ErrorModelIsNilOnSave
 	}
 
