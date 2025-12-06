@@ -11,6 +11,7 @@ type QueryHelper struct {
 	DontCheckMerchantId bool
 	MerchantId          types.MerchantId
 	Username            string
+	WithMerchant        bool
 }
 
 func (helper QueryHelper) CacheAdditionalKeys() []int64 {
@@ -26,6 +27,9 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	}
 	if helper.Username != "" {
 		chain = chain.Where("username = ?", helper.Username)
+	}
+	if helper.WithMerchant {
+		chain = chain.Preload("Merchant")
 	}
 	return chain.Order("id DESC")
 }
