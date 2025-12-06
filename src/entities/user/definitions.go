@@ -5,15 +5,15 @@ import (
 	"efw/components/model"
 )
 
-func (Entity) TableName() string {
+func (*Entity) TableName() string {
 	return "users"
 }
 
-func (Entity) GetSaveType() entity.SaveType {
+func (*Entity) GetSaveType() entity.SaveType {
 	return entity.SAVE_TYPE_DB_CACHE
 }
 
-func (Entity) CacheArgs() []int64 {
+func (*Entity) CacheArgs() []int64 {
 	return nil
 }
 
