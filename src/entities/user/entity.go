@@ -14,3 +14,7 @@ type Entity struct {
 	TotpToken                       string           `json:"-" gorm:"column:totp_token"`
 	IsTwofaEnabled                  bool             `json:"is_twofa_enabled" gorm:"column:is_twofa_enabled"`
 }
+
+func (*Entity) TableName() string {
+	return "users"
+}
