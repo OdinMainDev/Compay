@@ -29,7 +29,7 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 		chain = chain.Where("username = ?", helper.Username)
 	}
 	if helper.WithMerchant {
-		chain = chain.Preload("Merchant")
+		chain = chain.Preload("Merchant", func(db gorm.PreloadBuilder) error { return nil })
 	}
 	return chain.Order("id DESC")
 }

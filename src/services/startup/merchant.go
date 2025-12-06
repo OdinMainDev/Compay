@@ -23,7 +23,7 @@ func registerMerchantAdminAccounts() {
 
 	userModel = &user.Model{}
 	userModel.Username = "vioriel@developer.com"
-	userModel.MerchantId = 0
+	userModel.MerchantId = 1
 	userModel.SetId(1)
 	user.Save(userModel)
 	user.ResetSequence()
