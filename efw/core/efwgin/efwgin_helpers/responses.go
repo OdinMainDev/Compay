@@ -9,6 +9,8 @@ import (
 	"github.com/google/uuid"
 )
 
+type NotHiddenError error
+
 func ResponseError(context *gin.Context, err any, httpStatus ...int) {
 	respStatus := http.StatusUnprocessableEntity
 	if len(httpStatus) == 1 {
@@ -22,6 +24,11 @@ func ResponseError(context *gin.Context, err any, httpStatus ...int) {
 
 	if v, ok := err.(string); ok {
 		hideErrorAndResponse(context, v, respStatus)
+		return
+	}
+
+	if v, ok := err.(NotHiddenError); ok {
+		context.JSON(respStatus, gin.H{"status": respStatus, "success": false, "error": v.Error()})
 		return
 	}
 

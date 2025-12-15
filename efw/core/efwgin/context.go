@@ -11,8 +11,8 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-var ErrorSyntaxError = fmt.Errorf("%s", "SchemaError")
-var ErrorInvalidPayload = fmt.Errorf("%s", "InvalidPayload")
+var ErrorSyntaxError = fmt.Errorf("%s", "[EFW: GIN] SchemaError")
+var ErrorInvalidPayload = fmt.Errorf("%s", "[EFW: GIN] InvalidPayload")
 
 func ShouldBindBodyWithJSON(context *gin.Context, input any) bool {
 	return ShouldBindBody(context, input, binding.JSON)

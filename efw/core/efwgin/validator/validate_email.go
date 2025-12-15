@@ -16,9 +16,9 @@ var validateEmail validator.Func = func(fl validator.FieldLevel) bool {
 }
 
 var (
-	userRegexp    = regexp.MustCompile("^[a-zA-Z0-9_.-]+$")
-	hostRegexp    = regexp.MustCompile(`^[a-zA-Z][^\s]+\.[^\s]+$`)
-	userDotRegexp = regexp.MustCompile("(^[.]{1})|([.]{1}$)|([.]{2,})")
+	emailUsernameRegexp = regexp.MustCompile("^[a-zA-Z0-9_.-]+$")
+	emailHostRegexp     = regexp.MustCompile(`^[a-zA-Z][^\s]+\.[^\s]+$`)
+	emailDotRegexp      = regexp.MustCompile("(^[.]{1})|([.]{1}$)|([.]{2,})")
 )
 
 func ValidateEmail(email string) bool {
@@ -37,7 +37,7 @@ func ValidateEmail(email string) bool {
 	if len(user) > 64 {
 		return false
 	}
-	if userDotRegexp.MatchString(user) || !userRegexp.MatchString(user) || !hostRegexp.MatchString(host) {
+	if emailDotRegexp.MatchString(user) || !emailUsernameRegexp.MatchString(user) || !emailHostRegexp.MatchString(host) {
 		return false
 	}
 

@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var ErrorNilClientIp = fmt.Errorf("%s", "NilClientIp")
+var ErrorNilClientIp = fmt.Errorf("%s", "[EFW: GIN-CASTS] NilClientIp")
 
 func GetClientIP(context *gin.Context) (string, error) {
 	forwardHeader := context.Request.Header.Get("X-Forwarded-For")

@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var ErrorMiddlewareBadUserAgent = fmt.Errorf("%s", "BadUserAgent")
-var ErrorMiddlewareTooManyRequests = fmt.Errorf("%s", "TooManyRequests")
+var ErrorMiddlewareBadUserAgent = fmt.Errorf("%s", "[EFW: GIN-MIDDLEWARE] BadUserAgent")
+var ErrorMiddlewareTooManyRequests = fmt.Errorf("%s", "[EFW: GIN-MIDDLEWARE] TooManyRequests")
 
 type RateLimitRequest struct {
 	Email string `json:"email" binding:"omitempty,email,max=255"`
@@ -56,7 +56,7 @@ func errorHandler(context *gin.Context, _ ratelimit.Info) {
 	context.Abort()
 }
 
-func CheckThrottling(count uint) gin.HandlerFunc {
+func RateLimit(count uint) gin.HandlerFunc {
 	store := ratelimit.InMemoryStore(&ratelimit.InMemoryOptions{
 		Rate:  time.Minute,
 		Limit: count,
