@@ -3,6 +3,7 @@ package efwgin
 import (
 	"efw/config"
 	efwmiddleware "efw/core/efwgin/efw_middleware"
+	"efw/core/efwtotp"
 	"efw/utils"
 	"time"
 
@@ -49,7 +50,7 @@ func CreateRouter(routerOptions RouterOptions) *gin.Engine {
 		"X-Forwarded-For",
 		"X-Telegram-Bot-Api-Secret-Token",
 		"Referer",
-		"X-Totp-Token",
+		efwtotp.TotpHeaderName,
 	}
 	if len(routerOptions.AdditionalHeaders) == 0 {
 		allowHeaders = append(allowHeaders, routerOptions.AdditionalHeaders...)

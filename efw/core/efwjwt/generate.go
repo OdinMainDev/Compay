@@ -35,7 +35,7 @@ func GenerateJWT(userData []JwtData, secretToken string, jwtTTL int) (string, er
 		if err != nil {
 			return "", err
 		}
-		jwtData[val.Key] = encryptedVal
+		jwtData[val.Key+EncryptedKeySuffix] = encryptedVal
 	}
 
 	token := jwtLib.NewWithClaims(jwtLib.SigningMethodHS256, jwtData)
