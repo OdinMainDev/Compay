@@ -1,3 +1,3 @@
 package constants
 
-const UserTokenTtl = 1800
+const JwtMerchantTTL = 1800

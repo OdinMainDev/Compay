@@ -4,11 +4,13 @@ import (
 	"compay/common/config"
 	"context"
 	"efw/core/efwgin"
+	efwmiddleware "efw/core/efwgin/efw_middleware"
 	"efw/core/efwlog"
 	"net/http"
 
+	controller "compay/src/http/controllers/merchant"
+
 	"github.com/gin-gonic/gin"
-	// controller "compay/src/http/controllers/merchant"
 )
 
 var merchantServer *http.Server
@@ -56,6 +58,7 @@ func StopMerchant() {
 }
 
 func merchantAuthRoutes(group *gin.RouterGroup) {
+	group.POST("/login", efwmiddleware.CheckThrottling(5), controller.AuthLogin)
 	// group.POST("/login", efwmiddleware.CheckThrottling(5), controller.AuthLogin)
 	// group.POST("/totp", efwmiddleware.CheckThrottling(5), middleware.CheckAuth(true), controller.AuthTotp)
 }

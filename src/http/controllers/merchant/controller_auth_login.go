@@ -1,0 +1,64 @@
+package merchant
+
+import (
+	"compay/common/constants"
+	"compay/common/cperrors"
+	"compay/src/models/user"
+	"efw/core/efwgin"
+	efwginhelpers "efw/core/efwgin/efwgin_helpers"
+	"efw/core/efwjwt"
+
+	"github.com/gin-gonic/gin"
+)
+
+type requestLogin struct {
+	Email    string `json:"email" binding:"required,email,min=5,max=255"`
+	Password string `json:"password" binding:"required,min=6,max=255"`
+}
+
+func AuthLogin(context *gin.Context) {
+	var input requestLogin
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+
+	userModel := user.GetModel(user.QueryHelper{
+		Username:            input.Email,
+		DontCheckMerchantId: true,
+	})
+
+	if userModel == nil || userModel.GetId() == 0 {
+		efwginhelpers.ResponseError(context, cperrors.ErrorAuthUserNotFound)
+		return
+	}
+
+	if err := userModel.ValidatePassword(input.Password); err != nil {
+		efwginhelpers.ResponseError(context, err)
+		return
+	}
+
+	jwtData := []efwjwt.JwtData{}
+	jwtData = append(jwtData, efwjwt.JwtData{
+		Key:   "isa",
+		Value: userModel.MerchantId == 0,
+	})
+	jwtData = append(jwtData, efwjwt.JwtData{
+		Key:              "id",
+		Value:            userModel.GetIdInt64,
+		IsEncryptedValue: true,
+	})
+	jwtData = append(jwtData, efwjwt.JwtData{
+		Key:              "mid",
+		Value:            userModel.MerchantId,
+		IsEncryptedValue: true,
+	})
+
+	jwt, err := efwjwt.GenerateJWT(jwtData, userModel.SecretToken, constants.JwtMerchantTTL)
+	if err != nil {
+		efwginhelpers.ResponseError(context, err)
+		return
+	}
+
+	// go saveLog()
+	efwginhelpers.ResponseSuccess(context, gin.H{"token": jwt})
+}

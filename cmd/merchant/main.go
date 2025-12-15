@@ -3,8 +3,10 @@ package main
 import (
 	"compay/common/config"
 	"compay/common/database"
+	"compay/src/app"
 	"compay/src/services/startup"
 	"efw"
+	"efw/core/efwapp"
 	"fmt"
 )
 
@@ -31,5 +33,5 @@ func main() {
 	startup.FillConfig()
 	startup.StartMerchant()
 
-	// efwapp.CreateApp("merchant", []func(){app.StartMerchant}, []func(){app.StartMerchant})
+	efwapp.CreateApp("merchant", []func(){app.StartMerchant}, []func(){app.StartMerchant})
 }
