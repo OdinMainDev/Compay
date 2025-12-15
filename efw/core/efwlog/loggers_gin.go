@@ -8,6 +8,10 @@ func logGin(args ...any) {
 	LogByLoggerName("gin", args...)
 }
 
+func LogGinError(args ...any) {
+	LogByLoggerName("gin_error", args...)
+}
+
 type EsGinWriter struct{}
 
 func NewEsGinWriter() io.Writer {

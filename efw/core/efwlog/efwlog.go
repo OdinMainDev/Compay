@@ -18,12 +18,13 @@ type EfwLog struct {
 	MaxAge     int
 
 	EnableConsoleOutput bool
+	DisableCallerInfo   bool
 }
 
 // FileName -> Logger
 var allLoggers = []*EfwLog{}
 
-var fileLogFormat = logging.MustStringFormatter("[%{time:02.01.2006 15:04:05.000} %{message}")
+var fileLogFormat = logging.MustStringFormatter("[%{time:02.01.2006 15:04:05.000}%{message}")
 
 const (
 	logsDirectory = "resources/logs"
@@ -51,7 +52,10 @@ func LogByLoggerName(name string, args ...any) error {
 		if handler.Logger == nil {
 			continue
 		}
-		info := getCallerInfo()
+		info := ""
+		if !handler.DisableCallerInfo {
+			info = " " + getCallerInfo()
+		}
 		message := fmt.Sprint(args...)
 		handler.Logger.Info(logFormatter(info, message))
 		return nil

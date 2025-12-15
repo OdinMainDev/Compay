@@ -29,7 +29,7 @@ func NewEfwLog(name string) *EfwLog {
 	}
 }
 
-func (e *EfwLog) SetMaxSize(maxSize int) *EfwLog {
+func (that *EfwLog) SetMaxSize(maxSize int) *EfwLog {
 	if maxSize <= 0 {
 		maxSize = 100
 		fmt.Println("MaxSize is less than 0, set to 100 mb")
@@ -39,11 +39,11 @@ func (e *EfwLog) SetMaxSize(maxSize int) *EfwLog {
 		maxSize = 10000
 		fmt.Println("MaxSize is more than 10000 mb, set to 10000 mb")
 	}
-	e.MaxSize = maxSize
-	return e
+	that.MaxSize = maxSize
+	return that
 }
 
-func (e *EfwLog) SetMaxBackups(maxBackups int) *EfwLog {
+func (that *EfwLog) SetMaxBackups(maxBackups int) *EfwLog {
 	if maxBackups <= 0 {
 		maxBackups = 100
 		fmt.Println("MaxBackups is less than 0, set to 100 backups")
@@ -53,11 +53,11 @@ func (e *EfwLog) SetMaxBackups(maxBackups int) *EfwLog {
 		maxBackups = 10000
 		fmt.Println("MaxBackups is more than 10000 backups, set to 10000 backups")
 	}
-	e.MaxBackups = maxBackups
-	return e
+	that.MaxBackups = maxBackups
+	return that
 }
 
-func (e *EfwLog) SetMaxAge(maxAge int) *EfwLog {
+func (that *EfwLog) SetMaxAge(maxAge int) *EfwLog {
 	if maxAge <= 0 {
 		maxAge = 365
 		fmt.Println("MaxAge is less than 0, set to 365 days")
@@ -67,22 +67,28 @@ func (e *EfwLog) SetMaxAge(maxAge int) *EfwLog {
 		maxAge = 10000
 		fmt.Println("MaxAge is more than 10000 days, set to 10000 days")
 	}
-	e.MaxAge = maxAge
-	return e
+	that.MaxAge = maxAge
+	return that
 }
 
-func (e *EfwLog) SetEnableConsoleOutput(enable bool) *EfwLog {
-	e.EnableConsoleOutput = enable
-	return e
+func (that *EfwLog) SetEnableConsoleOutput(enable bool) *EfwLog {
+	that.EnableConsoleOutput = enable
+	return that
 }
 
-func (e *EfwLog) SaveLogger() error {
-	for _, logger := range allLoggers {
-		if logger.FileName == e.FileName {
-			return ErrorLoggerBuildFail(e.FileName)
+func (that *EfwLog) SetDisableCallerInfo(disable bool) *EfwLog {
+	that.DisableCallerInfo = disable
+	return that
+}
+
+func (that *EfwLog) SaveLogger() {
+	for i, logger := range allLoggers {
+		if logger.FileName == that.FileName {
+			allLoggers[i] = that
+			return
 		}
 	}
 
-	allLoggers = append(allLoggers, e)
-	return nil
+	allLoggers = append(allLoggers, that)
+	return
 }
