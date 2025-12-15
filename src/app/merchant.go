@@ -16,11 +16,7 @@ import (
 var merchantServer *http.Server
 
 func StartMerchant() {
-	router := efwgin.CreateRouter(efwgin.RouterOptions{
-		AdditionalHeaders: []string{
-			"T-Totp",
-		},
-	})
+	router := efwgin.CreateRouter(efwgin.RouterOptions{})
 
 	apiRoutes := router.Group("/api")
 	// apiRoutes.Use(middleware.SaveRequestBodyToContext())

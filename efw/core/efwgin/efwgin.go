@@ -49,6 +49,7 @@ func CreateRouter(routerOptions RouterOptions) *gin.Engine {
 		"X-Forwarded-For",
 		"X-Telegram-Bot-Api-Secret-Token",
 		"Referer",
+		"X-Totp-Token",
 	}
 	if len(routerOptions.AdditionalHeaders) == 0 {
 		allowHeaders = append(allowHeaders, routerOptions.AdditionalHeaders...)
