@@ -3,6 +3,7 @@ package merchant
 import (
 	"compay/common/constants"
 	"compay/common/cperrors"
+	"compay/src/helpers"
 	"compay/src/models/user"
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
@@ -37,22 +38,7 @@ func AuthLogin(context *gin.Context) {
 		return
 	}
 
-	jwtData := []efwjwt.JwtData{}
-	jwtData = append(jwtData, efwjwt.JwtData{
-		Key:   "isa",
-		Value: userModel.MerchantId == 0,
-	})
-	jwtData = append(jwtData, efwjwt.JwtData{
-		Key:              "id",
-		Value:            userModel.GetIdInt64,
-		IsEncryptedValue: true,
-	})
-	jwtData = append(jwtData, efwjwt.JwtData{
-		Key:              "mid",
-		Value:            userModel.MerchantId,
-		IsEncryptedValue: true,
-	})
-
+	jwtData := helpers.ConstructJwtData(userModel)
 	jwt, err := efwjwt.GenerateJWT(jwtData, userModel.SecretToken, constants.JwtMerchantTTL)
 	if err != nil {
 		efwginhelpers.ResponseError(context, err)

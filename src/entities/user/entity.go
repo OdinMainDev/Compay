@@ -13,6 +13,7 @@ type Entity struct {
 	SecretToken                     string           `json:"-" gorm:"column:secret_token"`
 	TotpToken                       string           `json:"-" gorm:"column:totp_token"`
 	IsTwofaEnabled                  bool             `json:"is_twofa_enabled" gorm:"column:is_twofa_enabled"`
+	IsBanned                        bool             `json:"-" gorm:"column:is_banned"`
 }
 
 func (*Entity) TableName() string {

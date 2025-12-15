@@ -12,6 +12,7 @@ type QueryHelper struct {
 	MerchantId          types.MerchantId
 	Username            string
 	WithMerchant        bool
+	NotBanned           bool
 }
 
 func (helper QueryHelper) CacheAdditionalKeys() []int64 {
@@ -30,6 +31,9 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	}
 	if helper.WithMerchant {
 		chain = chain.Preload("Merchant", func(db gorm.PreloadBuilder) error { return nil })
+	}
+	if helper.NotBanned {
+		chain = chain.Where("is_banned = ?", false)
 	}
 	return chain.Order("id DESC")
 }

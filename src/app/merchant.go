@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	controller "compay/src/http/controllers/merchant"
+	"compay/src/http/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,23 +21,26 @@ func StartMerchant() {
 
 	apiRoutes := router.Group("/api")
 	// apiRoutes.Use(middleware.SaveRequestBodyToContext())
-	// apiRoutes.Use(middleware.CheckTokenAndCasino())
 	// apiRoutes.Use(middleware.CheckUserCountry(true))
 
-	/* +++++++++++++++ PANEL ROUTES +++++++++++++++ */
-	// Groups
-	panelRoutes := apiRoutes.Group("/panel")
-	authRoutes := panelRoutes.Group("/auth")
-	// publicRoutes := apiRoutes.Group("/public")
-	// privateRoutes := apiRoutes.Group("/private")
-	// privateRoutes.Use(middleware.CheckAuth())
+	/* +++++++++++++++ AUTH ROUTES +++++++++++++++ */
+	authRoutes := apiRoutes.Group("/auth")
 
-	// Routes
 	merchantAuthRoutes(authRoutes)
+	/* --------------- AUTH ROUTES --------------- */
 
+	/* +++++++++++++++ PANEL ROUTES +++++++++++++++ */
+	panelRoutes := apiRoutes.Group("/panel")
+	panelRoutes.Use(efwmiddleware.CheckAuth(), middleware.CheckUser(), middleware.CheckAuthTotp())
+
+	merchantPanelUserRoutes(panelRoutes)
 	/* --------------- PANEL ROUTES --------------- */
 
-	// v1Routes := apiRoutes.Group("/v1")
+	/* +++++++++++++++ MERCHANT ROUTES +++++++++++++++ */
+	// merchantRoutes := apiRoutes.Group("/merchant")
+	// merchantRoutes.Use(efwmiddleware.CheckAuth(), middleware.CheckUser(), middleware.CheckAuthTotp(), middleware.CheckMerchant())
+
+	/* --------------- MERCHANT ROUTES --------------- */
 
 	merchantServer = &http.Server{Addr: ":" + config.AppPort, Handler: router.Handler()}
 	go func() {
@@ -54,7 +58,10 @@ func StopMerchant() {
 }
 
 func merchantAuthRoutes(group *gin.RouterGroup) {
-	group.POST("/login", efwmiddleware.CheckThrottling(5), controller.AuthLogin)
-	// group.POST("/login", efwmiddleware.CheckThrottling(5), controller.AuthLogin)
-	// group.POST("/totp", efwmiddleware.CheckThrottling(5), middleware.CheckAuth(true), controller.AuthTotp)
+	group.POST("/login", efwmiddleware.RateLimit(5), controller.AuthLogin)
+	// group.POST("/totp", efwmiddleware.RateLimit(5), efwmiddleware.CheckAuth(true), controller.AuthTotp)
+}
+
+func merchantPanelUserRoutes(group *gin.RouterGroup) {
+	group.GET("/get/me", controller.UserGetMe)
 }
