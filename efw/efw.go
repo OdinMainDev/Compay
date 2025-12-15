@@ -8,7 +8,8 @@ import (
 )
 
 type eframework struct {
-	options EfwOptions
+	options     EfwOptions
+	initMethods EfwInitMethods
 
 	// esFile    *esfile.ESFile
 	efwDB *gorm.DB
@@ -27,12 +28,9 @@ func Init(options EfwOptions, initMethods EfwInitMethods) error {
 
 	os.Setenv("TZ", "UTC")
 
-	if initMethods.InitLoggers != nil {
-		initMethods.InitLoggers()
-	}
-
 	eFrame = &eframework{
-		options: options,
+		options:     options,
+		initMethods: initMethods,
 	}
 
 	if err := eFrame.initLogger(); err != nil {

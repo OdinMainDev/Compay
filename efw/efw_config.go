@@ -123,6 +123,7 @@ func (that *eframework) fillConfigs() {
 
 func (that *eframework) fillConfigApp() {
 	config.AppDebug = os.Getenv("APP_DEBUG") == "true"
+	config.AppSecret = []byte(os.Getenv("APP_SECRET"))
 }
 
 func (that *eframework) fillConfigDatabase() {
