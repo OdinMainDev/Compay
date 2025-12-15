@@ -59,6 +59,10 @@ func Init(options EfwOptions, initMethods EfwInitMethods) error {
 		return err
 	}
 
+	if err := eFrame.initGin(); err != nil {
+		return err
+	}
+
 	eFrame.printBanner()
 
 	return nil

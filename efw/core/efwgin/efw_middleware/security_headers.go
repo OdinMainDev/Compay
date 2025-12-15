@@ -1,4 +1,4 @@
-package middleware
+package efwmiddleware
 
 import "github.com/gin-gonic/gin"
 

@@ -2,7 +2,7 @@ package efwgin
 
 import (
 	"efw/config"
-	"efw/core/efwgin/middleware"
+	efwmiddleware "efw/core/efwgin/efw_middleware"
 	"efw/utils"
 	"time"
 
@@ -30,7 +30,7 @@ func CreateRouter(routerOptions RouterOptions) *gin.Engine {
 	router.Use(gin.Recovery())
 
 	// Хидеры безопасности
-	router.Use(middleware.SecurityHeaders())
+	router.Use(efwmiddleware.SecurityHeaders())
 
 	// Доверенные прокси
 	router.ForwardedByClientIP = true

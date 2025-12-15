@@ -1,9 +1,12 @@
-package efwgin
+package efwginhelpers
 
 import (
+	"efw/core/efwlog"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func ResponseError(context *gin.Context, err any, httpStatus ...int) {
@@ -13,12 +16,12 @@ func ResponseError(context *gin.Context, err any, httpStatus ...int) {
 	}
 
 	if v, ok := err.(error); ok {
-		context.JSON(respStatus, gin.H{"status": respStatus, "success": false, "error": v.Error()})
+		hideErrorAndResponse(context, v.Error(), respStatus)
 		return
 	}
 
 	if v, ok := err.(string); ok {
-		context.JSON(respStatus, gin.H{"status": respStatus, "success": false, "error": v})
+		hideErrorAndResponse(context, v, respStatus)
 		return
 	}
 
@@ -36,4 +39,10 @@ func ResponseSuccess(context *gin.Context, data gin.H) {
 	}
 
 	context.JSON(http.StatusOK, resp)
+}
+
+func hideErrorAndResponse(context *gin.Context, err string, respStatus int) {
+	errId := uuid.NewString()
+	efwlog.LogGinError(fmt.Sprintf("Id: %s Error: %s", errId, err))
+	context.JSON(respStatus, gin.H{"status": respStatus, "success": false, "error": errId})
 }
