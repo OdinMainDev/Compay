@@ -22,7 +22,7 @@ var (
 )
 
 func EncryptString(plainText string) (string, error) {
-	plainText += "-" + config.CryptRandSaltString
+	plainText += "-" + config.CrypSalt
 	key, err := hex.DecodeString(config.Cryptkey)
 	if err != nil {
 		return "", ErrorCryptHexDecodeKeyError(err)
@@ -76,7 +76,7 @@ func DecryptString(cipherText string) (string, error) {
 		return "", ErrorCryptPkcs7Unpad(err)
 	}
 
-	return strings.ReplaceAll(string(unpaddedText), "-"+config.CryptRandSaltString, ""), nil
+	return strings.ReplaceAll(string(unpaddedText), "-"+config.CrypSalt, ""), nil
 }
 
 func pkcs7Pad(data []byte, blockSize int) []byte {
