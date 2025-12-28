@@ -34,6 +34,13 @@ func StartMerchant() {
 	panelRoutes.Use(efwmiddleware.CheckAuth(), middleware.CheckUser(), middleware.CheckAuthTotp())
 
 	merchantPanelUserRoutes(panelRoutes)
+
+	/* +++++++++++++++ ADMIN ROUTES +++++++++++++++ */
+	adminRoutes := panelRoutes.Group("/admin")
+	adminRoutes.Use(middleware.CheckIsUserAdmin())
+	merchantAdminUsersRoutes(adminRoutes)
+	/* --------------- ADMIN ROUTES --------------- */
+
 	/* --------------- PANEL ROUTES --------------- */
 
 	/* +++++++++++++++ MERCHANT ROUTES +++++++++++++++ */
@@ -64,4 +71,14 @@ func merchantAuthRoutes(group *gin.RouterGroup) {
 
 func merchantPanelUserRoutes(group *gin.RouterGroup) {
 	group.GET("/get/me", controller.UserGetMe)
+}
+
+func merchantAdminUsersRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/dev/users")
+
+	subGroup.GET("/list", controller.UserGetMe)
+	subGroup.GET("/list/filters", controller.UserGetMe)
+	subGroup.GET("/get/:id", controller.UserGetMe)
+	subGroup.GET("/process", controller.UserGetMe)
+	subGroup.GET("/delete/:id", controller.UserGetMe)
 }

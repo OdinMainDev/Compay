@@ -5,7 +5,7 @@ import (
 	"compay/common/cperrors"
 	"compay/src/models/user"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
-	"efw/core/efwtotp"
+	"efw/services/efwtotp"
 	"errors"
 	"net/http"
 

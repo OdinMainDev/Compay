@@ -2,11 +2,9 @@ package efwtotp
 
 import "fmt"
 
-var (
-	TotpHeaderName        = "X-Totp-Token"
-	TotpSessionTime int64 = 1200 // время в секундах
-)
+const TotpHeaderName = "X-Totp-Token"
 
+var TotpSessionTime int64 = 1200 // время в секундах
 var (
 	ErrorTotpNilHeader       = fmt.Errorf("%s", "[EFW: TOTP] NilHeader")
 	ErrorTotpTokenParseError = func(err error) error {

@@ -3,7 +3,7 @@ package efwgin
 import (
 	"efw/config"
 	efwmiddleware "efw/core/efwgin/efw_middleware"
-	"efw/core/efwtotp"
+	"efw/services/efwtotp"
 	"efw/utils"
 	"time"
 

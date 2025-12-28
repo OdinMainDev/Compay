@@ -13,3 +13,8 @@ var ErrorMiddlewareCheckUserBannedUserModel = fmt.Errorf("%s", "MiddlewareCheckU
 // CheckAuthTotp
 var ErrorMiddlewareCheckAuthTotpNilUserModel = fmt.Errorf("%s", "MiddlewareCheckAuthTotpNilUserModel")
 var ErrorMiddlewareCheckAuthTotpInvalidTypeUserModel = fmt.Errorf("%s", "MiddlewareCheckAuthTotpInvalidTypeUserModel")
+
+// CheckIsUserAdmin
+var ErrorMiddlewareCheckIsUserAdminNilUserModel = fmt.Errorf("%s", "MiddlewareCheckIsUserAdminNilUserModel")
+var ErrorMiddlewareCheckIsUserAdminInvalidTypeUserModel = fmt.Errorf("%s", "MiddlewareCheckIsUserAdminInvalidTypeUserModel")
+var ErrorMiddlewareCheckIsUserAdminPermissionDenied = fmt.Errorf("%s", "MiddlewareCheckIsUserAdminPermissionDenied")
