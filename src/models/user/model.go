@@ -23,6 +23,7 @@ var (
 	GetModel = model.GetModel[*Model, QueryHelper]
 	Save     = model.Save[*Model]
 	Delete   = model.Delete[*Model]
+	GetCount = model.GetCount[*Model, QueryHelper]
 )
 
 func ResetSequence() {

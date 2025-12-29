@@ -76,9 +76,9 @@ func merchantPanelUserRoutes(group *gin.RouterGroup) {
 func merchantAdminUsersRoutes(group *gin.RouterGroup) {
 	subGroup := group.Group("/dev/users")
 
-	subGroup.GET("/list", controller.UserGetMe)
-	subGroup.GET("/list/filters", controller.UserGetMe)
-	subGroup.GET("/get/:id", controller.UserGetMe)
-	subGroup.GET("/process", controller.UserGetMe)
-	subGroup.GET("/delete/:id", controller.UserGetMe)
+	subGroup.POST("/list", controller.AdminUsersList)
+	subGroup.POST("/list/filters", controller.AdminUsersListFilters)
+	// subGroup.GET("/get/:id", controller.UserGetMe)
+	// subGroup.GET("/process", controller.UserGetMe)
+	// subGroup.GET("/delete/:id", controller.UserGetMe)
 }

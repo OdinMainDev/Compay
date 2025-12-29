@@ -1,3 +1,4 @@
 package constants
 
-const JwtMerchantTTL = 1800
+// TODO: изменить
+const JwtMerchantTTL = 86400 * 360
