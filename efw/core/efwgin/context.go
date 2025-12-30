@@ -11,8 +11,12 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-var ErrorBindingSyntaxError = fmt.Errorf("%s", "[EFW: GIN BINDING] SchemaError")
-var ErrorBindingInvalidPayload = fmt.Errorf("%s", "[EFW: GIN BINDING] InvalidPayload")
+var ErrorBindingSyntaxError = func(err string) error {
+	return fmt.Errorf("[EFW: GIN BINDING] %s: %s", "SchemaError", err)
+}
+var ErrorBindingInvalidPayload = func(err string) error {
+	return fmt.Errorf("[EFW: GIN BINDING] %s: %s", "InvalidPayload", err)
+}
 var ErrorBindingUndefinedError = func(fnName, err string) error {
 	return fmt.Errorf("[EFW: GIN BINDING (%s)] %s: %s", fnName, "UndefinedError", err)
 }
@@ -34,13 +38,13 @@ func ShouldBindBody(context *gin.Context, input any, bindingType binding.Binding
 
 	var syntaxError *json.SyntaxError
 	if errors.As(err, &syntaxError) {
-		efwginhelpers.ResponseError(context, ErrorBindingSyntaxError)
+		efwginhelpers.ResponseError(context, ErrorBindingSyntaxError(err.Error()))
 		return false
 	}
 
 	var unmarshalError *json.UnmarshalTypeError
 	if errors.As(err, &unmarshalError) {
-		efwginhelpers.ResponseError(context, ErrorBindingInvalidPayload)
+		efwginhelpers.ResponseError(context, ErrorBindingInvalidPayload(err.Error()))
 		return false
 	}
 

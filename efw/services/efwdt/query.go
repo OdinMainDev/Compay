@@ -8,19 +8,13 @@ import (
 )
 
 func getQueryResponse[TModel, TRequest any](
-	model any,
-	req Request[TRequest],
-	availFilterColumns []string,
+	input Request[TRequest],
 	additionalFilters []ChainFilter[TModel],
 ) (any, int64, int64, int64, error) {
 	dbTx := efw.DBTransaction[TModel]()
 
 	baseTx := applyAdditionalFilters(dbTx, additionalFilters)
-	filteredTx := applyRequestFilters(baseTx, req)
-	dataTx, err := prepareBaseQuery(filteredTx, req, availFilterColumns)
-	if err != nil {
-		return nil, 0, 0, 0, err
-	}
+	filteredTx := applyRequestFilters(baseTx, input)
 
 	var wg sync.WaitGroup
 	var result any
@@ -32,21 +26,22 @@ func getQueryResponse[TModel, TRequest any](
 
 	go func() {
 		defer wg.Done()
-		result, queryErr = queryData(dataTx, model)
+		result, queryErr = buildDataQuery(filteredTx, input).Find(context.Background())
 	}()
 
 	go func() {
 		defer wg.Done()
-		recordsFiltered, recordsFilteredErr = filteredTx.Count(context.Background(), "*")
+		recordsFiltered, recordsFilteredErr = filteredTx.Count(context.Background(), "id")
 	}()
 
 	go func() {
 		defer wg.Done()
-		recordsTotal, recordsTotalErr = baseTx.Count(context.Background(), "*")
+		recordsTotal, recordsTotalErr = baseTx.Count(context.Background(), "id")
 	}()
 
 	wg.Wait()
 
+	// тут нужно будет переделать сохранение ошибок, чтобы выглядело лучше
 	if queryErr != nil {
 		efwlog.LogError(queryErr)
 		return nil, 0, 0, 0, queryErr
@@ -62,6 +57,6 @@ func getQueryResponse[TModel, TRequest any](
 		return nil, 0, 0, 0, recordsTotalErr
 	}
 
-	recordsCount := int64(recordsCount(result))
+	recordsCount := int64(calcRecordsCount(result))
 	return result, recordsTotal, recordsFiltered, recordsCount, nil
 }

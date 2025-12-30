@@ -1,9 +1,8 @@
 package efwdt
 
 import (
-	"context"
-	"efw/utils"
 	"reflect"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -19,76 +18,88 @@ func applyAdditionalFilters[T any](chain gorm.ChainInterface[T], filters []Chain
 }
 
 func applyRequestFilters[TModel, TRequest any](chain gorm.ChainInterface[TModel], request Request[TRequest]) gorm.ChainInterface[TModel] {
-	filter, ok := any(request.Conditions).(dbFilter[TModel])
-	if !ok || isNilInterface(filter) {
+	filters := buildFiltersMap(reflect.ValueOf(request.Filters))
+	if len(filters) == 0 {
 		return chain
 	}
-	return filter.ApplyDBFilters(chain)
+	return chain.Where(filters)
 }
 
-func queryData[T any](chain gorm.ChainInterface[T], model any) (any, error) {
-	if model == nil {
-		return chain.Find(context.Background())
+func buildFiltersMap(value reflect.Value) map[string]any {
+	if value.Kind() != reflect.Struct {
+		return nil
 	}
 
-	dest, ok := normalizeDestination(model)
-	if !ok {
-		return chain.Find(context.Background())
-	}
+	result := make(map[string]any)
+	valueType := value.Type()
+	for i := 0; i < valueType.NumField(); i++ {
+		field := valueType.Field(i)
+		if field.PkgPath != "" {
+			continue
+		}
 
-	if err := chain.Scan(context.Background(), dest); err != nil {
-		return nil, err
+		fieldValue := value.Field(i)
+		fieldName := efwdtTagName(field)
+		if fieldName == "-" {
+			continue
+		}
+
+		fieldValueInterface, ok := normalizeConditionValue(fieldValue)
+		if !ok {
+			continue
+		}
+
+		result[fieldName] = fieldValueInterface
 	}
-	return derefDestination(dest), nil
+	if len(result) == 0 {
+		return nil
+	}
+	return result
 }
 
-func normalizeDestination(model any) (any, bool) {
-	value := reflect.ValueOf(model)
+func efwdtTagName(field reflect.StructField) string {
+	tag := field.Tag.Get("efwdt")
+	if tag == "-" {
+		return "-"
+	}
+	if tag == "" {
+		return field.Name
+	}
+	name := strings.Split(tag, ",")[0]
+	if name == "" {
+		return field.Name
+	}
+	return name
+}
+
+func normalizeConditionValue(value reflect.Value) (any, bool) {
 	if !value.IsValid() {
 		return nil, false
 	}
 
-	if value.Kind() == reflect.Ptr {
+	if value.Kind() == reflect.Pointer {
 		if value.IsNil() {
-			ptr := reflect.New(value.Type().Elem())
-			return ptr.Interface(), true
+			return nil, false
 		}
-		return model, true
+		return value.Elem().Interface(), true
 	}
 
-	ptr := reflect.New(value.Type())
-	ptr.Elem().Set(value)
-	return ptr.Interface(), true
+	if (value.Kind() == reflect.Slice || value.Kind() == reflect.Array) && value.Len() == 0 {
+		return nil, false
+	}
+
+	if value.IsZero() {
+		return nil, false
+	}
+
+	return value.Interface(), true
 }
 
-func derefDestination(dest any) any {
-	value := reflect.ValueOf(dest)
-	for value.Kind() == reflect.Ptr || value.Kind() == reflect.Interface {
-		if value.IsNil() {
-			return nil
-		}
-		value = value.Elem()
-	}
-	if !value.IsValid() {
-		return nil
-	}
-	return value.Interface()
+func buildDataQuery[TModel, TRequest any](dbTrx gorm.ChainInterface[TModel], request Request[TRequest]) gorm.ChainInterface[TModel] {
+	return dbTrx.Order(request.OrderColumn + " " + request.OrderDirection).Offset(int(request.Start)).Limit(request.Length)
 }
 
-func isNilInterface(value any) bool {
-	if value == nil {
-		return true
-	}
-	kind := reflect.ValueOf(value).Kind()
-	switch kind {
-	case reflect.Ptr, reflect.Map, reflect.Slice, reflect.Interface, reflect.Func:
-		return reflect.ValueOf(value).IsNil()
-	default:
-		return false
-	}
-}
-
-func recordsCount(col any) int {
+func calcRecordsCount(col any) int {
 	if col == nil {
 		return 0
 	}
@@ -104,16 +115,4 @@ func recordsCount(col any) int {
 		return value.Len()
 	}
 	return 0
-}
-
-func prepareBaseQuery[TModel, TRequest any](dbTrx gorm.ChainInterface[TModel], request Request[TRequest], availFilterColumns []string) (gorm.ChainInterface[TModel], error) {
-	if !utils.InArray(request.OrderColumn, availFilterColumns) {
-		request.OrderColumn = "id"
-	}
-
-	if request.OrderDirection != "asc" && request.OrderDirection != "desc" {
-		request.OrderDirection = "asc"
-	}
-
-	return dbTrx.Order(request.OrderColumn + " " + request.OrderDirection).Offset(int(request.Start)).Limit(request.Length), nil
 }

@@ -9,15 +9,6 @@ type Response[T any] struct {
 	RecordsCount    int64 `json:"recordsCount"`
 }
 
-func responseEmpty(recordsTotal int64) gin.H {
-	return gin.H{
-		"data": Response[[]int64]{
-			Data:         []int64{},
-			RecordsTotal: recordsTotal,
-		},
-	}
-}
-
 func response[T any](data T, recordsTotal, recordsFiltered, recordsCount int64) gin.H {
 	return gin.H{
 		"data": Response[T]{

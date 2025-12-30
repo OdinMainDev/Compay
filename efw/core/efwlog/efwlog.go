@@ -54,7 +54,7 @@ func LogByLoggerName(name string, args ...any) error {
 		}
 		info := ""
 		if !handler.DisableCallerInfo {
-			info = " " + getCallerInfo()
+			info = " " + getCallerInfo(0)
 		}
 		message := fmt.Sprint(args...)
 		handler.Logger.Info(logFormatter(info, message))
@@ -64,8 +64,8 @@ func LogByLoggerName(name string, args ...any) error {
 	return ErrorLoggerNotExists(name)
 }
 
-func getCallerInfo(args ...string) string {
-	_, file, line, ok := runtime.Caller(2)
+func getCallerInfo(callerSkip int, args ...string) string {
+	_, file, line, ok := runtime.Caller(callerSkip + 2)
 	if !ok {
 		return ""
 	}

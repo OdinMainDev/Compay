@@ -13,12 +13,12 @@ var (
 type Request[T any] struct {
 	Start          int64  `json:"start" binding:"min=0"`
 	Length         int    `json:"length" binding:"required,max=250"`
-	OrderColumn    string `json:"order_column" binding:"required"`
+	OrderColumn    string `json:"order_column" binding:"required,min=1"`
 	OrderDirection string `json:"order_direction" binding:"required,eq=desc|eq=asc"`
-	Conditions     T      `json:"conditions"`
+	Filters        T      `json:"filters"`
 }
 
-func (request Request[T]) ValidateOrderColumn(availColumns []string) error {
+func (request *Request[T]) ValidateOrderColumn(availColumns []string) error {
 	if request.OrderColumn == "" {
 		return nil
 	}

@@ -9,9 +9,6 @@ import (
 )
 
 type ChainFilter[T any] func(gorm.ChainInterface[T]) gorm.ChainInterface[T]
-type dbFilter[T any] interface {
-	ApplyDBFilters(gorm.ChainInterface[T]) gorm.ChainInterface[T]
-}
 
 type FilterType string
 type Filter struct {
@@ -23,7 +20,6 @@ type Filter struct {
 func Datable[TModel, TRequest any](
 	context *gin.Context,
 	columnsOrder []string,
-	getCount func() int64,
 	additionalFilters []ChainFilter[TModel],
 ) {
 	var input Request[TRequest]
@@ -36,14 +32,7 @@ func Datable[TModel, TRequest any](
 		return
 	}
 
-	countRecords := getCount()
-	if input.Start > countRecords {
-		efwginhelpers.ResponseSuccess(context, responseEmpty(countRecords))
-		return
-	}
-
-	var dataSlice []*TModel
-	data, recordsCount, recordsFiltered, recordsTotal, err := getQueryResponse(dataSlice, input, columnsOrder, additionalFilters)
+	data, recordsCount, recordsFiltered, recordsTotal, err := getQueryResponse(input, additionalFilters)
 	if err != nil {
 		efwginhelpers.ResponseError(context, err)
 		return
