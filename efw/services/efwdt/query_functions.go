@@ -1,6 +1,7 @@
 package efwdt
 
 import (
+	"maps"
 	"reflect"
 	"strings"
 
@@ -18,19 +19,26 @@ func applyAdditionalFilters[T any](chain gorm.ChainInterface[T], filters []Chain
 }
 
 func applyRequestFilters[TModel, TRequest any](chain gorm.ChainInterface[TModel], request Request[TRequest]) gorm.ChainInterface[TModel] {
-	filters := buildFiltersMap(reflect.ValueOf(request.Filters))
-	if len(filters) == 0 {
+	filters, specialFilters := buildFiltersMap(reflect.ValueOf(request.Filters))
+	if len(filters) == 0 && len(specialFilters) == 0 {
 		return chain
 	}
-	return chain.Where(filters)
+	if len(filters) > 0 {
+		chain = chain.Where(filters)
+	}
+	for _, condition := range specialFilters {
+		chain = chain.Where(condition.Query, condition.Args...)
+	}
+	return chain
 }
 
-func buildFiltersMap(value reflect.Value) map[string]any {
+func buildFiltersMap(value reflect.Value) (map[string]any, []SpecialFilters) {
 	if value.Kind() != reflect.Struct {
-		return nil
+		return nil, nil
 	}
 
 	result := make(map[string]any)
+	specialFilters := make([]SpecialFilters, 0)
 	valueType := value.Type()
 	for i := 0; i < valueType.NumField(); i++ {
 		field := valueType.Field(i)
@@ -39,6 +47,13 @@ func buildFiltersMap(value reflect.Value) map[string]any {
 		}
 
 		fieldValue := value.Field(i)
+		if field.Anonymous && fieldValue.Kind() == reflect.Struct {
+			r, sF := buildFiltersMap(fieldValue)
+			maps.Copy(result, r)
+			specialFilters = append(specialFilters, sF...)
+			continue
+		}
+
 		fieldName := efwdtTagName(field)
 		if fieldName == "-" {
 			continue
@@ -49,12 +64,20 @@ func buildFiltersMap(value reflect.Value) map[string]any {
 			continue
 		}
 
+		if applied := applySpecialFilters(fieldName, fieldValueInterface, &specialFilters); applied {
+			continue
+		}
+
 		result[fieldName] = fieldValueInterface
 	}
-	if len(result) == 0 {
-		return nil
+	if len(result) == 0 && len(specialFilters) == 0 {
+		return nil, nil
 	}
-	return result
+
+	if len(result) == 0 {
+		return nil, specialFilters
+	}
+	return result, specialFilters
 }
 
 func efwdtTagName(field reflect.StructField) string {
@@ -70,6 +93,30 @@ func efwdtTagName(field reflect.StructField) string {
 		return field.Name
 	}
 	return name
+}
+
+func applySpecialFilters(fieldName string, value any, specialFilters *[]SpecialFilters) bool {
+	valueCheck := reflect.ValueOf(value)
+	if valueCheck.IsValid() && valueCheck.Kind() == reflect.Int64 && valueCheck.Int() == 0 {
+		return true
+	}
+
+	switch fieldName {
+	case "created_at_from":
+		*specialFilters = append(*specialFilters, SpecialFilters{Query: "created_at > ?", Args: []any{value}})
+		return true
+	case "created_at_to":
+		*specialFilters = append(*specialFilters, SpecialFilters{Query: "created_at < ?", Args: []any{value}})
+		return true
+	case "updated_at_from":
+		*specialFilters = append(*specialFilters, SpecialFilters{Query: "updated_at > ?", Args: []any{value}})
+		return true
+	case "updated_at_to":
+		*specialFilters = append(*specialFilters, SpecialFilters{Query: "updated_at < ?", Args: []any{value}})
+		return true
+	default:
+		return false
+	}
 }
 
 func normalizeConditionValue(value reflect.Value) (any, bool) {

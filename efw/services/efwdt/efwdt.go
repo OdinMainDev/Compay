@@ -17,6 +17,11 @@ type Filter struct {
 	Values any        `json:"values"`
 }
 
+type SpecialFilters struct {
+	Query string
+	Args  []any
+}
+
 func Datable[TModel, TRequest any](
 	context *gin.Context,
 	columnsOrder []string,

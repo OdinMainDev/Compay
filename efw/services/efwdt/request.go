@@ -18,6 +18,16 @@ type Request[T any] struct {
 	Filters        T      `json:"filters"`
 }
 
+type WithCreatedAt struct {
+	CreatedAtFrom int64 `json:"created_at_from" efwdt:"created_at_from" binding:"min=0"`
+	CreatedAtTo   int64 `json:"created_at_to" efwdt:"created_at_to" binding:"min=0"`
+}
+
+type WithUpdatedAt struct {
+	UpdatedAtFrom int64 `json:"updated_at_from" efwdt:"updated_at_from" binding:"min=0"`
+	UpdatedAtTo   int64 `json:"updated_at_to" efwdt:"updated_at_to" binding:"min=0"`
+}
+
 func (request *Request[T]) ValidateOrderColumn(availColumns []string) error {
 	if request.OrderColumn == "" {
 		return nil

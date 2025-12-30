@@ -17,6 +17,7 @@ type requestAdminUsersList struct {
 	MerchantId int64  `json:"merchant_id" efwdt:"merchant_id" binding:"omitempty,gt=0"`
 	Username   string `json:"username" efwdt:"username" binding:"omitempty,max=255"`
 	IsBanned   *bool  `json:"is_banned" efwdt:"is_banned" binding:"omitempty"`
+	efwdt.WithCreatedAt
 }
 
 func AdminUsersList(context *gin.Context) {
