@@ -39,6 +39,7 @@ func StartMerchant() {
 	adminRoutes := panelRoutes.Group("/admin")
 	adminRoutes.Use(middleware.CheckIsUserAdmin())
 	merchantAdminUsersRoutes(adminRoutes)
+	merchantAdminMerchantsRoutes(adminRoutes)
 	/* --------------- ADMIN ROUTES --------------- */
 
 	/* --------------- PANEL ROUTES --------------- */
@@ -78,7 +79,20 @@ func merchantAdminUsersRoutes(group *gin.RouterGroup) {
 
 	subGroup.POST("/list", controller.AdminUsersList)
 	subGroup.POST("/list/filters", controller.AdminUsersListFilters)
-	// subGroup.GET("/get/:id", controller.UserGetMe)
-	// subGroup.GET("/process", controller.UserGetMe)
+	subGroup.POST("/get/:id", controller.AdminUsersGet)
+	subGroup.POST("/create", controller.AdminUsersCreate)
+	subGroup.POST("/process", controller.AdminUsersProcess)
 	subGroup.POST("/delete", controller.AdminUsersDelete)
+}
+
+func merchantAdminMerchantsRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/dev/merchants")
+
+	// subGroup.POST("/list", controller.AdminUsersList)
+	// subGroup.POST("/list/filters", controller.AdminUsersListFilters)
+	// subGroup.POST("/get/:id", controller.AdminUsersGet)
+	// subGroup.POST("/create", controller.AdminUsersCreate)
+	// subGroup.POST("/process", controller.AdminUsersProcess)
+	// subGroup.POST("/delete", controller.AdminUsersDelete)
+	subGroup.POST("/search", controller.AdminMerchantsSearch)
 }

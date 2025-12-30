@@ -22,15 +22,19 @@ var ErrorBindingUndefinedError = func(fnName, err string) error {
 }
 
 func ShouldBindBodyWithJSON(context *gin.Context, input any) bool {
-	return ShouldBindBody(context, input, binding.JSON)
+	return shouldBindBody(context, input, binding.JSON)
 }
 
 func ShouldBindWithForm(context *gin.Context, input any) bool {
-	return ShouldBind(context, input, binding.Form)
+	return shouldBind(context, input, binding.Form)
+}
+
+func ShouldBindUri(context *gin.Context, input any) bool {
+	return shouldBindUri(context, input)
 }
 
 // return ok (true) or not ok (false)
-func ShouldBindBody(context *gin.Context, input any, bindingType binding.BindingBody) bool {
+func shouldBindBody(context *gin.Context, input any, bindingType binding.BindingBody) bool {
 	err := context.ShouldBindBodyWith(&input, bindingType)
 	if err == nil {
 		return true
@@ -48,30 +52,30 @@ func ShouldBindBody(context *gin.Context, input any, bindingType binding.Binding
 		return false
 	}
 
-	var validationErrors validator.ValidationErrors
-	if errors.As(err, &validationErrors) {
-		ret := make(map[string][]string)
-		for _, validatorErr := range validationErrors {
-			ret[validatorErr.Field()] = append(ret[validatorErr.Field()], validatorErr.Tag())
-		}
-		efwginhelpers.ResponseError(context, ret)
-		return false
-	}
-
-	if err != nil {
-		efwginhelpers.ResponseError(context, ErrorBindingUndefinedError("ShouldBindBody", err.Error()))
-		return false
-	}
-
-	return true
+	return validationResponse(context, err)
 }
 
-func ShouldBind(context *gin.Context, input any, bindingType binding.Binding) bool {
+// return ok (true) or not ok (false)
+func shouldBind(context *gin.Context, input any, bindingType binding.Binding) bool {
 	err := context.ShouldBindWith(&input, bindingType)
 	if err == nil {
 		return true
 	}
 
+	return validationResponse(context, err)
+}
+
+// return ok (true) or not ok (false)
+func shouldBindUri(context *gin.Context, input any) bool {
+	err := context.ShouldBindUri(&input)
+	if err == nil {
+		return true
+	}
+
+	return validationResponse(context, err)
+}
+
+func validationResponse(context *gin.Context, err error) bool {
 	var validationErrors validator.ValidationErrors
 	if errors.As(err, &validationErrors) {
 		ret := make(map[string][]string)

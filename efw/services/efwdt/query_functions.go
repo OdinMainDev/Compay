@@ -18,8 +18,8 @@ func applyAdditionalFilters[T any](chain gorm.ChainInterface[T], filters []Chain
 	return chain
 }
 
-func applyRequestFilters[TModel, TRequest any](chain gorm.ChainInterface[TModel], request Request[TRequest]) gorm.ChainInterface[TModel] {
-	filters, specialFilters := buildFiltersMap(reflect.ValueOf(request.Filters))
+func applyRequestFilters[TModel, TRequest any](chain gorm.ChainInterface[TModel], request Request[TRequest], customSpecialFilters SpecialFilterMap) gorm.ChainInterface[TModel] {
+	filters, specialFilters := buildFiltersMap(reflect.ValueOf(request.Filters), customSpecialFilters)
 	if len(filters) == 0 && len(specialFilters) == 0 {
 		return chain
 	}
@@ -32,7 +32,7 @@ func applyRequestFilters[TModel, TRequest any](chain gorm.ChainInterface[TModel]
 	return chain
 }
 
-func buildFiltersMap(value reflect.Value) (map[string]any, []SpecialFilters) {
+func buildFiltersMap(value reflect.Value, customSpecialFilters SpecialFilterMap) (map[string]any, []SpecialFilters) {
 	if value.Kind() != reflect.Struct {
 		return nil, nil
 	}
@@ -48,7 +48,7 @@ func buildFiltersMap(value reflect.Value) (map[string]any, []SpecialFilters) {
 
 		fieldValue := value.Field(i)
 		if field.Anonymous && fieldValue.Kind() == reflect.Struct {
-			r, sF := buildFiltersMap(fieldValue)
+			r, sF := buildFiltersMap(fieldValue, customSpecialFilters)
 			maps.Copy(result, r)
 			specialFilters = append(specialFilters, sF...)
 			continue
@@ -64,7 +64,11 @@ func buildFiltersMap(value reflect.Value) (map[string]any, []SpecialFilters) {
 			continue
 		}
 
-		if applied := applySpecialFilters(fieldName, fieldValueInterface, &specialFilters); applied {
+		if applySpecialFilters(fieldName, fieldValueInterface, &specialFilters) {
+			continue
+		}
+
+		if applyCustomFilters(fieldName, fieldValueInterface, customSpecialFilters, &specialFilters) {
 			continue
 		}
 
@@ -117,6 +121,27 @@ func applySpecialFilters(fieldName string, value any, specialFilters *[]SpecialF
 	default:
 		return false
 	}
+}
+
+func applyCustomFilters(fieldName string, value any, customSpecialFilters SpecialFilterMap, specialFilters *[]SpecialFilters) bool {
+	if len(customSpecialFilters) == 0 {
+		return false
+	}
+
+	handler, ok := customSpecialFilters[fieldName]
+	if !ok || handler == nil {
+		return false
+	}
+
+	filter, handled := handler(fieldName, value)
+	if !handled {
+		return false
+	}
+
+	if filter.Query != "" {
+		*specialFilters = append(*specialFilters, filter)
+	}
+	return true
 }
 
 func normalizeConditionValue(value reflect.Value) (any, bool) {

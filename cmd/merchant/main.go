@@ -5,6 +5,7 @@ import (
 	"compay/common/database"
 	"compay/src/app"
 	"compay/src/services/startup"
+	"compay/src/services/validator"
 	"efw"
 	"efw/core/efwapp"
 	"fmt"
@@ -23,7 +24,8 @@ func main() {
 	}
 
 	initMethods := efw.EfwInitMethods{
-		InitLoggers: config.InitLoggers,
+		InitLoggers:    config.InitLoggers,
+		InitValidation: validator.CustomValidators,
 	}
 
 	if err := efw.Init(options, initMethods); err != nil {

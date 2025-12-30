@@ -6,7 +6,7 @@ import (
 )
 
 func (that *eframework) initGin() error {
-	validator.Init()
+	validator.Init(that.initMethods.InitValidation)
 
 	efwlog.Log("[EFW: GIN] InitializedSuccess")
 	return nil

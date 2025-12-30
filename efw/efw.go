@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
@@ -18,7 +19,8 @@ type eframework struct {
 }
 
 type EfwInitMethods struct {
-	InitLoggers func()
+	InitLoggers    func()
+	InitValidation func() [](func() (string, validator.Func))
 }
 
 var eFrame *eframework

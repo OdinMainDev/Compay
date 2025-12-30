@@ -1,10 +1,12 @@
 package merchant
 
 import (
+	"compay/common/cperrors"
 	"compay/common/types"
 	"compay/src/models/user"
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
+	"efw/services/efwcontroller"
 	"efw/services/efwdt"
 	"net/http"
 
@@ -20,8 +22,23 @@ type requestAdminUsersList struct {
 	efwdt.WithCreatedAt
 }
 
+type requestAdminUsersCreate struct {
+	Username   string `json:"username" binding:"required,min=6,max=255"`
+	Password   string `json:"password" binding:"required,min=6,max=255"`
+	IsAdmin    bool   `json:"is_admin"`
+	MerchantId int64  `json:"merchant_id" binding:"required_if=IsAdmin false,merchantExist"`
+}
+
+type requestAdminUsersProcess struct {
+	Id             int64  `json:"id" binding:"omitempty,gt=0"`
+	Username       string `json:"username" binding:"omitempty,min=6,max=255"`
+	Password       string `json:"password" binding:"omitempty,min=6,max=255"`
+	IsBanned       bool   `json:"is_banned"`
+	DoDisableTwofa bool   `json:"do_disable_twofa"`
+}
+
 func AdminUsersList(context *gin.Context) {
-	efwdt.Datable[user.Model, requestAdminUsersList](
+	efwcontroller.Datable[user.Model, requestAdminUsersList](
 		context,
 		[]string{"id", "username", "is_banned", "created_at"},
 		[]efwdt.ChainFilter[user.Model]{
@@ -29,11 +46,20 @@ func AdminUsersList(context *gin.Context) {
 				return chain.Where("id != ?", 1)
 			},
 		},
+		nil,
+		// efwdt.SpecialFilterMap{
+		// 	"merchant_total_profit": func(fieldName string, value any) (efwdt.SpecialFilters, bool) {
+		// 		return efwdt.SpecialFilters{
+		// 			Query: fieldName + " > ?",
+		// 			Args:  []any{value},
+		// 		}, true
+		// 	},
+		// },
 	)
 }
 
 func AdminUsersListFilters(context *gin.Context) {
-	efwdt.Filters(context, []efwdt.Filter{
+	efwcontroller.DatatableFilters(context, []efwdt.Filter{
 		{Name: "id", Type: types.EFWDT_FilterTypeInteger},
 		{Name: "merchant_id", Type: types.EFWDT_FilterTypeMerchantId},
 		{Name: "username", Type: types.EFWDT_FilterTypeText},
@@ -43,18 +69,85 @@ func AdminUsersListFilters(context *gin.Context) {
 }
 
 func AdminUsersDelete(context *gin.Context) {
-	var input requestWithId
+	efwcontroller.DeleteModel(
+		context,
+		user.GetModel,
+		user.Delete,
+		func(id int64) user.QueryHelper {
+			return user.QueryHelper{Id: types.UserId(id), DontCheckMerchantId: true}
+		},
+	)
+}
+
+func AdminUsersGet(context *gin.Context) {
+	efwcontroller.GetModel(
+		context,
+		user.GetModel,
+		nil,
+		func(id int64) user.QueryHelper {
+			return user.QueryHelper{Id: types.UserId(id), DontCheckMerchantId: true}
+		},
+	)
+}
+
+func AdminUsersCreate(context *gin.Context) {
+	var input requestAdminUsersCreate
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
 		return
 	}
-	userModel := user.GetModel(user.QueryHelper{
-		Id:                  types.UserId(input.Id),
-		DontCheckMerchantId: true,
-	})
+
+	if input.IsAdmin && input.MerchantId != 0 {
+		efwginhelpers.ResponseError(context, cperrors.ErrorUserCreateAdminWithMerchantIdIsNotAllowed)
+		return
+	}
+	if !input.IsAdmin && input.MerchantId == 0 {
+		efwginhelpers.ResponseError(context, cperrors.ErrorUserCreateUserWithoutMerchantIdIsNotAllowed)
+		return
+	}
+
+	checkUserExist := user.GetModel(user.QueryHelper{Username: input.Username, DontCheckMerchantId: true})
+	if checkUserExist != nil {
+		efwginhelpers.ResponseError(context, cperrors.ErrorUserUsernameIsTaken)
+		return
+	}
+
+	userModel := &user.Model{}
+	userModel.Username = input.Username
+	userModel.MerchantId = types.MerchantId(input.MerchantId)
+	userModel.NewPassword = input.Password
+	user.Save(userModel)
+
+	efwginhelpers.ResponseSuccess(context, nil)
+}
+
+func AdminUsersProcess(context *gin.Context) {
+	var input requestAdminUsersProcess
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+
+	userModel := user.GetModel(user.QueryHelper{Id: types.UserId(input.Id), DontCheckMerchantId: true})
 	if userModel == nil {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return
 	}
-	user.Delete(userModel)
+
+	if userModel.Username != input.Username {
+		checkUserExist := user.GetModel(user.QueryHelper{Username: input.Username, DontCheckMerchantId: true})
+		if checkUserExist != nil {
+			efwginhelpers.ResponseError(context, cperrors.ErrorUserUsernameIsTaken)
+			return
+		}
+	}
+
+	if input.DoDisableTwofa {
+		userModel.TotpToken = ""
+		userModel.IsTwofaEnabled = false
+	}
+
+	userModel.Username = input.Username
+	userModel.NewPassword = input.Password
+	user.Save(userModel)
+
 	efwginhelpers.ResponseSuccess(context, nil)
 }

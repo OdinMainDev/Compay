@@ -8,9 +8,9 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func Init() {
-	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		v.RegisterTagNameFunc(func(fld reflect.StructField) string {
+func Init(customValidations func() [](func() (string, validator.Func))) {
+	if validatorEngine, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		validatorEngine.RegisterTagNameFunc(func(fld reflect.StructField) string {
 			name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
 			if name == "-" {
 				return ""
@@ -18,7 +18,12 @@ func Init() {
 			return name
 		})
 
-		v.RegisterValidation("email", validateEmail)
-		v.RegisterValidation("phone", validatePhone)
+		validatorEngine.RegisterValidation("email", validateEmail)
+		validatorEngine.RegisterValidation("phone", validatePhone)
+		if customValidations != nil {
+			for _, v := range customValidations() {
+				validatorEngine.RegisterValidation(v())
+			}
+		}
 	}
 }

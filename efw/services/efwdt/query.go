@@ -7,14 +7,15 @@ import (
 	"sync"
 )
 
-func getQueryResponse[TModel, TRequest any](
+func GetQueryResponse[TModel, TRequest any](
 	input Request[TRequest],
 	additionalFilters []ChainFilter[TModel],
+	specialFilters SpecialFilterMap,
 ) (any, int64, int64, int64, error) {
 	dbTx := efw.DBTransaction[TModel]()
 
 	baseTx := applyAdditionalFilters(dbTx, additionalFilters)
-	filteredTx := applyRequestFilters(baseTx, input)
+	filteredTx := applyRequestFilters(baseTx, input, specialFilters)
 
 	var wg sync.WaitGroup
 	var result any
