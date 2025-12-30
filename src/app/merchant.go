@@ -80,5 +80,5 @@ func merchantAdminUsersRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/list/filters", controller.AdminUsersListFilters)
 	// subGroup.GET("/get/:id", controller.UserGetMe)
 	// subGroup.GET("/process", controller.UserGetMe)
-	// subGroup.GET("/delete/:id", controller.UserGetMe)
+	subGroup.POST("/delete", controller.AdminUsersDelete)
 }

@@ -15,7 +15,7 @@ type Request[T any] struct {
 	Length         int    `json:"length" binding:"required,max=250"`
 	OrderColumn    string `json:"order_column" binding:"required"`
 	OrderDirection string `json:"order_direction" binding:"required,eq=desc|eq=asc"`
-	Conditions     T      `json:"conditions" binding:"omitempty,dive"`
+	Conditions     T      `json:"conditions"`
 }
 
 func (request Request[T]) ValidateOrderColumn(availColumns []string) error {

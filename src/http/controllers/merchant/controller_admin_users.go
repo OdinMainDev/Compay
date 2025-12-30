@@ -3,8 +3,10 @@ package merchant
 import (
 	"compay/common/types"
 	"compay/src/models/user"
-	"efw/services/efwcontroller"
+	"efw/core/efwgin"
+	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"efw/services/efwdt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,11 +40,18 @@ func AdminUsersListFilters(context *gin.Context) {
 }
 
 func AdminUsersDelete(context *gin.Context) {
-	efwcontroller.DeleteRecord[user.Model, user.QueryHelper](context, user.GetModel, user.QueryHelper{})
-	// casinoId := context.MustGet(constants.GinUser).(int64)
-	// if ok, id := requests.DeleteRecord(context, affiliatemedia.GetModelById, affiliatemedia.QueryHelper{
-	// 	CasinoId: casinoId,
-	// }); ok {
-	// 	events.OnAdminAffiliateMediaDelete(id, casinoId)
-	// }
+	var input requestWithId
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+	userModel := user.GetModel(user.QueryHelper{
+		Id:                  types.UserId(input.Id),
+		DontCheckMerchantId: true,
+	})
+	if userModel == nil {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+	user.Delete(userModel)
+	efwginhelpers.ResponseSuccess(context, nil)
 }

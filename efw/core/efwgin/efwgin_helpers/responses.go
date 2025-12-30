@@ -17,6 +17,11 @@ func ResponseError(context *gin.Context, err any, httpStatus ...int) {
 		respStatus = httpStatus[0]
 	}
 
+	if respStatus == http.StatusNotFound {
+		context.JSON(respStatus, gin.H{"status": respStatus, "success": false})
+		return
+	}
+
 	if v, ok := err.(error); ok {
 		hideErrorAndResponse(context, v.Error(), respStatus)
 		return
