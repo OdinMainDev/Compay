@@ -1,6 +1,7 @@
 package casts
 
 import (
+	"efw/components/entity"
 	"efw/config"
 	"fmt"
 	"net"
@@ -11,16 +12,16 @@ import (
 
 var ErrorNilClientIp = fmt.Errorf("%s", "[EFW: GIN-CASTS] NilClientIp")
 
-func GetClientIP(context *gin.Context) (string, error) {
+func GetClientIP(context *gin.Context) (entity.Ip, error) {
 	forwardHeader := context.Request.Header.Get("X-Forwarded-For")
 	firstAddress := strings.TrimSpace(strings.Split(forwardHeader, ",")[0])
 	if net.ParseIP(firstAddress) != nil {
-		return firstAddress, nil
+		return entity.Ip(firstAddress), nil
 	}
 
 	clientIp := context.ClientIP()
 	if ip := net.ParseIP(clientIp); ip != nil && !ip.IsLoopback() && !ip.IsUnspecified() {
-		return clientIp, nil
+		return entity.Ip(clientIp), nil
 	}
 
 	if config.AppDebug {

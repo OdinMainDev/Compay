@@ -67,7 +67,7 @@ func shouldBind(context *gin.Context, input any, bindingType binding.Binding) bo
 
 // return ok (true) or not ok (false)
 func shouldBindUri(context *gin.Context, input any) bool {
-	err := context.ShouldBindUri(&input)
+	err := context.ShouldBindUri(input)
 	if err == nil {
 		return true
 	}

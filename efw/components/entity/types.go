@@ -9,3 +9,12 @@ const (
 	SAVE_TYPE_CACHE
 	SAVE_TYPE_LOCAL_CACHE
 )
+
+// Базовые типы
+type FingerPrint string
+type Url string
+type Ip string
+type UserAgent string
+
+// User Types
+type UserId int64

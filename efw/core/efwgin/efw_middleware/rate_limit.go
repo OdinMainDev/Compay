@@ -33,7 +33,7 @@ func keyFunc(context *gin.Context) string {
 		return ""
 	}
 
-	key := clientIp + "-" + clientUserAgent
+	key := string(clientIp) + "-" + string(clientUserAgent)
 
 	var input RateLimitRequest
 	if err := context.ShouldBindBodyWithJSON(&input); err != nil {

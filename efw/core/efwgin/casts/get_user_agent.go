@@ -1,7 +1,11 @@
 package casts
 
-import "github.com/gin-gonic/gin"
+import (
+	"efw/components/entity"
 
-func GetClientUserAgent(context *gin.Context) string {
-	return context.GetHeader("User-Agent")
+	"github.com/gin-gonic/gin"
+)
+
+func GetClientUserAgent(context *gin.Context) entity.UserAgent {
+	return entity.UserAgent(context.GetHeader("User-Agent"))
 }
