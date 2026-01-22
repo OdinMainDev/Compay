@@ -25,6 +25,6 @@ func registerMerchantAdminAccounts() {
 	userModel.Username = "vioriel@developer.com"
 	userModel.NewPassword = "vioriel@developer.com"
 	userModel.SetId(1)
-	user.Save(userModel)
+	user.Save(userModel, user.QueryHelper{})
 	user.ResetSequence()
 }

@@ -16,6 +16,7 @@ require (
 require (
 	efw v0.0.0-00010101000000-000000000000
 	github.com/alexedwards/argon2id v1.0.0
+	github.com/go-playground/validator/v10 v10.26.0
 	gorm.io/gorm v1.30.1
 )
 
@@ -32,7 +33,6 @@ require (
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.26.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
 	github.com/golang-migrate/migrate/v4 v4.18.3 // indirect
@@ -54,6 +54,8 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
+	github.com/oschwald/geoip2-golang v1.13.0 // indirect
+	github.com/oschwald/maxminddb-golang v1.13.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/redis/go-redis/v9 v9.16.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect

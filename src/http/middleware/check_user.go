@@ -3,8 +3,8 @@ package middleware
 import (
 	"compay/common/constants"
 	"compay/common/cperrors"
-	"compay/common/types"
 	"compay/src/models/user"
+	"efw/components/entity"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"efw/core/efwjwt"
 	"net/http"
@@ -50,7 +50,7 @@ func CheckUser() gin.HandlerFunc {
 		}
 
 		userModel := user.GetModel(user.QueryHelper{
-			Id:                  types.UserId(userId),
+			Id:                  entity.UserId(userId),
 			DontCheckMerchantId: true,
 			WithMerchant:        true,
 		})

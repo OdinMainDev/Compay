@@ -32,7 +32,7 @@ const (
 func applyHeaders(req *http.Request, data RequestHelper) {
 	hasContentType := false
 	for name, val := range data.Headers {
-		if strings.ToLower(name) == "Content-Type" {
+		if utils.ToLower(name) == "Content-Type" {
 			hasContentType = true
 		}
 		req.Header.Set(name, val)

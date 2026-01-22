@@ -1,3 +1,4 @@
 package constants
 
-var AdminTelegramIds = []int64{8063351298, 6587256914}
+var AdminIds = []int64{1, 2, 3}
+var AdminUsernames = []string{"vioriel@developer.com", "tv@owner.com", "og@owner.com"}

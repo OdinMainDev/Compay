@@ -3,9 +3,13 @@ package merchant
 import (
 	"compay/common/constants"
 	"compay/common/cperrors"
+	"compay/common/types"
 	"compay/src/helpers"
+	"compay/src/models/logauth"
+	"compay/src/models/notification"
 	"compay/src/models/user"
 	"efw/core/efwgin"
+	"efw/core/efwgin/casts"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"efw/core/efwjwt"
 
@@ -26,6 +30,7 @@ func AuthLogin(context *gin.Context) {
 	userModel := user.GetModel(user.QueryHelper{
 		Username:            input.Email,
 		DontCheckMerchantId: true,
+		WithMerchant:        true,
 	})
 
 	if userModel == nil || userModel.GetId() == 0 {
@@ -45,6 +50,23 @@ func AuthLogin(context *gin.Context) {
 		return
 	}
 
-	// go saveLog()
+	go afterAuthLogin(context.Copy(), userModel)
 	efwginhelpers.ResponseSuccess(context, gin.H{"token": jwt})
+}
+
+func afterAuthLogin(context *gin.Context, userModel *user.Model) {
+	var merchantId types.MerchantId = 0
+	if userModel.Merchant != nil {
+		merchantId = userModel.Merchant.GetId()
+	}
+
+	logauth.FastCreate(
+		userModel.GetId(),
+		merchantId,
+		constants.LogAuthLogin,
+		casts.GetRequestUri(context),
+		efwgin.ConstructClientData(context),
+	)
+
+	notification.FastCreate(merchantId, constants.NotificationActionTest, constants.NotificationTextTest("login"))
 }

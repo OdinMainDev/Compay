@@ -11,7 +11,7 @@ func validateMerchantExist() (string, validator.Func) {
 	var fn validator.Func = func(fl validator.FieldLevel) bool {
 		data, ok := fl.Field().Interface().(int64)
 		if ok {
-			return merchant.GetModel(merchant.QueryHelper{Id: types.UserId(data)}) != nil
+			return merchant.GetModel(merchant.QueryHelper{Id: types.MerchantId(data)}) != nil
 		}
 		return false
 	}

@@ -4,6 +4,7 @@ import (
 	"compay/common/cperrors"
 	"compay/common/types"
 	"compay/src/models/user"
+	"efw/components/entity"
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"efw/services/efwcontroller"
@@ -30,17 +31,20 @@ type requestAdminUsersCreate struct {
 }
 
 type requestAdminUsersProcess struct {
-	Id             int64  `json:"id" binding:"omitempty,gt=0"`
-	Username       string `json:"username" binding:"omitempty,min=6,max=255"`
-	Password       string `json:"password" binding:"omitempty,min=6,max=255"`
-	IsBanned       bool   `json:"is_banned"`
-	DoDisableTwofa bool   `json:"do_disable_twofa"`
+	Id       int64  `json:"id" binding:"required,gt=0"`
+	Username string `json:"username" binding:"omitempty,min=6,max=255"`
+	Password string `json:"password" binding:"omitempty,min=6,max=255"`
+	IsBanned bool   `json:"is_banned"`
+}
+
+type requestAdminUsersAction struct {
+	Id int64 `json:"id" binding:"required,gt=0"`
 }
 
 func AdminUsersList(context *gin.Context) {
 	efwcontroller.Datable[user.Model, requestAdminUsersList](
 		context,
-		[]string{"id", "username", "is_banned", "created_at"},
+		[]string{"id", "username", "is_banned", "merchant_id", "created_at"},
 		[]efwdt.ChainFilter[user.Model]{
 			func(chain gorm.ChainInterface[user.Model]) gorm.ChainInterface[user.Model] {
 				return chain.Where("id != ?", 1)
@@ -74,7 +78,7 @@ func AdminUsersDelete(context *gin.Context) {
 		user.GetModel,
 		user.Delete,
 		func(id int64) user.QueryHelper {
-			return user.QueryHelper{Id: types.UserId(id), DontCheckMerchantId: true}
+			return user.QueryHelper{Id: entity.UserId(id), DontCheckMerchantId: true}
 		},
 	)
 }
@@ -85,7 +89,10 @@ func AdminUsersGet(context *gin.Context) {
 		user.GetModel,
 		nil,
 		func(id int64) user.QueryHelper {
-			return user.QueryHelper{Id: types.UserId(id), DontCheckMerchantId: true}
+			if isUserRootAdmin(entity.UserId(id)) {
+				id = 0
+			}
+			return user.QueryHelper{Id: entity.UserId(id), DontCheckMerchantId: true}
 		},
 	)
 }
@@ -107,7 +114,7 @@ func AdminUsersCreate(context *gin.Context) {
 
 	checkUserExist := user.GetModel(user.QueryHelper{Username: input.Username, DontCheckMerchantId: true})
 	if checkUserExist != nil {
-		efwginhelpers.ResponseError(context, cperrors.ErrorUserUsernameIsTaken)
+		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorUserUsernameIsTaken))
 		return
 	}
 
@@ -115,7 +122,7 @@ func AdminUsersCreate(context *gin.Context) {
 	userModel.Username = input.Username
 	userModel.MerchantId = types.MerchantId(input.MerchantId)
 	userModel.NewPassword = input.Password
-	user.Save(userModel)
+	user.Save(userModel, user.QueryHelper{})
 
 	efwginhelpers.ResponseSuccess(context, nil)
 }
@@ -126,8 +133,13 @@ func AdminUsersProcess(context *gin.Context) {
 		return
 	}
 
-	userModel := user.GetModel(user.QueryHelper{Id: types.UserId(input.Id), DontCheckMerchantId: true})
+	userModel := user.GetModel(user.QueryHelper{Id: entity.UserId(input.Id), DontCheckMerchantId: true})
 	if userModel == nil {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	if isUserRootAdmin(userModel.GetId()) {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return
 	}
@@ -135,19 +147,51 @@ func AdminUsersProcess(context *gin.Context) {
 	if userModel.Username != input.Username {
 		checkUserExist := user.GetModel(user.QueryHelper{Username: input.Username, DontCheckMerchantId: true})
 		if checkUserExist != nil {
-			efwginhelpers.ResponseError(context, cperrors.ErrorUserUsernameIsTaken)
+			efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorUserUsernameIsTaken))
 			return
 		}
 	}
 
-	if input.DoDisableTwofa {
-		userModel.TotpToken = ""
-		userModel.IsTwofaEnabled = false
-	}
-
 	userModel.Username = input.Username
 	userModel.NewPassword = input.Password
-	user.Save(userModel)
+	user.Save(userModel, user.QueryHelper{})
 
 	efwginhelpers.ResponseSuccess(context, nil)
+}
+
+func AdminUsersActionDisableTotp(context *gin.Context) {
+	var input requestAdminUsersAction
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+
+	userModel := user.GetModel(user.QueryHelper{Id: entity.UserId(input.Id), DontCheckMerchantId: true})
+	if userModel == nil {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	if isUserRootAdmin(userModel.GetId()) {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	if userModel.IsTwofaEnabled {
+		userModel.TotpToken = ""
+		userModel.IsTwofaEnabled = false
+		user.Save(userModel, user.QueryHelper{})
+	}
+
+	efwginhelpers.ResponseSuccess(context, nil)
+}
+
+func AdminUsersSearch(context *gin.Context) {
+	var input requestSearch
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": user.GetModels(user.QueryHelper{
+		Search: input.Search,
+	})})
 }

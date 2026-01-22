@@ -3,6 +3,7 @@ package efwrequest
 import (
 	"compress/gzip"
 	"compress/zlib"
+	"efw/utils"
 	"fmt"
 	"io"
 	"net/http"
@@ -44,7 +45,7 @@ func DecodeRequest(resp *http.Response) ([]byte, error) {
 	if encHeader != "" {
 		encs := strings.Split(encHeader, ",")
 		for i := len(encs) - 1; i >= 0; i-- {
-			switch strings.TrimSpace(strings.ToLower(encs[i])) {
+			switch strings.TrimSpace(utils.ToLower(encs[i])) {
 			case "", "identity":
 				// ничего
 			case "gzip":

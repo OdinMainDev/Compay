@@ -10,17 +10,16 @@ import (
 
 func GetModel[TModel any, TQueryHelper any](
 	context *gin.Context,
-	getModel func(queryHelper TQueryHelper, additionalCacheKeys ...int64) *TModel,
+	getModel func(queryHelper TQueryHelper) *TModel,
 	modelToDto func(model *TModel) any,
 	constructQueryHelper func(int64) TQueryHelper,
-	additionalCacheKeys ...int64,
 ) (int64, bool) {
 	var input RequestWithId
 	if !efwgin.ShouldBindUri(context, &input) {
 		return 0, false
 	}
 
-	model := getModel(constructQueryHelper(input.Id), additionalCacheKeys...)
+	model := getModel(constructQueryHelper(input.Id))
 	if model == nil {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return 0, false

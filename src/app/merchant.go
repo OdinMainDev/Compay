@@ -21,7 +21,7 @@ func StartMerchant() {
 
 	apiRoutes := router.Group("/api")
 	// apiRoutes.Use(middleware.SaveRequestBodyToContext())
-	// apiRoutes.Use(middleware.CheckUserCountry(true))
+	apiRoutes.Use(efwmiddleware.CheckClientIp())
 
 	/* +++++++++++++++ AUTH ROUTES +++++++++++++++ */
 	authRoutes := apiRoutes.Group("/auth")
@@ -71,7 +71,8 @@ func merchantAuthRoutes(group *gin.RouterGroup) {
 }
 
 func merchantPanelUserRoutes(group *gin.RouterGroup) {
-	group.GET("/get/me", controller.UserGetMe)
+	group.POST("/get/me", controller.ProfileGet) // Profile Get
+	group.POST("/profile/process", controller.ProfileProcess)
 }
 
 func merchantAdminUsersRoutes(group *gin.RouterGroup) {
@@ -83,16 +84,20 @@ func merchantAdminUsersRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/create", controller.AdminUsersCreate)
 	subGroup.POST("/process", controller.AdminUsersProcess)
 	subGroup.POST("/delete", controller.AdminUsersDelete)
+	subGroup.POST("/search", controller.AdminUsersSearch)
+	subGroup.POST("/action/disable-totp", controller.AdminUsersActionDisableTotp)
 }
 
 func merchantAdminMerchantsRoutes(group *gin.RouterGroup) {
 	subGroup := group.Group("/dev/merchants")
 
-	// subGroup.POST("/list", controller.AdminUsersList)
-	// subGroup.POST("/list/filters", controller.AdminUsersListFilters)
-	// subGroup.POST("/get/:id", controller.AdminUsersGet)
-	// subGroup.POST("/create", controller.AdminUsersCreate)
-	// subGroup.POST("/process", controller.AdminUsersProcess)
-	// subGroup.POST("/delete", controller.AdminUsersDelete)
+	// subGroup.POST("/list", controller.AdminMerchantsList)
+	// subGroup.POST("/list/filters", controller.AdminMerchantsListFilters)
+	// subGroup.POST("/get/:id", controller.AdminMerchantsGet)
+	// subGroup.POST("/create", controller.AdminMerchantsCreate)
+	// subGroup.POST("/process", controller.AdminMerchantsProcess)
+	// subGroup.POST("/delete", controller.AdminMerchantsDelete)
 	subGroup.POST("/search", controller.AdminMerchantsSearch)
+	// subGroup.POST("/action/disable", controller.AdminMerchantsActionDisable)
+	// subGroup.POST("/action/enable", controller.AdminMerchantsActionEnable)
 }

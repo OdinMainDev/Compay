@@ -10,8 +10,8 @@ import (
 
 func DeleteModel[TModel any, TQueryHelper any](
 	context *gin.Context,
-	getModel func(queryHelper TQueryHelper, additionalCacheKeys ...int64) *TModel,
-	deleteModel func(model *TModel, additionalCacheKeys ...int64),
+	getModel func(queryHelper TQueryHelper) *TModel,
+	deleteModel func(model *TModel, queryHelper TQueryHelper),
 	constructQueryHelper func(int64) TQueryHelper,
 	additionalCacheKeys ...int64,
 ) (int64, bool) {
@@ -20,13 +20,14 @@ func DeleteModel[TModel any, TQueryHelper any](
 		return 0, false
 	}
 
-	model := getModel(constructQueryHelper(input.Id), additionalCacheKeys...)
+	queryHelper := constructQueryHelper(input.Id)
+	model := getModel(queryHelper)
 	if model == nil {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return 0, false
 	}
 
-	deleteModel(model, additionalCacheKeys...)
+	deleteModel(model, queryHelper)
 	efwginhelpers.ResponseSuccess(context, nil)
 	return input.Id, true
 }

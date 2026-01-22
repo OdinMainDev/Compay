@@ -2,6 +2,7 @@ package merchant
 
 import (
 	"efw/components/entity"
+	"efw/components/model"
 )
 
 func (*Model) GetSaveType() entity.SaveType {
@@ -11,3 +12,11 @@ func (*Model) GetSaveType() entity.SaveType {
 func (*Model) CacheArgs() []int64 {
 	return nil
 }
+
+var (
+	GetModel  = model.GetModel[*Model, QueryHelper]
+	GetModels = model.GetModels[*Model, QueryHelper]
+	Save      = model.Save[*Model, QueryHelper]
+	Delete    = model.Delete[*Model, QueryHelper]
+	GetCount  = model.GetCount[*Model, QueryHelper]
+)
