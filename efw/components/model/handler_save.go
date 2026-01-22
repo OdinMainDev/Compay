@@ -10,7 +10,7 @@ import (
 
 var ErrorModelIsNilOnSave = fmt.Errorf("%s", "[EFW: MODEL] ModelIsNilOnSave")
 
-func save[T Model](model T, additionalCacheKeys ...int64) error {
+func save[T Model, F Filter[T]](model T, filter F) error {
 	if isNil(model) {
 		return ErrorModelIsNilOnSave
 	}
@@ -28,7 +28,7 @@ func save[T Model](model T, additionalCacheKeys ...int64) error {
 	}
 
 	if isCacheModel(model) {
-		if err := updateCache(model, additionalCacheKeys...); err != nil {
+		if err := updateCache(model, filter.CacheAdditionalKeys()...); err != nil {
 			return err
 		}
 	}

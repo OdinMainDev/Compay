@@ -1,15 +1,21 @@
 package model
 
-import "efw/core/efwcache"
+import (
+	"efw/core/efwcache"
+)
 
-func getModels[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) ([]T, error) {
-	records, err := doGetModels(filter, additionalCacheKeys...)
+func getModels[T Model, F Filter[T]](filter F) ([]T, error) {
+	records, isCachedModel, err := doGetModels(filter)
 	if err != nil {
 		return nil, err
 	}
 
 	if len(records) == 0 {
 		return []T{}, nil
+	}
+
+	if !isCachedModel {
+		return records, nil
 	}
 
 	result := make([]T, 0, len(records))
@@ -21,36 +27,36 @@ func getModels[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) ([]
 	return result, nil
 }
 
-func doGetModels[T Model](filter Filter[T], additionalCacheKeys ...int64) ([]T, error) {
+func doGetModels[T Model](filter Filter[T]) ([]T, bool, error) {
 	var m T
 	if isCacheModel(m) {
-		if cached, err := efwcache.Get[T](additionalCacheKeys...); err == nil {
-			return cached, nil
+		if cached, err := efwcache.Get[T](filter.CacheAdditionalKeys()...); err == nil {
+			return cached, true, nil
 		} else {
-			return nil, err
+			return nil, true, err
 		}
 	}
 
 	if !isDatabaseModel(m) {
-		return nil, nil
+		return nil, true, nil
 	}
 
 	records, err := fetchFromDb(filter)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	if isCacheModel(m) {
-		if err := efwcache.Set(records, additionalCacheKeys...); err != nil {
-			return records, err
+		if err := efwcache.Set(records, filter.CacheAdditionalKeys()...); err != nil {
+			return records, false, err
 		}
 	}
 
-	return records, nil
+	return records, false, nil
 }
 
-func getModel[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) (T, error) {
-	records, err := getModels(filter, additionalCacheKeys...)
+func getModel[T Model, F Filter[T]](filter F) (T, error) {
+	records, err := getModels(filter)
 	if len(records) > 0 && err == nil {
 		return records[0], nil
 	}
@@ -59,8 +65,8 @@ func getModel[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) (T, 
 	return zero, err
 }
 
-func getCount[T Model, F Filter[T]](filter F, additionalCacheKeys ...int64) (int64, error) {
-	records, err := getModels(filter, additionalCacheKeys...)
+func getCount[T Model, F Filter[T]](filter F) (int64, error) {
+	records, err := getModels(filter)
 	if err != nil {
 		return 0, err
 	}

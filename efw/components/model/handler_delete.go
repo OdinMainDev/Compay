@@ -8,8 +8,9 @@ import (
 )
 
 var ErrorModelIsNilOnDelete = fmt.Errorf("%s", "[EFW: MODEL] ModelIsNilOnDelete")
+var ErrorModelIsNotCacheableModelOnDelete = fmt.Errorf("%s", "[EFW: MODEL] ModelIsNotCacheableModelOnDelete")
 
-func delete[T Model](model T, additionalCacheKeys ...int64) error {
+func delete[T Model, F Filter[T]](model T, filter F) error {
 	if isNil(model) {
 		return ErrorModelIsNilOnDelete
 	}
@@ -21,7 +22,7 @@ func delete[T Model](model T, additionalCacheKeys ...int64) error {
 	}
 
 	if isCacheModel(model) {
-		if err := deleteFromCache(model, additionalCacheKeys...); err != nil {
+		if err := deleteFromCache(model, filter.CacheAdditionalKeys()...); err != nil {
 			return err
 		}
 	}
@@ -48,7 +49,7 @@ func deleteFromCache[T Model](model T, additionalCacheKeys ...int64) error {
 	cacheAny := any(model)
 	cacheModel, ok := cacheAny.(efwcache.CacheableModel)
 	if !ok {
-		return fmt.Errorf("%s", "[EFW: MODEL] ModelIsNotCacheableModelOnDelete")
+		return ErrorModelIsNotCacheableModelOnDelete
 	}
 
 	if err := efwcache.Delete(cacheModel, additionalCacheKeys...); err != nil {
