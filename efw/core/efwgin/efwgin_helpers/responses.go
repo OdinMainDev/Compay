@@ -9,7 +9,13 @@ import (
 	"github.com/google/uuid"
 )
 
-type NotHiddenError error
+type notHiddenError struct {
+	err error
+}
+
+func NotHiddenError(err error) notHiddenError {
+	return notHiddenError{err: err}
+}
 
 func ResponseError(context *gin.Context, err any, httpStatus ...int) {
 	respStatus := http.StatusUnprocessableEntity
@@ -22,6 +28,11 @@ func ResponseError(context *gin.Context, err any, httpStatus ...int) {
 		return
 	}
 
+	if v, ok := err.(notHiddenError); ok {
+		context.JSON(respStatus, gin.H{"status": respStatus, "success": false, "error": v.err.Error()})
+		return
+	}
+
 	if v, ok := err.(error); ok {
 		hideErrorAndResponse(context, v.Error(), respStatus)
 		return
@@ -29,11 +40,6 @@ func ResponseError(context *gin.Context, err any, httpStatus ...int) {
 
 	if v, ok := err.(string); ok {
 		hideErrorAndResponse(context, v, respStatus)
-		return
-	}
-
-	if v, ok := err.(NotHiddenError); ok {
-		context.JSON(respStatus, gin.H{"status": respStatus, "success": false, "error": v.Error()})
 		return
 	}
 
