@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 )
 
 func Explode(delimiter, text string) []string {
@@ -61,8 +62,66 @@ func MaskUsername(s string) string {
 	if s == "" {
 		return "****"
 	}
+
+	if strings.Contains(s, "@") {
+		return maskEmail(s)
+	}
+
 	runes := []rune(s)
 	n := len(runes)
-	keep := max(n-4, 1)
-	return string(runes[:keep]) + "****"
+
+	switch {
+	case n > 8:
+		return string(runes[:2]) +
+			strings.Repeat("*", n-4) +
+			string(runes[n-2:])
+	case n > 6:
+		return string(runes[0]) +
+			strings.Repeat("*", n-2) +
+			string(runes[n-1])
+	default:
+		return string(runes[0]) + "****"
+	}
+}
+
+func maskEmail(email string) string {
+	parts := strings.Split(email, "@")
+	if len(parts) != 2 {
+		return "****"
+	}
+
+	local := parts[0]
+	domain := parts[1]
+
+	localRunes := []rune(local)
+	if len(localRunes) <= 2 {
+		local = string(localRunes[0]) + "*"
+	} else {
+		local = string(localRunes[:2]) +
+			strings.Repeat("*", len(localRunes)-2)
+	}
+
+	domainParts := strings.Split(domain, ".")
+	if len(domainParts) < 2 {
+		return local + "@****"
+	}
+
+	domainName := domainParts[0]
+	tld := domainParts[len(domainParts)-1]
+
+	if utf8.RuneCountInString(domainName) > 1 {
+		domainName = string([]rune(domainName)[0]) + "***"
+	} else {
+		domainName = "*"
+	}
+
+	return local + "@" + domainName + "." + tld
+}
+
+func ToLower(s string) string {
+	if len(s) == 0 {
+		return ""
+	}
+
+	return strings.ToLower(s)
 }
