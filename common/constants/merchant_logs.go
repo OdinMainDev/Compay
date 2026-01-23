@@ -9,5 +9,9 @@ const (
 
 // Log User
 const (
-	LogUserProfileUpdate types.LogUserAction = "ProfileUpdate"
+	LogUserProfileUpdate        types.LogUserAction = "ProfileUpdate"
+	LogUserAdminUserCreate      types.LogUserAction = "AdminUserCreate"
+	LogUserAdminUserProcess     types.LogUserAction = "AdminUserProcess"
+	LogUserAdminUserDelete      types.LogUserAction = "AdminUserDelete"
+	LogUserAdminUserDisableTotp types.LogUserAction = "AdminUserDisableTotp"
 )

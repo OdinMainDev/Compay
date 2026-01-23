@@ -56,6 +56,7 @@ func ProfileProcess(context *gin.Context) {
 
 	if hasChanges {
 		user.Save(userModel, user.QueryHelper{})
+		createLogUser(context, userModel, constants.LogUserProfileUpdate)
 	}
 
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": user.DTO(userModel)})

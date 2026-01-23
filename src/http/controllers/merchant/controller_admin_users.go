@@ -1,6 +1,7 @@
 package merchant
 
 import (
+	"compay/common/constants"
 	"compay/common/cperrors"
 	"compay/common/types"
 	"compay/src/models/user"
@@ -73,7 +74,7 @@ func AdminUsersListFilters(context *gin.Context) {
 }
 
 func AdminUsersDelete(context *gin.Context) {
-	efwcontroller.DeleteModel(
+	_, ok := efwcontroller.DeleteModel(
 		context,
 		user.GetModel,
 		user.Delete,
@@ -81,6 +82,10 @@ func AdminUsersDelete(context *gin.Context) {
 			return user.QueryHelper{Id: entity.UserId(id), DontCheckMerchantId: true}
 		},
 	)
+	if ok {
+		userModel := context.MustGet(constants.GinUser).(*user.Model)
+		createLogUser(context, userModel, constants.LogUserAdminUserDelete)
+	}
 }
 
 func AdminUsersGet(context *gin.Context) {
@@ -124,6 +129,7 @@ func AdminUsersCreate(context *gin.Context) {
 	userModel.NewPassword = input.Password
 	user.Save(userModel, user.QueryHelper{})
 
+	createLogUser(context, userModel, constants.LogUserAdminUserCreate)
 	efwginhelpers.ResponseSuccess(context, nil)
 }
 
@@ -156,6 +162,7 @@ func AdminUsersProcess(context *gin.Context) {
 	userModel.NewPassword = input.Password
 	user.Save(userModel, user.QueryHelper{})
 
+	createLogUser(context, userModel, constants.LogUserAdminUserProcess)
 	efwginhelpers.ResponseSuccess(context, nil)
 }
 
@@ -180,6 +187,7 @@ func AdminUsersActionDisableTotp(context *gin.Context) {
 		userModel.TotpToken = ""
 		userModel.IsTwofaEnabled = false
 		user.Save(userModel, user.QueryHelper{})
+		createLogUser(context, userModel, constants.LogUserAdminUserDisableTotp)
 	}
 
 	efwginhelpers.ResponseSuccess(context, nil)
