@@ -8,3 +8,6 @@ const (
 )
 
 // Log User
+const (
+	LogUserProfileUpdate types.LogUserAction = "ProfileUpdate"
+)

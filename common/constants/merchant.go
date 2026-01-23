@@ -1,4 +1,6 @@
 package constants
 
-var AdminIds = []int64{1, 2, 3}
+import "efw/components/entity"
+
+var AdminIds = []entity.UserId{1, 2, 3}
 var AdminUsernames = []string{"vioriel@developer.com", "tv@owner.com", "og@owner.com"}

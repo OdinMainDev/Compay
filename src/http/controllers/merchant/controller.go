@@ -1,15 +1,64 @@
 package merchant
 
-import "efw/components/entity"
+import (
+	"compay/common/constants"
+	"compay/common/types"
+	"compay/src/models/logauth"
+	"compay/src/models/loguser"
+	"compay/src/models/notification"
+	"compay/src/models/user"
+	"efw/components/entity"
+	"efw/core/efwgin"
+	"efw/core/efwgin/casts"
+	"efw/utils"
 
-type requestWithId struct {
-	Id int64 `uri:"id" json:"id" binding:"required,min=0"`
-}
+	"github.com/gin-gonic/gin"
+)
 
 type requestSearch struct {
 	Search string `form:"search" query:"search" uri:"search" json:"search" binding:"omitempty,max=255"`
 }
 
 func isUserRootAdmin(userId entity.UserId) bool {
-	return userId == 1
+	return utils.InArray(userId, constants.AdminIds)
+}
+
+func createNotify(context *gin.Context, userModel *user.Model, action types.NotificationAction, text types.NotificationText) {
+	var merchantId types.MerchantId = 0
+	if userModel.Merchant != nil {
+		merchantId = userModel.Merchant.GetId()
+	}
+
+	notification.FastCreate(merchantId, action, text)
+}
+
+func createLogAuth(context *gin.Context, userModel *user.Model, action types.LogAuthAction) {
+	var merchantId types.MerchantId = 0
+	if userModel.Merchant != nil {
+		merchantId = userModel.Merchant.GetId()
+	}
+
+	logauth.FastCreate(
+		userModel.GetId(),
+		merchantId,
+		action,
+		casts.GetRequestUri(context),
+		efwgin.ConstructClientData(context),
+	)
+}
+
+func createLogUser(context *gin.Context, userModel *user.Model, action types.LogUserAction) {
+	var merchantId types.MerchantId = 0
+	if userModel.Merchant != nil {
+		merchantId = userModel.Merchant.GetId()
+	}
+
+	loguser.FastCreate(
+		userModel.GetId(),
+		merchantId,
+		action,
+		casts.GetRequestUri(context),
+		casts.GetRequestBodyString(context),
+		efwgin.ConstructClientData(context),
+	)
 }
