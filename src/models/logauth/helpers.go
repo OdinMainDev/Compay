@@ -18,6 +18,7 @@ func FastCreate(
 	model.Action = action
 	model.Url = url
 	model.Ip = clientData.Ip
+	model.FingerPrint = clientData.Fingerprint
 	model.UserAgent = clientData.UserAgent
 	model.ClientData = clientData
 

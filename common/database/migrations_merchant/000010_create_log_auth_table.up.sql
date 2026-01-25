@@ -5,6 +5,7 @@ CREATE TABLE "log_auth" (
     "action" varchar(255),
     "url" text,
     "ip" varchar(255),
+    "fingerprint" varchar(255),
     "user_agent" varchar(255),
     "client_data" jsonb,
     "created_at" int,
