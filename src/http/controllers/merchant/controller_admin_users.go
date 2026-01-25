@@ -18,29 +18,29 @@ import (
 )
 
 type requestAdminUsersList struct {
-	Id         int64  `json:"id" efwdt:"id" binding:"omitempty,gt=0"`
-	MerchantId int64  `json:"merchant_id" efwdt:"merchant_id" binding:"omitempty,gt=0"`
-	Username   string `json:"username" efwdt:"username" binding:"omitempty,max=255"`
-	IsBanned   *bool  `json:"is_banned" efwdt:"is_banned" binding:"omitempty"`
+	Id         entity.UserId    `json:"id" efwdt:"id" binding:"omitempty,gt=0"`
+	MerchantId types.MerchantId `json:"merchant_id" efwdt:"merchant_id" binding:"omitempty,gt=0"`
+	Username   string           `json:"username" efwdt:"username" binding:"omitempty,max=255"`
+	IsBanned   *bool            `json:"is_banned" efwdt:"is_banned" binding:"omitempty"`
 	efwdt.WithCreatedAt
 }
 
 type requestAdminUsersCreate struct {
-	Username   string `json:"username" binding:"required,min=6,max=255"`
-	Password   string `json:"password" binding:"required,min=6,max=255"`
-	IsAdmin    bool   `json:"is_admin"`
-	MerchantId int64  `json:"merchant_id" binding:"required_if=IsAdmin false,merchantExist"`
+	Username   string           `json:"username" binding:"required,min=6,max=255"`
+	Password   string           `json:"password" binding:"required,min=6,max=255"`
+	IsAdmin    bool             `json:"is_admin"`
+	MerchantId types.MerchantId `json:"merchant_id" binding:"required_if=IsAdmin false,merchantExist"`
 }
 
 type requestAdminUsersProcess struct {
-	Id       int64  `json:"id" binding:"required,gt=0"`
-	Username string `json:"username" binding:"omitempty,min=6,max=255"`
-	Password string `json:"password" binding:"omitempty,min=6,max=255"`
-	IsBanned bool   `json:"is_banned"`
+	Id       entity.UserId `json:"id" binding:"required,gt=0"`
+	Username string        `json:"username" binding:"omitempty,min=6,max=255"`
+	Password string        `json:"password" binding:"omitempty,min=6,max=255"`
+	IsBanned bool          `json:"is_banned"`
 }
 
 type requestAdminUsersAction struct {
-	Id int64 `json:"id" binding:"required,gt=0"`
+	Id entity.UserId `json:"id" binding:"required,gt=0"`
 }
 
 func AdminUsersList(context *gin.Context) {
@@ -126,7 +126,7 @@ func AdminUsersCreate(context *gin.Context) {
 
 	userModel := &user.Model{}
 	userModel.Username = input.Username
-	userModel.MerchantId = types.MerchantId(input.MerchantId)
+	userModel.MerchantId = input.MerchantId
 	userModel.NewPassword = input.Password
 	user.Save(userModel, user.QueryHelper{})
 
@@ -140,7 +140,7 @@ func AdminUsersProcess(context *gin.Context) {
 		return
 	}
 
-	userModel := user.GetModel(user.QueryHelper{Id: entity.UserId(input.Id), DontCheckMerchantId: true})
+	userModel := user.GetModel(user.QueryHelper{Id: input.Id, DontCheckMerchantId: true})
 	if userModel == nil {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return
@@ -173,7 +173,7 @@ func AdminUsersActionDisableTotp(context *gin.Context) {
 		return
 	}
 
-	userModel := user.GetModel(user.QueryHelper{Id: entity.UserId(input.Id), DontCheckMerchantId: true})
+	userModel := user.GetModel(user.QueryHelper{Id: input.Id, DontCheckMerchantId: true})
 	if userModel == nil {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return
