@@ -3,6 +3,7 @@ package user
 import (
 	"compay/common/types"
 	"efw/components/entity"
+	"efw/components/model"
 	"efw/utils"
 
 	"gorm.io/gorm"
@@ -16,6 +17,7 @@ type QueryHelper struct {
 	WithMerchant        bool
 	NotBanned           bool
 	Search              string
+	model.HasPagination
 }
 
 func (helper QueryHelper) CacheAdditionalKeys() []int64 {

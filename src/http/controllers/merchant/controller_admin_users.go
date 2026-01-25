@@ -6,6 +6,7 @@ import (
 	"compay/common/types"
 	"compay/src/models/user"
 	"efw/components/entity"
+	"efw/components/model"
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"efw/services/efwcontroller"
@@ -95,7 +96,7 @@ func AdminUsersGet(context *gin.Context) {
 		nil,
 		func(id int64) user.QueryHelper {
 			if isUserRootAdmin(entity.UserId(id)) {
-				id = 0
+				id = -1
 			}
 			return user.QueryHelper{Id: entity.UserId(id), DontCheckMerchantId: true}
 		},
@@ -201,5 +202,11 @@ func AdminUsersSearch(context *gin.Context) {
 
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": user.GetModels(user.QueryHelper{
 		Search: input.Search,
+		HasPagination: model.HasPagination{
+			HasLimit:      true,
+			PageNumber:    1,
+			HasPagination: true,
+			ElementsCount: 20,
+		},
 	})})
 }
