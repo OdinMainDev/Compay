@@ -8,6 +8,7 @@ import (
 )
 
 type QueryHelper struct {
+	model.QueryHelper
 	Id       types.NotificationId
 	IsRead   bool
 	IsUnread bool
@@ -15,7 +16,6 @@ type QueryHelper struct {
 
 func (helper QueryHelper) CacheAdditionalKeys() []int64         { return nil }
 func (helper QueryHelper) ApplyCacheFilters(entity *Model) bool { return true }
-func (helper QueryHelper) GetPagination() *model.HasPagination  { return nil }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
 	if helper.Id != 0 {

@@ -10,6 +10,7 @@ import (
 )
 
 type QueryHelper struct {
+	model.QueryHelper
 	Id                  entity.UserId
 	DontCheckMerchantId bool
 	MerchantId          types.MerchantId
@@ -17,12 +18,10 @@ type QueryHelper struct {
 	WithMerchant        bool
 	NotBanned           bool
 	Search              string
-	model.HasPagination
 }
 
 func (helper QueryHelper) CacheAdditionalKeys() []int64         { return nil }
 func (helper QueryHelper) ApplyCacheFilters(entity *Model) bool { return true }
-func (helper QueryHelper) GetPagination() *model.HasPagination  { return &helper.HasPagination }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
 	helper.Search = utils.ToLower(helper.Search)

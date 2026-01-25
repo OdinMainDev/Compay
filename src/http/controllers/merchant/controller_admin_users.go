@@ -202,8 +202,10 @@ func AdminUsersSearch(context *gin.Context) {
 
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": user.GetModels(user.QueryHelper{
 		Search: input.Search,
-		HasPagination: model.HasPagination{
-			HasLimit: true,
+		QueryHelper: model.QueryHelper{
+			HasPagination: model.HasPagination{
+				HasLimit: true,
+			},
 		},
 	})})
 }

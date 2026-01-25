@@ -17,8 +17,10 @@ func AdminMerchantsSearch(context *gin.Context) {
 
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": merchant.GetModels(merchant.QueryHelper{
 		Search: input.Search,
-		HasPagination: model.HasPagination{
-			HasLimit: true,
+		QueryHelper: model.QueryHelper{
+			HasPagination: model.HasPagination{
+				HasLimit: true,
+			},
 		},
 	})})
 }

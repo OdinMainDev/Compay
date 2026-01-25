@@ -10,13 +10,12 @@ import (
 )
 
 type QueryHelper struct {
+	model.QueryHelper
 	Id     types.MerchantId
 	Search string
-	model.HasPagination
 }
 
-func (helper QueryHelper) CacheAdditionalKeys() []int64        { return nil }
-func (helper QueryHelper) GetPagination() *model.HasPagination { return &helper.HasPagination }
+func (helper QueryHelper) CacheAdditionalKeys() []int64 { return nil }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
 	helper.Search = utils.ToLower(helper.Search)
