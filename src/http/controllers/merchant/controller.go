@@ -16,14 +16,14 @@ import (
 )
 
 type requestSearch struct {
-	Search string `form:"search" query:"search" uri:"search" json:"search" binding:"omitempty,max=255"`
+	Search string `json:"search" binding:"omitempty,max=255"`
 }
 
 func isUserRootAdmin(userId entity.UserId) bool {
 	return utils.InArray(userId, constants.AdminIds)
 }
 
-func createNotify(context *gin.Context, userModel *user.Model, action types.NotificationAction, text types.NotificationText) {
+func createNotify(userModel *user.Model, action types.NotificationAction, text types.NotificationText) {
 	var merchantId types.MerchantId = 0
 	if userModel.Merchant != nil {
 		merchantId = userModel.Merchant.GetId()

@@ -71,7 +71,7 @@ func merchantAuthRoutes(group *gin.RouterGroup) {
 }
 
 func merchantPanelUserRoutes(group *gin.RouterGroup) {
-	group.POST("/get/me", controller.ProfileGet) // Profile Get
+	group.POST("/profile/get", controller.ProfileGet) // Profile Get
 	group.POST("/profile/process", controller.ProfileProcess)
 }
 
