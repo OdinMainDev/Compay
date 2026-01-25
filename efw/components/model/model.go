@@ -24,12 +24,5 @@ type Filter[T Model] interface {
 	CacheAdditionalKeys() []int64
 	ApplyDBFilters(gorm.ChainInterface[T]) gorm.ChainInterface[T]
 	ApplyCacheFilters(T) bool
-}
-
-// HasPagination это интегрируемая структура которая обозначает что у QueryHelper есть пагинация
-type HasPagination struct {
-	HasLimit      bool
-	HasPagination bool
-	PageNumber    int
-	ElementsCount int
+	GetPagination() *HasPagination
 }

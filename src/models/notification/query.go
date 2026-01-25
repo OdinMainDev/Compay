@@ -2,6 +2,7 @@ package notification
 
 import (
 	"compay/common/types"
+	"efw/components/model"
 
 	"gorm.io/gorm"
 )
@@ -12,9 +13,9 @@ type QueryHelper struct {
 	IsUnread bool
 }
 
-func (helper QueryHelper) CacheAdditionalKeys() []int64 {
-	return nil
-}
+func (helper QueryHelper) CacheAdditionalKeys() []int64         { return nil }
+func (helper QueryHelper) ApplyCacheFilters(entity *Model) bool { return true }
+func (helper QueryHelper) GetPagination() *model.HasPagination  { return nil }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
 	if helper.Id != 0 {
@@ -27,8 +28,4 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 		chain = chain.Where("is_read = ?", false)
 	}
 	return chain.Order("id DESC")
-}
-
-func (helper QueryHelper) ApplyCacheFilters(entity *Model) bool {
-	return true
 }

@@ -2,6 +2,7 @@ package merchant
 
 import (
 	"compay/src/models/merchant"
+	"efw/components/model"
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 
@@ -16,5 +17,8 @@ func AdminMerchantsSearch(context *gin.Context) {
 
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": merchant.GetModels(merchant.QueryHelper{
 		Search: input.Search,
+		HasPagination: model.HasPagination{
+			HasLimit: true,
+		},
 	})})
 }

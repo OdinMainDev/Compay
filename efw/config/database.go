@@ -7,3 +7,5 @@ var DbUser = "root"
 var DbPassword = "NULL"
 var DbSSLMode = "disable"
 var DbTimezone = "Europe/Moscow"
+
+var PaginationDefaultElementsCount = 10
