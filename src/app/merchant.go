@@ -40,6 +40,10 @@ func StartMerchant() {
 	adminRoutes.Use(middleware.CheckIsUserAdmin())
 	merchantAdminUsersRoutes(adminRoutes)
 	merchantAdminMerchantsRoutes(adminRoutes)
+
+	// LOGS
+	logGroup := adminRoutes.Group("/dev/logs")
+	merchantAdminLogAuthRoutes(logGroup)
 	/* --------------- ADMIN ROUTES --------------- */
 
 	/* --------------- PANEL ROUTES --------------- */
@@ -100,4 +104,11 @@ func merchantAdminMerchantsRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/search", controller.AdminMerchantsSearch)
 	// subGroup.POST("/action/disable", controller.AdminMerchantsActionDisable)
 	// subGroup.POST("/action/enable", controller.AdminMerchantsActionEnable)
+}
+
+func merchantAdminLogAuthRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/auth")
+
+	subGroup.POST("/list", controller.AdminLogAuthList)
+	subGroup.POST("/list/filters", controller.AdminLogAuthListFilters)
 }

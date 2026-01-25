@@ -15,4 +15,5 @@ const (
 
 	// TYPES WITH QUERY
 	EFWDT_FilterTypeMerchantId efwdt.FilterType = "merchant_id"
+	EFWDT_FilterTypeUserId     efwdt.FilterType = "user_id"
 )
