@@ -17,3 +17,11 @@ const (
 	LogUserAdminUserDelete      types.LogUserAction = "AdminUserDelete"
 	LogUserAdminUserDisableTotp types.LogUserAction = "AdminUserDisableTotp"
 )
+
+var LogUserActions = []types.LogUserAction{
+	LogUserProfileUpdate,
+	LogUserAdminUserCreate,
+	LogUserAdminUserProcess,
+	LogUserAdminUserDelete,
+	LogUserAdminUserDisableTotp,
+}

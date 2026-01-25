@@ -44,6 +44,7 @@ func StartMerchant() {
 	// LOGS
 	logGroup := adminRoutes.Group("/dev/logs")
 	merchantAdminLogAuthRoutes(logGroup)
+	merchantAdminLogUserRoutes(logGroup)
 	/* --------------- ADMIN ROUTES --------------- */
 
 	/* --------------- PANEL ROUTES --------------- */
@@ -111,4 +112,11 @@ func merchantAdminLogAuthRoutes(group *gin.RouterGroup) {
 
 	subGroup.POST("/list", controller.AdminLogAuthList)
 	subGroup.POST("/list/filters", controller.AdminLogAuthListFilters)
+}
+
+func merchantAdminLogUserRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/user")
+
+	subGroup.POST("/list", controller.AdminLogUserList)
+	subGroup.POST("/list/filters", controller.AdminLogUserListFilters)
 }
