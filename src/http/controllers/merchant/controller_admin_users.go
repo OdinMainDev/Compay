@@ -33,10 +33,9 @@ type requestAdminUsersCreate struct {
 }
 
 type requestAdminUsersProcess struct {
-	Id       entity.UserId `json:"id" binding:"required,gt=0"`
-	Username string        `json:"username" binding:"omitempty,min=6,max=255"`
-	Password string        `json:"password" binding:"omitempty,min=6,max=255"`
-	IsBanned bool          `json:"is_banned"`
+	Id          entity.UserId `json:"id" binding:"required,gt=0"`
+	NewUsername string        `json:"new_username" binding:"omitempty,min=6,max=255"`
+	NewPassword string        `json:"new_password" binding:"omitempty,min=6,max=255"`
 }
 
 type requestAdminUsersAction struct {
@@ -49,18 +48,21 @@ func AdminUsersList(context *gin.Context) {
 		[]string{"id", "username", "is_banned", "merchant_id", "created_at"},
 		[]efwdt.ChainFilter[user.Model]{
 			func(chain gorm.ChainInterface[user.Model]) gorm.ChainInterface[user.Model] {
-				return chain.Where("id != ?", 1)
+				return chain.Where("id NOT IN (?)", constants.AdminIds)
 			},
 		},
-		nil,
-		// efwdt.SpecialFilterMap{
-		// 	"merchant_total_profit": func(fieldName string, value any) (efwdt.SpecialFilters, bool) {
-		// 		return efwdt.SpecialFilters{
-		// 			Query: fieldName + " > ?",
-		// 			Args:  []any{value},
-		// 		}, true
-		// 	},
-		// },
+		efwdt.SpecialFilterMap{
+			"username": func(fieldName string, value any) (efwdt.SpecialFilters, bool) {
+				v, ok := value.(string)
+				if !ok {
+					return efwdt.SpecialFilters{}, false
+				}
+				return efwdt.SpecialFilters{
+					Query: fieldName + " ILIKE ?",
+					Args:  []any{"%" + v + "%"},
+				}, true
+			},
+		},
 	)
 }
 
@@ -131,7 +133,7 @@ func AdminUsersCreate(context *gin.Context) {
 	user.Save(userModel, user.QueryHelper{})
 
 	createLogUser(context, userModel, constants.LogUserAdminUserCreate)
-	efwginhelpers.ResponseSuccess(context, nil)
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": userModel})
 }
 
 func AdminUsersProcess(context *gin.Context) {
@@ -151,20 +153,20 @@ func AdminUsersProcess(context *gin.Context) {
 		return
 	}
 
-	if userModel.Username != input.Username {
-		checkUserExist := user.GetModel(user.QueryHelper{Username: input.Username, DontCheckMerchantId: true})
+	if input.NewUsername != "" && userModel.Username != input.NewUsername {
+		checkUserExist := user.GetModel(user.QueryHelper{Username: input.NewUsername, DontCheckMerchantId: true})
 		if checkUserExist != nil {
 			efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorUserUsernameIsTaken))
 			return
 		}
+		userModel.Username = input.NewUsername
 	}
 
-	userModel.Username = input.Username
-	userModel.NewPassword = input.Password
+	userModel.NewPassword = input.NewPassword
 	user.Save(userModel, user.QueryHelper{})
 
 	createLogUser(context, userModel, constants.LogUserAdminUserProcess)
-	efwginhelpers.ResponseSuccess(context, nil)
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": userModel})
 }
 
 func AdminUsersActionDisableTotp(context *gin.Context) {
