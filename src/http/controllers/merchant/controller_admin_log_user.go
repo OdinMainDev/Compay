@@ -24,7 +24,7 @@ func AdminLogUserList(context *gin.Context) {
 	efwcontroller.Datable[loguser.Model, requestAdminLogUserList](
 		context,
 		[]string{"id", "user_id", "merchant_id", "action", "url", "created_at"},
-		[]efwdt.ChainFilter[loguser.Model]{},
+		nil,
 		nil,
 	)
 }

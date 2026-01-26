@@ -27,7 +27,7 @@ func AdminLogAuthList(context *gin.Context) {
 	efwcontroller.Datable[logauth.Model, requestAdminLogAuthList](
 		context,
 		[]string{"id", "user_id", "merchant_id", "action", "url", "fingerprint", "ip", "user_agent", "created_at"},
-		[]efwdt.ChainFilter[logauth.Model]{},
+		nil,
 		nil,
 	)
 }
