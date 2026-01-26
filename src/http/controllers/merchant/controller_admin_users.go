@@ -26,7 +26,7 @@ type requestAdminUsersList struct {
 }
 
 type requestAdminUsersCreate struct {
-	Username   string           `json:"username" binding:"required,min=6,max=255"`
+	Username   string           `json:"username" binding:"required,email,min=6,max=255"`
 	Password   string           `json:"password" binding:"required,min=6,max=255"`
 	IsAdmin    bool             `json:"is_admin"`
 	MerchantId types.MerchantId `json:"merchant_id" binding:"required_if=IsAdmin false,merchantExist"`
@@ -34,7 +34,7 @@ type requestAdminUsersCreate struct {
 
 type requestAdminUsersProcess struct {
 	Id          entity.UserId `json:"id" binding:"required,gt=0"`
-	NewUsername string        `json:"new_username" binding:"omitempty,min=6,max=255"`
+	NewUsername string        `json:"new_username" binding:"omitempty,email,min=6,max=255"`
 	NewPassword string        `json:"new_password" binding:"omitempty,min=6,max=255"`
 }
 
