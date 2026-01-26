@@ -25,7 +25,7 @@ func GetClientIP(context *gin.Context) (entity.Ip, error) {
 	}
 
 	if config.AppDebug {
-		return "167.107.108.136", nil
+		return "8.8.8.8", nil
 	}
 
 	return "", ErrorNilClientIp
