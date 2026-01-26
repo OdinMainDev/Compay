@@ -12,13 +12,13 @@ func LogGinError(args ...any) {
 	LogByLoggerName("gin_error", 3, args...)
 }
 
-type EfwLogWriter struct{}
+type EfwGinLogWriter struct{}
 
-func NewEfwLogWriter() io.Writer {
-	return &EfwLogWriter{}
+func NewEfwGinLogWriter() io.Writer {
+	return &EfwGinLogWriter{}
 }
 
-func (w *EfwLogWriter) Write(p []byte) (n int, err error) {
+func (w *EfwGinLogWriter) Write(p []byte) (n int, err error) {
 	logGin(string(p))
 	return len(p), nil
 }
