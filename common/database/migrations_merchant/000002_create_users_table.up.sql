@@ -1,6 +1,7 @@
 CREATE TABLE "users" (
     "id" bigserial,
     "merchant_id" int,
+    "creator_id" bigint,
     "username" varchar(255) NOT NULL,
     "password" varchar(255) NOT NULL,
     "secret_token" varchar(255) NOT NULL,

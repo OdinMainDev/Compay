@@ -43,12 +43,19 @@ type requestAdminUsersAction struct {
 }
 
 func AdminUsersList(context *gin.Context) {
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
 	efwcontroller.Datable[user.Model, requestAdminUsersList](
 		context,
 		[]string{"id", "username", "is_banned", "merchant_id", "created_at"},
 		[]efwdt.ChainFilter[user.Model]{
 			func(chain gorm.ChainInterface[user.Model]) gorm.ChainInterface[user.Model] {
 				return chain.Where("id NOT IN (?)", constants.AdminIds)
+			},
+			func(chain gorm.ChainInterface[user.Model]) gorm.ChainInterface[user.Model] {
+				if !isUserRootAdmin(adminUserModel.GetId()) {
+					return chain.Where("creator_id = ?", adminUserModel.GetId())
+				}
+				return nil
 			},
 		},
 		efwdt.SpecialFilterMap{
@@ -77,6 +84,7 @@ func AdminUsersListFilters(context *gin.Context) {
 }
 
 func AdminUsersGet(context *gin.Context) {
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
 	efwcontroller.GetModel(
 		context,
 		user.GetModel,
@@ -85,28 +93,32 @@ func AdminUsersGet(context *gin.Context) {
 			if isUserRootAdmin(entity.UserId(id)) {
 				id = -1
 			}
-			return user.QueryHelper{Id: entity.UserId(id), DontCheckMerchantId: true}
+
+			qH := user.QueryHelper{Id: entity.UserId(id), DontCheckMerchantId: true}
+			if !isUserRootAdmin(adminUserModel.GetId()) {
+				qH.CreatorId = entity.UserId(id)
+			}
+			return qH
 		},
 	)
 }
 
 func AdminUsersDelete(context *gin.Context) {
-	userModel := context.MustGet(constants.GinUser).(*user.Model)
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
 	_, ok := efwcontroller.DeleteModel(
 		context,
 		user.GetModel,
 		user.Delete,
 		func(id int64) user.QueryHelper {
 			qH := user.QueryHelper{Id: entity.UserId(id), DontCheckMerchantId: true}
-			if !isUserRootAdmin(userModel.GetId()) {
+			if !isUserRootAdmin(adminUserModel.GetId()) {
 				qH.CreatorId = entity.UserId(id)
 			}
 			return qH
 		},
 	)
 	if ok {
-		userModel := context.MustGet(constants.GinUser).(*user.Model)
-		createLogUser(context, userModel, constants.LogUserAdminUserDelete)
+		createLogUser(context, adminUserModel, constants.LogUserAdminUserDelete)
 	}
 }
 
@@ -131,10 +143,13 @@ func AdminUsersCreate(context *gin.Context) {
 		return
 	}
 
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+
 	userModel := &user.Model{}
 	userModel.Username = input.Username
 	userModel.MerchantId = input.MerchantId
 	userModel.NewPassword = input.Password
+	userModel.CreatorId = adminUserModel.GetId()
 	user.Save(userModel, user.QueryHelper{})
 
 	createLogUser(context, userModel, constants.LogUserAdminUserCreate)
@@ -153,7 +168,8 @@ func AdminUsersProcess(context *gin.Context) {
 		return
 	}
 
-	if isUserRootAdmin(userModel.GetId()) {
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if isUserRootAdmin(userModel.GetId()) || !isAdminCanUpdateUser(adminUserModel, userModel) {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return
 	}

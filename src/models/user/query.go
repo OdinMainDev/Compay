@@ -12,6 +12,7 @@ import (
 type QueryHelper struct {
 	model.QueryHelper
 	Id                  entity.UserId
+	CreatorId           entity.UserId
 	DontCheckMerchantId bool
 	MerchantId          types.MerchantId
 	Username            string
@@ -28,6 +29,9 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 
 	if helper.Id != 0 {
 		chain = chain.Where("id = ?", helper.Id)
+	}
+	if helper.CreatorId != 0 {
+		chain = chain.Where("creator_id = ?", helper.CreatorId)
 	}
 	if !helper.DontCheckMerchantId {
 		chain = chain.Where("merchant_id = ?", helper.MerchantId)

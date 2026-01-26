@@ -23,6 +23,13 @@ func isUserRootAdmin(userId entity.UserId) bool {
 	return utils.InArray(userId, constants.AdminIds)
 }
 
+func isAdminCanUpdateUser(adminUserModel, userModel *user.Model) bool {
+	if isUserRootAdmin(adminUserModel.GetId()) {
+		return true
+	}
+	return adminUserModel.GetId() == userModel.CreatorId
+}
+
 func createNotify(userModel *user.Model, action types.NotificationAction, text types.NotificationText) {
 	var merchantId types.MerchantId = 0
 	if userModel.Merchant != nil {
