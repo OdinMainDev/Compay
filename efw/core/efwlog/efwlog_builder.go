@@ -90,5 +90,4 @@ func (that *EfwLog) SaveLogger() {
 	}
 
 	allLoggers = append(allLoggers, that)
-	return
 }

@@ -5,22 +5,22 @@ import (
 )
 
 func Panic(args ...any) {
-	LogByLoggerName("panic", args...)
+	LogByLoggerName("panic", 1, args...)
 	log.Panic(args...)
 }
 
 func Log(args ...any) {
-	LogByLoggerName("info", args...)
+	LogByLoggerName("info", 1, args...)
 }
 
 func LogError(args ...any) {
-	LogByLoggerName("error", args...)
+	LogByLoggerName("error", 1, args...)
 }
 
 func LogWarning(args ...any) {
-	LogByLoggerName("warning", args...)
+	LogByLoggerName("warning", 1, args...)
 }
 
 func LogDebug(args ...any) {
-	LogByLoggerName("debug", args...)
+	LogByLoggerName("debug", 1, args...)
 }

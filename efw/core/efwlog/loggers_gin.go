@@ -5,20 +5,20 @@ import (
 )
 
 func logGin(args ...any) {
-	LogByLoggerName("gin", args...)
+	LogByLoggerName("gin", 0, args...)
 }
 
 func LogGinError(args ...any) {
-	LogByLoggerName("gin_error", args...)
+	LogByLoggerName("gin_error", 3, args...)
 }
 
-type EsGinWriter struct{}
+type EfwLogWriter struct{}
 
-func NewEsGinWriter() io.Writer {
-	return &EsGinWriter{}
+func NewEfwLogWriter() io.Writer {
+	return &EfwLogWriter{}
 }
 
-func (w *EsGinWriter) Write(p []byte) (n int, err error) {
-	logGin(string(p)) // Используйте ваш метод Log или другой, как вам нужно
+func (w *EfwLogWriter) Write(p []byte) (n int, err error) {
+	logGin(string(p))
 	return len(p), nil
 }

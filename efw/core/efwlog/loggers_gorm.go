@@ -9,15 +9,15 @@ import (
 )
 
 func logGorm(args ...any) {
-	LogByLoggerName("gorm", args...)
+	LogByLoggerName("gorm", 0, args...)
 }
 
 func logGormError(args ...any) {
-	LogByLoggerName("gorm_error", args...)
+	LogByLoggerName("gorm_error", 0, args...)
 }
 
 func logGormDebug(args ...any) {
-	LogByLoggerName("gorm_debug", args...)
+	LogByLoggerName("gorm_debug", 0, args...)
 }
 
 type EsGormLogger struct{}
@@ -43,14 +43,12 @@ func (gl *EsGormLogger) Trace(_ context.Context, start time.Time, fc func() (str
 	sql, rows := fc()
 	if err != nil {
 		message := fmt.Sprintf(
-			"######################## HAS ERROR ########################\n"+
-				"Rows affected: %d\n"+
+			"Rows affected: %d\n"+
 				"Duration: %d\n"+
 				"Error: %s\n"+
-				"%s\n"+
-				"######################## END ERROR ########################\n",
+				"%s\n",
 			rows, elapsed, err.Error(), sql)
-		logGormDebug(message)
+		logGormError(message)
 	} else {
 		message := fmt.Sprintf(
 			"Rows affected: %d\n"+

@@ -35,7 +35,7 @@ var ErrorLoggerNotExists = func(loggerName string) error {
 	return fmt.Errorf("%s %s", "[EFW: LOGGER] NotExists:", loggerName)
 }
 
-func LogByLoggerName(name string, args ...any) error {
+func LogByLoggerName(name string, callerSkip int, args ...any) error {
 	for _, suffix := range []string{"", ".log"} {
 		var handler *EfwLog
 		var exists bool
@@ -53,8 +53,8 @@ func LogByLoggerName(name string, args ...any) error {
 			continue
 		}
 		info := ""
-		if !handler.DisableCallerInfo {
-			info = " " + getCallerInfo(0)
+		if !handler.DisableCallerInfo || callerSkip == 0 {
+			info = " " + getCallerInfo(callerSkip)
 		}
 		message := fmt.Sprint(args...)
 		handler.Logger.Info(logFormatter(info, message))
