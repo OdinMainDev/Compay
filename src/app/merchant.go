@@ -34,12 +34,14 @@ func StartMerchant() {
 
 	merchantPanelProfileRoutes(panelRoutes)
 	merchantPanelNotificationsRoutes(panelRoutes)
+	merchantPanelApiRoutes(panelRoutes)
 
 	/* +++++++++++++++ ADMIN ROUTES +++++++++++++++ */
 	adminRoutes := panelRoutes.Group("/admin")
 	adminRoutes.Use(middleware.CheckIsUserAdmin())
 	merchantAdminUsersRoutes(adminRoutes)
 	merchantAdminMerchantsRoutes(adminRoutes)
+	merchantAdminCurrenciesRoutes(adminRoutes)
 
 	// LOGS
 	logGroup := adminRoutes.Group("/dev/logs")
@@ -94,6 +96,12 @@ func merchantPanelNotificationsRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/read/all", controller.NotificationsReadAll)
 }
 
+func merchantPanelApiRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/get/data")
+
+	subGroup.POST("/currency/networks", controller.PanelApiCurrencyNetworks)
+}
+
 // ADMIN ROUTES
 
 func merchantAdminUsersRoutes(group *gin.RouterGroup) {
@@ -121,6 +129,18 @@ func merchantAdminMerchantsRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/search", controller.AdminMerchantsSearch)
 	// subGroup.POST("/action/disable", controller.AdminMerchantsActionDisable)
 	// subGroup.POST("/action/enable", controller.AdminMerchantsActionEnable)
+}
+
+func merchantAdminCurrenciesRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/dev/currencies")
+
+	subGroup.POST("/list", controller.AdminCurrencyList)
+	subGroup.POST("/list/filters", controller.AdminCurrencyListFilters)
+	subGroup.POST("/get/:id", controller.AdminCurrencyGet)
+	subGroup.POST("/process", controller.AdminCurrencyProcess)
+	// subGroup.POST("/delete", controller.AdminCurrencyDelete)
+	// subGroup.POST("/search", controller.AdminCurrencySearch)
+	// subGroup.POST("/action/import", controller.AdminCurrencyActionImport)
 }
 
 func merchantAdminLogAuthRoutes(group *gin.RouterGroup) {
