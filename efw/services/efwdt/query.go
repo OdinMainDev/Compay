@@ -3,9 +3,24 @@ package efwdt
 import (
 	"context"
 	"efw"
-	"efw/core/efwlog"
+	"fmt"
 	"sync"
 )
+
+var ErrorQueryResponse = func(queryErr, recordsFilteredErr, recordsTotalErr error) error {
+	var err1, err2, err3 string
+	if queryErr != nil {
+		err1 = fmt.Sprintf("%s %s", "QueryError:", queryErr.Error())
+	}
+	if recordsFilteredErr != nil {
+		err2 = fmt.Sprintf("%s %s", "RecordsFilteredError:", recordsFilteredErr.Error())
+	}
+	if recordsTotalErr != nil {
+		err3 = fmt.Sprintf("%s %s", "RecordsTotalErr:", recordsTotalErr.Error())
+	}
+
+	return fmt.Errorf("%s %s %s %s", "[EFW: DATATABLE] QueryResponseError:", err1, err2, err3)
+}
 
 func GetQueryResponse[TModel, TRequest any](
 	input Request[TRequest],
@@ -42,20 +57,8 @@ func GetQueryResponse[TModel, TRequest any](
 
 	wg.Wait()
 
-	// тут нужно будет переделать сохранение ошибок, чтобы выглядело лучше
-	if queryErr != nil {
-		efwlog.LogError(queryErr)
-		return nil, 0, 0, 0, queryErr
-	}
-
-	if recordsFilteredErr != nil {
-		efwlog.LogError(recordsFilteredErr)
-		return nil, 0, 0, 0, recordsFilteredErr
-	}
-
-	if recordsTotalErr != nil {
-		efwlog.LogError(recordsTotalErr)
-		return nil, 0, 0, 0, recordsTotalErr
+	if queryErr != nil || recordsFilteredErr != nil || recordsTotalErr != nil {
+		return nil, 0, 0, 0, ErrorQueryResponse(queryErr, recordsFilteredErr, recordsTotalErr)
 	}
 
 	recordsCount := int64(calcRecordsCount(result))

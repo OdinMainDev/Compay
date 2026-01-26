@@ -3,6 +3,7 @@ package efwcontroller
 import (
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
+	"efw/core/efwlog"
 	"efw/services/efwdt"
 
 	"github.com/gin-gonic/gin"
@@ -26,6 +27,7 @@ func Datable[TModel, TRequest any](
 
 	data, recordsCount, recordsFiltered, recordsTotal, err := efwdt.GetQueryResponse(input, additionalFilters, specialFilters)
 	if err != nil {
+		efwlog.LogError(err)
 		efwginhelpers.ResponseError(context, err)
 		return
 	}
