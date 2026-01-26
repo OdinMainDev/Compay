@@ -20,7 +20,6 @@ func StartMerchant() {
 	router := efwgin.CreateRouter(efwgin.RouterOptions{})
 
 	apiRoutes := router.Group("/api")
-	// apiRoutes.Use(middleware.SaveRequestBodyToContext())
 	apiRoutes.Use(efwmiddleware.CheckClientIp())
 
 	/* +++++++++++++++ AUTH ROUTES +++++++++++++++ */
@@ -34,6 +33,7 @@ func StartMerchant() {
 	panelRoutes.Use(efwmiddleware.CheckAuth(), middleware.CheckUser(), middleware.CheckAuthTotp())
 
 	merchantPanelProfileRoutes(panelRoutes)
+	merchantPanelNotificationsRoutes(panelRoutes)
 
 	/* +++++++++++++++ ADMIN ROUTES +++++++++++++++ */
 	adminRoutes := panelRoutes.Group("/admin")
@@ -50,8 +50,8 @@ func StartMerchant() {
 	/* --------------- PANEL ROUTES --------------- */
 
 	/* +++++++++++++++ MERCHANT ROUTES +++++++++++++++ */
-	// merchantRoutes := apiRoutes.Group("/merchant")
-	// merchantRoutes.Use(efwmiddleware.CheckAuth(), middleware.CheckUser(), middleware.CheckAuthTotp(), middleware.CheckMerchant())
+	// merchantRoutes := panelRoutes.Group("/merchant")
+	// merchantRoutes.Use(middleware.CheckMerchant())
 
 	/* --------------- MERCHANT ROUTES --------------- */
 
@@ -75,10 +75,26 @@ func merchantAuthRoutes(group *gin.RouterGroup) {
 	// group.POST("/totp", efwmiddleware.RateLimit(5), efwmiddleware.CheckAuth(true), controller.AuthTotp)
 }
 
+// PANEL ROUTES
+
 func merchantPanelProfileRoutes(group *gin.RouterGroup) {
-	group.POST("/profile/get", controller.ProfileGet) // Profile Get
-	group.POST("/profile/process", controller.ProfileProcess)
+	subGroup := group.Group("/profile")
+
+	subGroup.POST("/get", controller.ProfileGet)
+	subGroup.POST("/process", controller.ProfileProcess)
 }
+
+func merchantPanelNotificationsRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/notifications")
+
+	subGroup.POST("/list", controller.NotificationsList)
+	subGroup.POST("/list/filters", controller.NotificationsListFilters)
+	subGroup.POST("/get/unread", controller.NotificationsGetUnread)
+	subGroup.POST("/read/:id", controller.NotificationsRead)
+	subGroup.POST("/read/all", controller.NotificationsReadAll)
+}
+
+// ADMIN ROUTES
 
 func merchantAdminUsersRoutes(group *gin.RouterGroup) {
 	subGroup := group.Group("/dev/users")
@@ -120,3 +136,5 @@ func merchantAdminLogUserRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/list", controller.AdminLogUserList)
 	subGroup.POST("/list/filters", controller.AdminLogUserListFilters)
 }
+
+// MERCHANT ROUTES

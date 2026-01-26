@@ -1,6 +1,11 @@
 package notification
 
-import "compay/common/types"
+import (
+	"compay/common/types"
+	"compay/src/entities/notification"
+	"context"
+	"efw"
+)
 
 func FastCreate(merchantId types.MerchantId, action types.NotificationAction, text types.NotificationText) {
 	model := &Model{}
@@ -10,4 +15,13 @@ func FastCreate(merchantId types.MerchantId, action types.NotificationAction, te
 	model.Text = text
 
 	Save(model, QueryHelper{})
+}
+
+func ReadAll(merchantId types.MerchantId) int {
+	res, _ := efw.DBTransaction[any]().
+		Where("merchant_id", merchantId).
+		Where("is_read", false).
+		Updates(context.Background(), Model{Entity: notification.Entity{IsRead: true}})
+
+	return res
 }

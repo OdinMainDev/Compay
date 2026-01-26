@@ -16,6 +16,8 @@ const (
 	LogUserAdminUserProcess     types.LogUserAction = "AdminUserProcess"
 	LogUserAdminUserDelete      types.LogUserAction = "AdminUserDelete"
 	LogUserAdminUserDisableTotp types.LogUserAction = "AdminUserDisableTotp"
+	LogUserNotifyRead           types.LogUserAction = "NotifyRead"
+	LogUserNotifyReadAll        types.LogUserAction = "NotifyReadAll"
 )
 
 var LogUserActions = []types.LogUserAction{
@@ -24,4 +26,5 @@ var LogUserActions = []types.LogUserAction{
 	LogUserAdminUserProcess,
 	LogUserAdminUserDelete,
 	LogUserAdminUserDisableTotp,
+	LogUserNotifyRead,
 }
