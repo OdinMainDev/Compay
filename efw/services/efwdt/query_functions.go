@@ -10,7 +10,7 @@ import (
 
 func applyAdditionalFilters[T any](chain gorm.ChainInterface[T], filters []ChainFilter[T]) gorm.ChainInterface[T] {
 	for _, filter := range filters {
-		if filter == nil {
+		if filter == nil || filter(chain) == nil {
 			continue
 		}
 		chain = filter(chain)
