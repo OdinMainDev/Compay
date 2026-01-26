@@ -19,7 +19,7 @@ import (
 
 type requestAdminUsersList struct {
 	Id         entity.UserId    `json:"id" efwdt:"id" binding:"omitempty,gt=0"`
-	MerchantId types.MerchantId `json:"merchant_id" efwdt:"merchant_id" binding:"omitempty,gt=0"`
+	MerchantId types.MerchantId `json:"merchant_id" efwdt:"merchant_id" binding:"omitempty,merchantExist"`
 	Username   string           `json:"username" efwdt:"username" binding:"omitempty,max=255"`
 	IsBanned   *bool            `json:"is_banned" efwdt:"is_banned" binding:"omitempty"`
 	efwdt.WithCreatedAt
@@ -76,21 +76,6 @@ func AdminUsersListFilters(context *gin.Context) {
 	})
 }
 
-func AdminUsersDelete(context *gin.Context) {
-	_, ok := efwcontroller.DeleteModel(
-		context,
-		user.GetModel,
-		user.Delete,
-		func(id int64) user.QueryHelper {
-			return user.QueryHelper{Id: entity.UserId(id), DontCheckMerchantId: true}
-		},
-	)
-	if ok {
-		userModel := context.MustGet(constants.GinUser).(*user.Model)
-		createLogUser(context, userModel, constants.LogUserAdminUserDelete)
-	}
-}
-
 func AdminUsersGet(context *gin.Context) {
 	efwcontroller.GetModel(
 		context,
@@ -103,6 +88,26 @@ func AdminUsersGet(context *gin.Context) {
 			return user.QueryHelper{Id: entity.UserId(id), DontCheckMerchantId: true}
 		},
 	)
+}
+
+func AdminUsersDelete(context *gin.Context) {
+	userModel := context.MustGet(constants.GinUser).(*user.Model)
+	_, ok := efwcontroller.DeleteModel(
+		context,
+		user.GetModel,
+		user.Delete,
+		func(id int64) user.QueryHelper {
+			qH := user.QueryHelper{Id: entity.UserId(id), DontCheckMerchantId: true}
+			if !isUserRootAdmin(userModel.GetId()) {
+				qH.CreatorId = entity.UserId(id)
+			}
+			return qH
+		},
+	)
+	if ok {
+		userModel := context.MustGet(constants.GinUser).(*user.Model)
+		createLogUser(context, userModel, constants.LogUserAdminUserDelete)
+	}
 }
 
 func AdminUsersCreate(context *gin.Context) {

@@ -13,9 +13,9 @@ import (
 
 type requestAdminLogUserList struct {
 	Id         types.LogUserId     `json:"id" efwdt:"id" binding:"omitempty,gt=0"`
-	MerchantId types.MerchantId    `json:"merchant_id" efwdt:"merchant_id" binding:"omitempty,gt=0"`
-	UserId     entity.UserId       `json:"user_id" efwdt:"user_id" binding:"omitempty,gt=0"`
-	Action     types.LogUserAction `json:"action" efwdt:"action" binding:"omitempty,gt=0"`
+	MerchantId types.MerchantId    `json:"merchant_id" efwdt:"merchant_id" binding:"omitempty,merchantExist"`
+	UserId     entity.UserId       `json:"user_id" efwdt:"user_id" binding:"omitempty,userExist"`
+	Action     types.LogUserAction `json:"action" efwdt:"action" binding:"omitempty,logUserActionExist"`
 	Url        entity.Url          `json:"url" efwdt:"url" binding:"omitempty,gt=0"`
 	efwdt.WithCreatedAt
 }
