@@ -10,7 +10,8 @@ type Entity struct {
 	entity.BaseEntity[types.MerchantId] `gorm:"embedded"`
 	Name                                string        `json:"name" gorm:"column:name"`
 	Token                               string        `json:"token" gorm:"column:token"`
-	AdminId                             entity.UserId `json:"user_id" gorm:"column:token"`
+	CreatorId                           entity.UserId `json:"creator_id" gorm:"column:creator_id"`
+	AdminId                             entity.UserId `json:"admin_id" gorm:"column:admin_id"`
 	IsEnabled                           bool          `json:"is_enabled" gorm:"column:is_enabled"`
 	Settings                            Settings      `json:"settings" gorm:"column:settings"`
 }
