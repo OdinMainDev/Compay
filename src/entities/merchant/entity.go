@@ -8,10 +8,11 @@ import (
 
 type Entity struct {
 	entity.BaseEntity[types.MerchantId] `gorm:"embedded"`
-	Name                                string   `json:"name" gorm:"column:name"`
-	Token                               string   `json:"token" gorm:"column:token"`
-	IsEnabled                           bool     `json:"is_enabled" gorm:"column:is_enabled"`
-	Settings                            Settings `json:"settings" gorm:"column:settings"`
+	Name                                string        `json:"name" gorm:"column:name"`
+	Token                               string        `json:"token" gorm:"column:token"`
+	AdminId                             entity.UserId `json:"user_id" gorm:"column:token"`
+	IsEnabled                           bool          `json:"is_enabled" gorm:"column:is_enabled"`
+	Settings                            Settings      `json:"settings" gorm:"column:settings"`
 }
 
 type Settings struct {
