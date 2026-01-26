@@ -1,7 +1,6 @@
 package efw
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/go-playground/validator/v10"
@@ -26,8 +25,6 @@ type EfwInitMethods struct {
 var eFrame *eframework
 
 func Init(options EfwOptions, initMethods EfwInitMethods) error {
-	fmt.Println("START EFW v1.0.1")
-
 	os.Setenv("TZ", "UTC")
 
 	eFrame = &eframework{
