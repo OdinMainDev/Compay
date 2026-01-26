@@ -33,7 +33,7 @@ func StartMerchant() {
 	panelRoutes := apiRoutes.Group("/panel")
 	panelRoutes.Use(efwmiddleware.CheckAuth(), middleware.CheckUser(), middleware.CheckAuthTotp())
 
-	merchantPanelUserRoutes(panelRoutes)
+	merchantPanelProfileRoutes(panelRoutes)
 
 	/* +++++++++++++++ ADMIN ROUTES +++++++++++++++ */
 	adminRoutes := panelRoutes.Group("/admin")
@@ -75,7 +75,7 @@ func merchantAuthRoutes(group *gin.RouterGroup) {
 	// group.POST("/totp", efwmiddleware.RateLimit(5), efwmiddleware.CheckAuth(true), controller.AuthTotp)
 }
 
-func merchantPanelUserRoutes(group *gin.RouterGroup) {
+func merchantPanelProfileRoutes(group *gin.RouterGroup) {
 	group.POST("/profile/get", controller.ProfileGet) // Profile Get
 	group.POST("/profile/process", controller.ProfileProcess)
 }
