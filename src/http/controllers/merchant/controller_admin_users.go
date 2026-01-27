@@ -20,6 +20,7 @@ import (
 type requestAdminUsersList struct {
 	Id         entity.UserId    `json:"id" efwdt:"id" binding:"omitempty,gt=0"`
 	MerchantId types.MerchantId `json:"merchant_id" efwdt:"merchant_id" binding:"omitempty,merchantExist"`
+	CreatorId  entity.UserId    `json:"creator_id" efwdt:"creator_id" binding:"omitempty,userExist"`
 	Username   string           `json:"username" efwdt:"username" binding:"omitempty,max=255"`
 	IsBanned   *bool            `json:"is_banned" efwdt:"is_banned" binding:"omitempty"`
 	efwdt.WithCreatedAt
@@ -46,7 +47,7 @@ func AdminUsersList(context *gin.Context) {
 	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
 	efwcontroller.Datable[user.Model, requestAdminUsersList](
 		context,
-		[]string{"id", "username", "is_banned", "merchant_id", "created_at"},
+		[]string{"id", "username", "is_banned", "merchant_id", "creator_id", "created_at"},
 		[]efwdt.ChainFilter[user.Model]{
 			func(chain gorm.ChainInterface[user.Model]) gorm.ChainInterface[user.Model] {
 				return chain.Where("id NOT IN (?)", constants.AdminIds)
@@ -77,6 +78,7 @@ func AdminUsersListFilters(context *gin.Context) {
 	efwcontroller.DatatableFilters(context, []efwdt.Filter{
 		{Name: "id", Type: types.EFWDT_FilterTypeInteger},
 		{Name: "merchant_id", Type: types.EFWDT_FilterTypeMerchantId},
+		{Name: "creator_id", Type: types.EFWDT_FilterTypeUserId},
 		{Name: "username", Type: types.EFWDT_FilterTypeText},
 		{Name: "is_banned", Type: types.EFWDT_FilterTypeBoolean},
 		{Name: "created_at", Type: types.EFWDT_FilterTypeDate},
@@ -152,7 +154,7 @@ func AdminUsersCreate(context *gin.Context) {
 	userModel.CreatorId = adminUserModel.GetId()
 	user.Save(userModel, user.QueryHelper{})
 
-	createLogUser(context, userModel, constants.LogUserAdminUserCreate)
+	createLogUser(context, adminUserModel, constants.LogUserAdminUserCreate)
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": userModel})
 }
 
@@ -186,7 +188,7 @@ func AdminUsersProcess(context *gin.Context) {
 	userModel.NewPassword = input.NewPassword
 	user.Save(userModel, user.QueryHelper{})
 
-	createLogUser(context, userModel, constants.LogUserAdminUserProcess)
+	createLogUser(context, adminUserModel, constants.LogUserAdminUserProcess)
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": userModel})
 }
 
@@ -202,7 +204,8 @@ func AdminUsersActionDisableTotp(context *gin.Context) {
 		return
 	}
 
-	if isUserRootAdmin(userModel.GetId()) {
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if isUserRootAdmin(userModel.GetId()) || !isAdminCanUpdateUser(adminUserModel, userModel) {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return
 	}
@@ -211,7 +214,7 @@ func AdminUsersActionDisableTotp(context *gin.Context) {
 		userModel.TotpToken = ""
 		userModel.IsTwofaEnabled = false
 		user.Save(userModel, user.QueryHelper{})
-		createLogUser(context, userModel, constants.LogUserAdminUserDisableTotp)
+		createLogUser(context, adminUserModel, constants.LogUserAdminUserDisableTotp)
 	}
 
 	efwginhelpers.ResponseSuccess(context, nil)
