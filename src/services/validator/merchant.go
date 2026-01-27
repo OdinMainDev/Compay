@@ -9,9 +9,9 @@ import (
 
 func validateMerchantExist() (string, validator.Func) {
 	var fn validator.Func = func(fl validator.FieldLevel) bool {
-		data, ok := fl.Field().Interface().(int64)
+		data, ok := fl.Field().Interface().(types.MerchantId)
 		if ok {
-			return merchant.GetModel(merchant.QueryHelper{Id: types.MerchantId(data)}) != nil
+			return merchant.GetModel(merchant.QueryHelper{Id: data}) != nil
 		}
 		return false
 	}
