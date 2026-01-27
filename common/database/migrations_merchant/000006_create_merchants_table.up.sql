@@ -3,7 +3,7 @@ CREATE TABLE "merchants" (
     "name" varchar(255),
     "token" varchar(255),
     "creator_id" bigint,
-    "admin_id" bigint,
+    "owner_id" bigint,
     "is_enabled" boolean,
     "settings" jsonb,
     "created_at" int,

@@ -120,12 +120,11 @@ func merchantAdminUsersRoutes(group *gin.RouterGroup) {
 func merchantAdminMerchantsRoutes(group *gin.RouterGroup) {
 	subGroup := group.Group("/dev/merchants")
 
-	// subGroup.POST("/list", controller.AdminMerchantsList)
-	// subGroup.POST("/list/filters", controller.AdminMerchantsListFilters)
-	// subGroup.POST("/get/:id", controller.AdminMerchantsGet)
-	// subGroup.POST("/create", controller.AdminMerchantsCreate)
+	subGroup.POST("/list", controller.AdminMerchantsList)
+	subGroup.POST("/list/filters", controller.AdminMerchantsListFilters)
+	subGroup.POST("/get/:id", controller.AdminMerchantsGet)
+	subGroup.POST("/create", controller.AdminMerchantsCreate)
 	// subGroup.POST("/process", controller.AdminMerchantsProcess)
-	// subGroup.POST("/delete", controller.AdminMerchantsDelete)
 	subGroup.POST("/search", controller.AdminMerchantsSearch)
 	// subGroup.POST("/action/disable", controller.AdminMerchantsActionDisable)
 	// subGroup.POST("/action/enable", controller.AdminMerchantsActionEnable)
