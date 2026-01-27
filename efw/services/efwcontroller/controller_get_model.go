@@ -27,7 +27,7 @@ func GetModel[TModel any, TQueryHelper any](
 
 	if modelToDto == nil {
 		efwginhelpers.ResponseSuccess(context, gin.H{"data": model})
-		return nil, 0, false
+		return model, 0, false
 	}
 
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": modelToDto(model)})
