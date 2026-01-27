@@ -10,3 +10,7 @@ import (
 func PanelApiCurrencyNetworks(context *gin.Context) {
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": constants.CurrencyNetworks})
 }
+
+func PanelApiCountries(context *gin.Context) {
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": constants.Countries})
+}
