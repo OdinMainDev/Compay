@@ -1,11 +1,14 @@
 package startup
 
 import (
+	"compay/src/models/currency"
 	"compay/src/models/user"
+	"efw/core/efwcache"
 )
 
 func StartMerchant() {
 	registerMerchantAdminAccounts()
+	registerMerchantCacheTypes()
 }
 
 func registerMerchantAdminAccounts() {
@@ -27,4 +30,8 @@ func registerMerchantAdminAccounts() {
 	userModel.SetId(1)
 	user.Save(userModel, user.QueryHelper{})
 	user.ResetSequence()
+}
+
+func registerMerchantCacheTypes() {
+	efwcache.RegisterType(&currency.Model{})
 }
