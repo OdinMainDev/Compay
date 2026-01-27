@@ -2,10 +2,17 @@ package merchant
 
 import (
 	"compay/common/constants"
+	"compay/common/cperrors"
 	"compay/common/types"
 	"compay/src/models/currency"
+	"compay/src/models/user"
+	"compay/src/services/importdata"
+	"efw/components/model"
+	"efw/core/efwgin"
+	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"efw/services/efwcontroller"
 	"efw/services/efwdt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +25,15 @@ type requestAdminCurrencyList struct {
 	IsCoin     *types.CurrencyIsCoin    `json:"is_coin" efwdt:"is_coin" binding:"omitempty"`
 	MinorUnits types.CurrencyMinorUnits `json:"minor_units" efwdt:"minor_units" binding:"omitempty"`
 	efwdt.WithCreatedAt
+}
+
+type requestAdminCurrencyProcess struct {
+	Id         types.CurrencyId         `json:"id" binding:"omitempty,gt=0"`
+	CodeAlpha  types.CurrencyCodeAlpha  `json:"code_alpha" efwdt:"code_alpha" binding:"required,min=1"`
+	Title      string                   `json:"title" efwdt:"title" binding:"required,min=1"`
+	Network    types.CurrencyNetwork    `json:"network" efwdt:"network" binding:"required,currencyNetworkExist"`
+	IsCoin     types.CurrencyIsCoin     `json:"is_coin" efwdt:"is_coin" binding:"omitempty"`
+	MinorUnits types.CurrencyMinorUnits `json:"minor_units" efwdt:"minor_units" binding:"omitempty"`
 }
 
 func AdminCurrencyList(context *gin.Context) {
@@ -73,13 +89,93 @@ func AdminCurrencyGet(context *gin.Context) {
 	)
 }
 
-func AdminCurrencyProcess(context *gin.Context) {
-	efwcontroller.GetModel(
+func AdminCurrencyDelete(context *gin.Context) {
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if !isUserRootAdmin(adminUserModel.GetId()) {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+	_, ok := efwcontroller.DeleteModel(
 		context,
 		currency.GetModel,
-		nil,
+		currency.Delete,
 		func(id int64) currency.QueryHelper {
 			return currency.QueryHelper{Id: types.CurrencyId(id)}
 		},
 	)
+	if ok {
+		createLogUser(context, adminUserModel, constants.LogUserAdminCurrencyDelete)
+	}
+}
+
+func AdminCurrencyProcess(context *gin.Context) {
+	var input requestAdminCurrencyProcess
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if !isUserRootAdmin(adminUserModel.GetId()) {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	currencyModel := &currency.Model{}
+	if input.Id != 0 {
+		currencyModel = currency.GetModel(currency.QueryHelper{
+			Id: input.Id,
+		})
+		if currencyModel == nil {
+			efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+			return
+		}
+	}
+
+	if currencyModel.CodeAlpha == "" || currencyModel.CodeAlpha != input.CodeAlpha {
+		checkCurrencyExist := currency.GetModel(currency.QueryHelper{
+			CodeAlpha: input.CodeAlpha,
+		})
+		if checkCurrencyExist != nil {
+			efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorCurrencyCodeAlphaIsTaken))
+			return
+		}
+	}
+
+	currencyModel.CodeAlpha = input.CodeAlpha
+	currencyModel.Title = input.Title
+	currencyModel.Network = input.Network
+	currencyModel.IsCoin = input.IsCoin
+	currencyModel.MinorUnits = input.MinorUnits
+	currency.Save(currencyModel, currency.QueryHelper{})
+
+	createLogUser(context, adminUserModel, constants.LogUserAdminCurrencyProcess)
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": currencyModel})
+}
+
+func AdminCurrencySearch(context *gin.Context) {
+	var input requestSearch
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": currency.GetModels(currency.QueryHelper{
+		Search: input.Search,
+		QueryHelper: model.QueryHelper{
+			HasPagination: model.HasPagination{
+				HasLimit: true,
+			},
+		},
+	})})
+}
+
+func AdminCurrencyActionImport(context *gin.Context) {
+	isWorking := importdata.ImportCurrencies()
+	if isWorking {
+		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorCurrencyImportIsAlreadyStarted))
+		return
+	}
+
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	createLogUser(context, adminUserModel, constants.LogUserAdminCurrencyImport)
+	efwginhelpers.ResponseSuccess(context, nil)
 }

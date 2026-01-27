@@ -21,6 +21,10 @@ const (
 	LogUserAdminMerchantCreate  types.LogUserAction = "AdminMerchantCreate"
 	LogUserAdminMerchantProcess types.LogUserAction = "AdminMerchantProcess"
 
+	LogUserAdminCurrencyProcess types.LogUserAction = "AdminCurrencyProcess"
+	LogUserAdminCurrencyDelete  types.LogUserAction = "AdminCurrencyDelete"
+	LogUserAdminCurrencyImport  types.LogUserAction = "AdminCurrencyImport"
+
 	LogUserNotifyRead    types.LogUserAction = "NotifyRead"
 	LogUserNotifyReadAll types.LogUserAction = "NotifyReadAll"
 )
