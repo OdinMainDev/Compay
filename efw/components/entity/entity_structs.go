@@ -7,11 +7,11 @@ import (
 )
 
 var ErrorStructScanFail = func(err string) error {
-	return fmt.Errorf("%s %s", "[EFW: DB] StructScanFail:", err)
+	return fmt.Errorf("%s %s", "[EFW: ENTITY] StructScanFail:", err)
 }
 
 var ErrorStructValueFail = func(err string) error {
-	return fmt.Errorf("%s %s", "[EFW: DB] StructValueFail:", err)
+	return fmt.Errorf("%s %s", "[EFW: ENTITY] StructValueFail:", err)
 }
 
 func ScanStruct[T any](data T, value any) error {

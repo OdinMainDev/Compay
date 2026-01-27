@@ -13,23 +13,23 @@ func GetModel[TModel any, TQueryHelper any](
 	getModel func(queryHelper TQueryHelper) *TModel,
 	modelToDto func(model *TModel) any,
 	constructQueryHelper func(int64) TQueryHelper,
-) (int64, bool) {
+) (*TModel, int64, bool) {
 	var input RequestWithId
 	if !efwgin.ShouldBindUri(context, &input) {
-		return 0, false
+		return nil, 0, false
 	}
 
 	model := getModel(constructQueryHelper(input.Id))
 	if model == nil {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
-		return 0, false
+		return nil, 0, false
 	}
 
 	if modelToDto == nil {
 		efwginhelpers.ResponseSuccess(context, gin.H{"data": model})
-		return 0, false
+		return nil, 0, false
 	}
 
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": modelToDto(model)})
-	return input.Id, true
+	return model, input.Id, true
 }

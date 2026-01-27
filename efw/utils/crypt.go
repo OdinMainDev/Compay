@@ -13,12 +13,12 @@ import (
 
 // Crypt Errors
 var (
-	ErrorCryptBadPadding         = fmt.Errorf("%s", "BadPadding")
-	ErrorCryptHexDecodeKeyError  = func(err error) error { return fmt.Errorf("%s: %s", "HexDecodeKeyError", err.Error()) }
-	ErrorCryptHexDecodeIvError   = func(err error) error { return fmt.Errorf("%s: %s", "HexDecodeIvError", err.Error()) }
-	ErrorCryptAesNewCipher       = func(err error) error { return fmt.Errorf("%s: %s", "AesNewCipher", err.Error()) }
-	ErrorCryptBase64DecodeString = func(err error) error { return fmt.Errorf("%s: %s", "Base64DecodeString", err.Error()) }
-	ErrorCryptPkcs7Unpad         = func(err error) error { return fmt.Errorf("%s: %s", "Pkcs7Unpad", err.Error()) }
+	ErrorCryptBadPadding         = fmt.Errorf("%s", "[EFW: CRYPT]  BadPadding")
+	ErrorCryptHexDecodeKeyError  = func(err error) error { return fmt.Errorf("%s: %s", "[EFW: CRYPT]  HexDecodeKeyError", err.Error()) }
+	ErrorCryptHexDecodeIvError   = func(err error) error { return fmt.Errorf("%s: %s", "[EFW: CRYPT]  HexDecodeIvError", err.Error()) }
+	ErrorCryptAesNewCipher       = func(err error) error { return fmt.Errorf("%s: %s", "[EFW: CRYPT]  AesNewCipher", err.Error()) }
+	ErrorCryptBase64DecodeString = func(err error) error { return fmt.Errorf("%s: %s", "[EFW: CRYPT]  Base64DecodeString", err.Error()) }
+	ErrorCryptPkcs7Unpad         = func(err error) error { return fmt.Errorf("%s: %s", "[EFW: CRYPT]  Pkcs7Unpad", err.Error()) }
 )
 
 func EncryptString(plainText string) (string, error) {
