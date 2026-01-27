@@ -89,25 +89,6 @@ func AdminCurrencyGet(context *gin.Context) {
 	)
 }
 
-func AdminCurrencyDelete(context *gin.Context) {
-	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
-	if !isUserRootAdmin(adminUserModel.GetId()) {
-		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
-		return
-	}
-	_, ok := efwcontroller.DeleteModel(
-		context,
-		currency.GetModel,
-		currency.Delete,
-		func(id int64) currency.QueryHelper {
-			return currency.QueryHelper{Id: types.CurrencyId(id)}
-		},
-	)
-	if ok {
-		createLogUser(context, adminUserModel, constants.LogUserAdminCurrencyDelete)
-	}
-}
-
 func AdminCurrencyProcess(context *gin.Context) {
 	var input requestAdminCurrencyProcess
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {

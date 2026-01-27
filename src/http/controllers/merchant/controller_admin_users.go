@@ -105,25 +105,6 @@ func AdminUsersGet(context *gin.Context) {
 	)
 }
 
-func AdminUsersDelete(context *gin.Context) {
-	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
-	_, ok := efwcontroller.DeleteModel(
-		context,
-		user.GetModel,
-		user.Delete,
-		func(id int64) user.QueryHelper {
-			qH := user.QueryHelper{Id: entity.UserId(id), DontCheckMerchantId: true}
-			if !isUserRootAdmin(adminUserModel.GetId()) {
-				qH.CreatorId = entity.UserId(id)
-			}
-			return qH
-		},
-	)
-	if ok {
-		createLogUser(context, adminUserModel, constants.LogUserAdminUserDelete)
-	}
-}
-
 func AdminUsersCreate(context *gin.Context) {
 	var input requestAdminUsersCreate
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {

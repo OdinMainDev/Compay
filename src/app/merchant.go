@@ -113,7 +113,6 @@ func merchantAdminUsersRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/get/:id", controller.AdminUsersGet)
 	subGroup.POST("/create", controller.AdminUsersCreate)
 	subGroup.POST("/process", controller.AdminUsersProcess)
-	// subGroup.POST("/delete", controller.AdminUsersDelete)
 	subGroup.POST("/search", controller.AdminUsersSearch)
 	subGroup.POST("/action/disable-totp", controller.AdminUsersActionDisableTotp)
 	// subGroup.POST("/action/ban", controller.AdminUsersActionDisableTotp)
@@ -140,7 +139,6 @@ func merchantAdminCurrenciesRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/list/filters", controller.AdminCurrencyListFilters)
 	subGroup.POST("/get/:id", controller.AdminCurrencyGet)
 	subGroup.POST("/process", controller.AdminCurrencyProcess)
-	// subGroup.POST("/delete", controller.AdminCurrencyDelete)
 	subGroup.POST("/search", controller.AdminCurrencySearch)
 	subGroup.POST("/action/import", controller.AdminCurrencyActionImport)
 }
