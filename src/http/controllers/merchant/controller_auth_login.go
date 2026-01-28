@@ -29,7 +29,7 @@ func AuthLogin(context *gin.Context) {
 		WithMerchant:        true,
 	})
 
-	if userModel == nil || userModel.GetId() == 0 {
+	if userModel == nil || userModel.IsBanned {
 		efwginhelpers.ResponseError(context, cperrors.ErrorAuthUserNotFound)
 		return
 	}
@@ -51,7 +51,6 @@ func AuthLogin(context *gin.Context) {
 }
 
 func asyncAuthLogin(context *gin.Context, userModel *user.Model) {
-	createLogUser(context, userModel, constants.LogUserProfileUpdate)
 	createLogAuth(context, userModel, constants.LogAuthLogin)
 	createNotify(userModel, constants.NotificationActionTest, constants.NotificationTextTest("login"))
 }
