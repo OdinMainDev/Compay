@@ -10,7 +10,7 @@ var isImportCurrenciesWorking = false
 
 func ImportCurrencies() bool {
 	if isImportCurrenciesWorking {
-		return false
+		return true
 	}
 	isImportCurrenciesWorking = true
 	go func() {
@@ -36,7 +36,7 @@ func ImportCurrencies() bool {
 		isImportCurrenciesWorking = false
 	}()
 
-	return true
+	return false
 }
 
 func addBtcCurrency() *currency.Model {
