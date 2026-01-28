@@ -9,6 +9,7 @@ import (
 )
 
 var ErrorModelIsNilOnSave = fmt.Errorf("%s", "[EFW: MODEL] ModelIsNilOnSave")
+var ErrorModelIsNotCacheableModelOnUpdate = fmt.Errorf("%s", "[EFW: MODEL] ModelIsNotCacheableModelOnUpdate")
 
 func save[T Model, F Filter[T]](model T, filter F) error {
 	if isNil(model) {
@@ -28,7 +29,7 @@ func save[T Model, F Filter[T]](model T, filter F) error {
 	}
 
 	if isCacheModel(model) {
-		if err := updateCache(model, filter.CacheAdditionalKeys()...); err != nil {
+		if err := updateCache(model, filter.CacheAdditionalKeys(model)...); err != nil {
 			return err
 		}
 	}
@@ -65,7 +66,7 @@ func updateCache[T Model](model T, additionalCacheKeys ...int64) error {
 	cacheAny := any(model)
 	cacheModel, ok := cacheAny.(efwcache.CacheableModel)
 	if !ok {
-		return fmt.Errorf("%s", "[EFW: MODEL] ModelIsNotCacheableModelOnUpdate")
+		return ErrorModelIsNotCacheableModelOnUpdate
 	}
 
 	if err := efwcache.Update(cacheModel, additionalCacheKeys...); err != nil {

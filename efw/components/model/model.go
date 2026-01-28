@@ -21,7 +21,7 @@ type Model interface {
 
 // Filter это абстрактный класс который наследуется от Model. Служит для фильтрации в базе/кеш данных для получения моделей
 type Filter[T Model] interface {
-	CacheAdditionalKeys() []int64
+	CacheAdditionalKeys(T) []int64
 	ApplyDBFilters(gorm.ChainInterface[T]) gorm.ChainInterface[T]
 	ApplyCacheDBFilters(gorm.ChainInterface[T]) gorm.ChainInterface[T]
 	ApplyCacheFilters(T) bool

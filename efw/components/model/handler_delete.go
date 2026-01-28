@@ -22,7 +22,7 @@ func delete[T Model, F Filter[T]](model T, filter F) error {
 	}
 
 	if isCacheModel(model) {
-		if err := deleteFromCache(model, filter.CacheAdditionalKeys()...); err != nil {
+		if err := deleteFromCache(model, filter.CacheAdditionalKeys(model)...); err != nil {
 			return err
 		}
 	}
