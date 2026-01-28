@@ -11,7 +11,6 @@ type Model interface {
 	GetIdInt64() int64
 	GetCreatedAt() int64
 	GetUpdatedAt() int64
-	CacheArgs() []int64
 	GetSaveType() entity.SaveType
 
 	Lock()

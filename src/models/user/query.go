@@ -21,12 +21,6 @@ type QueryHelper struct {
 	Search              string
 }
 
-func (helper QueryHelper) ApplyCacheFilters(entity *Model) bool { return true }
-
-func (helper QueryHelper) ApplyCacheDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
-	return chain
-}
-
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
 	helper.Search = utils.ToLower(helper.Search)
 

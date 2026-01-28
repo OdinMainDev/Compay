@@ -5,13 +5,7 @@ import (
 	"efw/components/model"
 )
 
-func (*Model) GetSaveType() entity.SaveType {
-	return entity.SAVE_TYPE_DB_CACHE
-}
-
-func (*Model) CacheArgs() []int64 {
-	return nil
-}
+func (*Model) GetSaveType() entity.SaveType { return entity.SAVE_TYPE_DB_CACHE }
 
 var (
 	GetModel  = model.GetModel[*Model, QueryHelper]
