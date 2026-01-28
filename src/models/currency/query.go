@@ -16,7 +16,9 @@ type QueryHelper struct {
 	Search    string
 }
 
-func (helper QueryHelper) CacheAdditionalKeys() []int64 { return nil }
+func (helper QueryHelper) ApplyCacheDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
+	return chain.Order("id DESC")
+}
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
 	helper.Search = utils.ToLower(helper.Search)

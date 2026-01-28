@@ -30,28 +30,46 @@ func getModels[T Model, F Filter[T]](filter F) ([]T, error) {
 func doGetModels[T Model](filter Filter[T]) ([]T, bool, error) {
 	var m T
 	if isCacheModel(m) {
-		cached, err := efwcache.Get[T](filter.CacheAdditionalKeys()...)
-		if err != nil {
-			return nil, true, err
-		}
-		if len(cached) > 0 {
-			return cached, true, nil
-		}
+		return doGetCachedModels(filter)
+	}
+	return doGetDbModels(filter)
+}
+
+func doGetCachedModels[T Model](filter Filter[T]) ([]T, bool, error) {
+	cached, err := efwcache.Get[T](filter.CacheAdditionalKeys()...)
+	if err != nil {
+		return nil, true, err
+	}
+	if len(cached) > 0 {
+		return cached, true, nil
 	}
 
+	var m T
 	if !isDatabaseModel(m) {
 		return nil, true, nil
+	}
+
+	records, err := fetchAllFromDbForCache(filter)
+	if err != nil {
+		return nil, true, err
+	}
+
+	if err := efwcache.Set(records, filter.CacheAdditionalKeys()...); err != nil {
+		return records, true, err
+	}
+
+	return records, true, nil
+}
+
+func doGetDbModels[T Model](filter Filter[T]) ([]T, bool, error) {
+	var m T
+	if !isDatabaseModel(m) {
+		return nil, false, nil
 	}
 
 	records, err := fetchFromDb(filter)
 	if err != nil {
 		return nil, false, err
-	}
-
-	if isCacheModel(m) {
-		if err := efwcache.Set(records, filter.CacheAdditionalKeys()...); err != nil {
-			return records, false, err
-		}
 	}
 
 	return records, false, nil

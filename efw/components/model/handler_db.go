@@ -15,3 +15,11 @@ func fetchFromDb[T Model](filter Filter[T]) ([]T, error) {
 
 	return chain.Find(context.Background())
 }
+
+func fetchAllFromDbForCache[T Model](filter Filter[T]) ([]T, error) {
+	query := efw.DBTransaction[T]()
+	chain := query.Scopes()
+	chain = filter.ApplyCacheDBFilters(chain)
+
+	return chain.Find(context.Background())
+}

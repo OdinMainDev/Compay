@@ -15,8 +15,11 @@ type QueryHelper struct {
 	IsUnread   bool
 }
 
-func (helper QueryHelper) CacheAdditionalKeys() []int64         { return nil }
 func (helper QueryHelper) ApplyCacheFilters(entity *Model) bool { return true }
+
+func (helper QueryHelper) ApplyCacheDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
+	return chain
+}
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
 	chain = chain.Where("merchant_id = ?", helper.MerchantId)
