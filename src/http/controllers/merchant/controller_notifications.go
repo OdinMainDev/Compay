@@ -45,8 +45,10 @@ func NotificationsListFilters(context *gin.Context) {
 }
 
 func NotificationsGetUnread(context *gin.Context) {
+	userModel := context.MustGet(constants.GinUser).(*user.Model)
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": notification.GetModels(notification.QueryHelper{
-		IsUnread: true,
+		IsUnread:   true,
+		MerchantId: userModel.MerchantId,
 		QueryHelper: model.QueryHelper{
 			HasPagination: model.HasPagination{
 				HasLimit: true,
