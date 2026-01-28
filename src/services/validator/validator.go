@@ -12,10 +12,15 @@ func CustomValidators() []func() (string, validator.Func) {
 	resp = append(resp, validateUserExist)
 
 	// Currency
-	resp = append(resp, validateCurrencyNetworkExist)
+	resp = append(resp, validateCurrencyExist)
 
 	// LOGS
 	resp = append(resp, validateLogAuthActionExist)
 	resp = append(resp, validateLogUserActionExist)
+
+	// STATIC DATA VALIDATIONS
+	resp = append(resp, validateCountryExist)
+	resp = append(resp, validateCurrencyNetworkExist)
+	resp = append(resp, validateFeeTypeExist)
 	return resp
 }

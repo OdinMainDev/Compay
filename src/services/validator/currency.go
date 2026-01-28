@@ -1,20 +1,19 @@
 package validator
 
 import (
-	"compay/common/constants"
 	"compay/common/types"
-	"efw/utils"
+	"compay/src/models/currency"
 
 	"github.com/go-playground/validator/v10"
 )
 
-func validateCurrencyNetworkExist() (string, validator.Func) {
+func validateCurrencyExist() (string, validator.Func) {
 	var fn validator.Func = func(fl validator.FieldLevel) bool {
-		data, ok := fl.Field().Interface().(types.CurrencyNetwork)
+		data, ok := fl.Field().Interface().(types.CurrencyId)
 		if ok {
-			return utils.InArray(data, constants.CurrencyNetworks)
+			return currency.GetModel(currency.QueryHelper{Id: data}) != nil
 		}
 		return false
 	}
-	return "currencyNetworkExist", fn
+	return "currencyExist", fn
 }

@@ -15,3 +15,13 @@ var CurrencyNetworks = []types.CurrencyNetwork{
 	CurrencyNetworkSol,
 	CurrencyNetworkTrx,
 }
+
+const (
+	CurrencyCodeAlphaBtc      types.CurrencyCodeAlpha = "BTC"
+	CurrencyMinimumAmountBtc  types.Amount            = 0.0001
+	CurrencyConfirmationBtc   types.Confirmation      = 3
+	CurrencyFeeTypeBtc        types.FeeType           = FeeTypeOnlyWithdraw
+	CurrencyFeePercentTypeBtc types.FeeType           = FeeTypeOnlyWithdraw
+	CurrencyFeeBtc            types.FeeAmount         = 0.0001
+	CurrencyFeePercentBtc     types.FeePercentAmount  = 0.25
+)
