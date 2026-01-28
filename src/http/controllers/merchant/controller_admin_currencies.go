@@ -112,7 +112,7 @@ func AdminCurrencyProcess(context *gin.Context) {
 		}
 	}
 
-	if currencyModel.CodeAlpha == "" || currencyModel.CodeAlpha != input.CodeAlpha {
+	if currencyModel.CodeAlpha != input.CodeAlpha {
 		checkCurrencyExist := currency.GetModel(currency.QueryHelper{
 			CodeAlpha: input.CodeAlpha,
 		})
