@@ -43,6 +43,8 @@ func StartMerchant() {
 	merchantAdminMerchantsRoutes(adminRoutes)
 	merchantAdminCurrenciesRoutes(adminRoutes)
 
+	merchantAdminApiRoutes(adminRoutes)
+
 	// LOGS
 	logGroup := adminRoutes.Group("/dev/logs")
 	merchantAdminLogAuthRoutes(logGroup)
@@ -126,10 +128,19 @@ func merchantAdminMerchantsRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/list/filters", controller.AdminMerchantsListFilters)
 	subGroup.POST("/get/:id", controller.AdminMerchantsGet)
 	subGroup.POST("/create", controller.AdminMerchantsCreate)
-	// subGroup.POST("/process", controller.AdminMerchantsProcess)
+	subGroup.POST("/process", controller.AdminMerchantsProcess)
 	subGroup.POST("/search", controller.AdminMerchantsSearch)
 	// subGroup.POST("/action/disable", controller.AdminMerchantsActionDisable)
 	// subGroup.POST("/action/enable", controller.AdminMerchantsActionEnable)
+}
+
+func merchantAdminApiRoutes(group *gin.RouterGroup) {
+	getGroup := group.Group("/get/data")
+	actionGroup := group.Group("/action")
+
+	getGroup.POST("/fee-types", controller.AdminApiFeeTypes)
+
+	actionGroup.POST("/clear-cache", controller.AdminApiClearCache)
 }
 
 func merchantAdminCurrenciesRoutes(group *gin.RouterGroup) {
