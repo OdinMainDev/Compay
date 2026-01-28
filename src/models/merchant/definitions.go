@@ -6,7 +6,7 @@ import (
 )
 
 func (*Model) GetSaveType() entity.SaveType {
-	return entity.SAVE_TYPE_DB
+	return entity.SAVE_TYPE_DB_CACHE
 }
 
 func (*Model) CacheArgs() []int64 {

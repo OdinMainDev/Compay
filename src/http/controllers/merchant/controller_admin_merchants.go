@@ -4,6 +4,7 @@ import (
 	"compay/common/constants"
 	"compay/common/cperrors"
 	"compay/common/types"
+	merchantEntity "compay/src/entities/merchant"
 	"compay/src/models/merchant"
 	"compay/src/models/user"
 	"efw/components/entity"
@@ -12,6 +13,7 @@ import (
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"efw/services/efwcontroller"
 	"efw/services/efwdt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -31,6 +33,18 @@ type requestAdminMerchantsCreate struct {
 	Name          string `json:"name" binding:"required,min=6,max=255"`
 	AdminUsername string `json:"admin_username" binding:"required,email,min=6,max=255"`
 	AdminPassword string `json:"admin_password" binding:"required,min=6,max=255"`
+}
+
+type requestAdminMerchantsProcess struct {
+	Id                         types.MerchantId                      `json:"id" binding:"required,gt=0"`
+	Name                       string                                `json:"name" binding:"required,min=6,max=255"`
+	BlockedCountries           []types.Country                       `json:"blocked_countries" binding:"omitempty,dive,countryExist"`
+	AllowedCountries           []types.Country                       `json:"allowed_countries" binding:"omitempty,dive,countryExist"`
+	NotificationTelegramChatId int64                                 `json:"notification_telegram_chat_id" binding:"omitempty"`
+	MinimumAmounts             []merchantEntity.MinimumAmount        `json:"minimum_amounts" binding:"required,dive"`
+	MinimumConfirmations       []merchantEntity.MinimumConfirmations `json:"minimum_confirmations" binding:"required,dive"`
+	FeeAmounts                 []merchantEntity.FeeAmount            `json:"fee_amounts" binding:"required,dive"`
+	FeePercentAmounts          []merchantEntity.FeePercentAmount     `json:"fee_percent_amounts" binding:"required,dive"`
 }
 
 func AdminMerchantsList(context *gin.Context) {
@@ -115,13 +129,50 @@ func AdminMerchantsCreate(context *gin.Context) {
 	merchantModel.CreatorId = adminUserModel.GetId()
 	merchantModel.OwnerId = userModel.GetId()
 	merchantModel.IsEnabled = true
+	merchantModel.Settings = merchant.ConstructDefaultSettings()
 	merchant.Save(merchantModel, merchant.QueryHelper{})
 
 	userModel.MerchantId = merchantModel.GetId()
 	user.Save(userModel, user.QueryHelper{})
 
-	createLogUser(context, userModel, constants.LogUserAdminMerchantCreate)
-	efwginhelpers.ResponseSuccess(context, gin.H{"data": merchantModel, "token": token})
+	createLogUser(context, adminUserModel, constants.LogUserAdminMerchantCreate)
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": merchantModel})
+}
+
+func AdminMerchantsProcess(context *gin.Context) {
+	var input requestAdminMerchantsProcess
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+
+	merchantModel := merchant.GetModel(merchant.QueryHelper{Id: input.Id})
+	if merchantModel == nil {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if !isUserRootAdmin(adminUserModel.GetId()) && merchantModel.CreatorId != adminUserModel.GetId() {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	merchantModel.Name = input.Name
+	// Conditions
+	merchantModel.Settings.Conditions.AllowedCountries = input.AllowedCountries
+	merchantModel.Settings.Conditions.BlockedCountries = input.BlockedCountries
+	// Fees and sums
+	merchantModel.Settings.MinimumAmounts = input.MinimumAmounts
+	merchantModel.Settings.MinimumConfirmations = input.MinimumConfirmations
+	merchantModel.Settings.FeeAmounts = input.FeeAmounts
+	merchantModel.Settings.FeePercentAmounts = input.FeePercentAmounts
+	// Public
+	merchantModel.Settings.PublicSettings.NotificationTelegramChatId = input.NotificationTelegramChatId
+
+	merchant.Save(merchantModel, merchant.QueryHelper{})
+
+	createLogUser(context, adminUserModel, constants.LogUserAdminMerchantProcess)
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": merchantModel})
 }
 
 func AdminMerchantsSearch(context *gin.Context) {

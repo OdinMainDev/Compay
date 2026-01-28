@@ -2,6 +2,7 @@ CREATE TABLE "merchants" (
     "id" bigserial,
     "name" varchar(255),
     "token" varchar(255),
+    "secret_key" varchar(255),
     "creator_id" bigint,
     "owner_id" bigint,
     "is_enabled" boolean,
