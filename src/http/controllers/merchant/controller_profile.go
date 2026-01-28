@@ -44,7 +44,7 @@ func ProfileProcess(context *gin.Context) {
 		hasChanges = true
 	}
 
-	if input.NewUsername != "" {
+	if input.NewUsername != "" && input.NewUsername != userModel.Username {
 		checkUserExist := user.GetModel(user.QueryHelper{Username: input.NewUsername, DontCheckMerchantId: true})
 		if checkUserExist != nil {
 			efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorProfileNewUsernameIsTaken))
