@@ -30,10 +30,12 @@ func getModels[T Model, F Filter[T]](filter F) ([]T, error) {
 func doGetModels[T Model](filter Filter[T]) ([]T, bool, error) {
 	var m T
 	if isCacheModel(m) {
-		if cached, err := efwcache.Get[T](filter.CacheAdditionalKeys()...); err == nil {
-			return cached, true, nil
-		} else {
+		cached, err := efwcache.Get[T](filter.CacheAdditionalKeys()...)
+		if err != nil {
 			return nil, true, err
+		}
+		if len(cached) > 0 {
+			return cached, true, nil
 		}
 	}
 

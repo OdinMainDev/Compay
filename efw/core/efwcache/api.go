@@ -32,10 +32,6 @@ func Set[T CacheableModel](models []T, args ...int64) error {
 		return ErrorCacheNotInitialized
 	}
 
-	if len(models) > 0 {
-		RegisterType(models[0])
-	}
-
 	key := constructKey[T](args...)
 	items := make([]CacheItem, len(models))
 
@@ -59,8 +55,6 @@ func Update[T CacheableModel](model T, args ...int64) error {
 		return ErrorCacheNotInitialized
 	}
 
-	RegisterType(model)
-
 	key := constructKeyFromModel(model, args...)
 	item := CacheItem{
 		Id:   model.GetIdInt64(),
@@ -78,8 +72,18 @@ func Delete[T CacheableModel](model T, args ...int64) error {
 		return ErrorCacheNotInitialized
 	}
 
-	RegisterType(model)
-
 	key := constructKeyFromModel(model, args...)
 	return instance.delete(key, model.GetIdInt64())
+}
+
+func ClearCache() error {
+	instanceMu.RLock()
+	defer instanceMu.RUnlock()
+
+	if instance == nil {
+		return ErrorCacheNotInitialized
+	}
+
+	instance.clear()
+	return nil
 }

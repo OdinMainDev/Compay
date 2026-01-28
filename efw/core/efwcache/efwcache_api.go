@@ -73,3 +73,18 @@ func (c *EfwCache) delete(key string, itemID int64) error {
 	resp := <-respChan
 	return resp.Error
 }
+
+func (c *EfwCache) clear() error {
+	key := constructKeyFromModel(&EfwCache{})
+	shard := c.getShard(key)
+
+	respChan := make(chan CacheResponse, 1)
+	operation := CacheOperation{
+		OperationType: OperationClear,
+		Response:      respChan,
+	}
+
+	shard.operations <- operation
+	resp := <-respChan
+	return resp.Error
+}
