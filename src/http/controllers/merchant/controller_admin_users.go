@@ -98,7 +98,7 @@ func AdminUsersGet(context *gin.Context) {
 
 			qH := user.QueryHelper{Id: entity.UserId(id), DontCheckMerchantId: true}
 			if !isUserRootAdmin(adminUserModel.GetId()) {
-				qH.CreatorId = entity.UserId(id)
+				qH.CreatorId = adminUserModel.GetId()
 			}
 			return qH
 		},
@@ -207,8 +207,16 @@ func AdminUsersSearch(context *gin.Context) {
 		return
 	}
 
+	creatorId := entity.UserId(0)
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if !isUserRootAdmin(adminUserModel.GetId()) {
+		creatorId = adminUserModel.GetId()
+	}
+
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": user.GetModels(user.QueryHelper{
-		Search: input.Search,
+		Search:              input.Search,
+		CreatorId:           creatorId,
+		DontCheckMerchantId: true,
 		QueryHelper: model.QueryHelper{
 			HasPagination: model.HasPagination{
 				HasLimit: true,
