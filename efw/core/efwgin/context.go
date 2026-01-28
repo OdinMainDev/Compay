@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -75,21 +76,52 @@ func shouldBindUri(context *gin.Context, input any) bool {
 	return validationResponse(context, err)
 }
 
-func validationResponse(context *gin.Context, err error) bool {
+func validationResponse(ctx *gin.Context, err error) bool {
 	var validationErrors validator.ValidationErrors
-	if errors.As(err, &validationErrors) {
-		ret := make(map[string][]string)
-		for _, validatorErr := range validationErrors {
-			ret[validatorErr.Field()] = append(ret[validatorErr.Field()], validatorErr.Tag())
+	if !errors.As(err, &validationErrors) {
+		if err != nil {
+			efwginhelpers.ResponseError(
+				ctx,
+				ErrorBindingUndefinedError("validationResponse", err.Error()),
+			)
+			return false
 		}
-		efwginhelpers.ResponseError(context, ret)
-		return false
+		return true
 	}
 
-	if err != nil {
-		efwginhelpers.ResponseError(context, ErrorBindingUndefinedError("ShouldBind", err.Error()))
-		return false
+	ret := make(map[string][]string)
+	for _, val := range validationErrors {
+		ns := val.Namespace()
+
+		nsParts := strings.SplitN(ns, ".", 2)
+		if len(nsParts) != 2 {
+			continue
+		}
+		path := nsParts[1]
+		parts := strings.Split(path, ".")
+		key := strings.Split(parts[0], "[")[0]
+
+		index := ""
+		if strings.Contains(parts[0], "[") {
+			index = parts[0][strings.Index(parts[0], "["):]
+		}
+
+		var message string
+
+		if len(parts) == 1 {
+			message = val.Tag()
+		} else {
+			message = fmt.Sprintf(
+				"%s%s;%s",
+				parts[1],
+				index,
+				val.Tag(),
+			)
+		}
+
+		ret[key] = append(ret[key], message)
 	}
 
-	return true
+	efwginhelpers.ResponseError(ctx, ret)
+	return false
 }
