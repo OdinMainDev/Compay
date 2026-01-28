@@ -57,7 +57,7 @@ func AdminMerchantsList(context *gin.Context) {
 				if !isUserRootAdmin(adminUserModel.GetId()) {
 					return chain.Where("creator_id = ?", adminUserModel.GetId())
 				}
-				return nil
+				return chain
 			},
 		},
 		efwdt.SpecialFilterMap{
