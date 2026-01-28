@@ -79,7 +79,7 @@ func AdminMerchantsListFilters(context *gin.Context) {
 	efwcontroller.DatatableFilters(context, []efwdt.Filter{
 		{Name: "id", Type: types.EFWDT_FilterTypeInteger},
 		{Name: "creator_id", Type: types.EFWDT_FilterTypeUserId},
-		{Name: "admin_id", Type: types.EFWDT_FilterTypeUserId},
+		{Name: "owner_id", Type: types.EFWDT_FilterTypeUserId},
 		{Name: "name", Type: types.EFWDT_FilterTypeText},
 		{Name: "is_enabled", Type: types.EFWDT_FilterTypeBoolean},
 		{Name: "created_at", Type: types.EFWDT_FilterTypeDate},
@@ -95,7 +95,7 @@ func AdminMerchantsGet(context *gin.Context) {
 		func(id int64) merchant.QueryHelper {
 			qH := merchant.QueryHelper{Id: types.MerchantId(id)}
 			if !isUserRootAdmin(adminUserModel.GetId()) {
-				qH.CreatorId = entity.UserId(id)
+				qH.CreatorId = adminUserModel.GetId()
 			}
 			return qH
 		},
@@ -181,8 +181,15 @@ func AdminMerchantsSearch(context *gin.Context) {
 		return
 	}
 
+	creatorId := entity.UserId(0)
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if !isUserRootAdmin(adminUserModel.GetId()) {
+		creatorId = adminUserModel.GetId()
+	}
+
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": merchant.GetModels(merchant.QueryHelper{
-		Search: input.Search,
+		Search:    input.Search,
+		CreatorId: creatorId,
 		QueryHelper: model.QueryHelper{
 			HasPagination: model.HasPagination{
 				HasLimit: true,
