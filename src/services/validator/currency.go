@@ -9,9 +9,9 @@ import (
 
 func validateCurrencyExist() (string, validator.Func) {
 	var fn validator.Func = func(fl validator.FieldLevel) bool {
-		data, ok := fl.Field().Interface().(types.CurrencyId)
+		data, ok := fl.Field().Interface().(types.CurrencyCodeAlpha)
 		if ok {
-			return currency.GetModel(currency.QueryHelper{Id: data}) != nil
+			return currency.GetModel(currency.QueryHelper{CodeAlpha: data}) != nil
 		}
 		return false
 	}
