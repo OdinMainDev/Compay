@@ -33,8 +33,8 @@ func CheckAuthTotp() gin.HandlerFunc {
 			return
 		}
 
-		if err := efwtotp.Validate(context, userModel.Username); err != nil {
-			if errors.Is(err, efwtotp.ErrorTotpTokenExpired) {
+		if err := efwtotp.ValidateRequest(context, userModel.Username); err != nil {
+			if errors.Is(err, efwtotp.ErrorTokenExpired) {
 				efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorAuthTotpExpired))
 			} else {
 				efwginhelpers.ResponseError(context, err, http.StatusUnauthorized)
