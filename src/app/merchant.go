@@ -117,8 +117,8 @@ func merchantAdminUsersRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/process", controller.AdminUsersProcess)
 	subGroup.POST("/search", controller.AdminUsersSearch)
 	subGroup.POST("/action/disable-totp", controller.AdminUsersActionDisableTotp)
-	// subGroup.POST("/action/ban", controller.AdminUsersActionDisableTotp)
-	// subGroup.POST("/action/unban", controller.AdminUsersActionDisableTotp)
+	subGroup.POST("/action/ban", controller.AdminUsersActionBan)
+	subGroup.POST("/action/unban", controller.AdminUsersActionUnban)
 }
 
 func merchantAdminMerchantsRoutes(group *gin.RouterGroup) {

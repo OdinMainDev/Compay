@@ -17,6 +17,8 @@ const (
 	LogUserAdminUserProcess     types.LogUserAction = "AdminUserProcess"
 	LogUserAdminUserDelete      types.LogUserAction = "AdminUserDelete"
 	LogUserAdminUserDisableTotp types.LogUserAction = "AdminUserDisableTotp"
+	LogUserAdminUserBan         types.LogUserAction = "AdminUserBan"
+	LogUserAdminUserUnban       types.LogUserAction = "AdminUserUnban"
 
 	LogUserAdminMerchantCreate  types.LogUserAction = "AdminMerchantCreate"
 	LogUserAdminMerchantProcess types.LogUserAction = "AdminMerchantProcess"

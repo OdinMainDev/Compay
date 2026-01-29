@@ -173,6 +173,30 @@ func AdminUsersProcess(context *gin.Context) {
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": userModel})
 }
 
+func AdminUsersSearch(context *gin.Context) {
+	var input requestSearch
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+
+	creatorId := entity.UserId(0)
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if !isUserRootAdmin(adminUserModel.GetId()) {
+		creatorId = adminUserModel.GetId()
+	}
+
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": user.GetModels(user.QueryHelper{
+		Search:              input.Search,
+		CreatorId:           creatorId,
+		DontCheckMerchantId: true,
+		QueryHelper: model.QueryHelper{
+			HasPagination: model.HasPagination{
+				HasLimit: true,
+			},
+		},
+	})})
+}
+
 func AdminUsersActionDisableTotp(context *gin.Context) {
 	var input requestAdminUsersAction
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
@@ -198,29 +222,51 @@ func AdminUsersActionDisableTotp(context *gin.Context) {
 		createLogUser(context, adminUserModel, constants.LogUserAdminUserDisableTotp)
 	}
 
-	efwginhelpers.ResponseSuccess(context, nil)
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": userModel})
 }
 
-func AdminUsersSearch(context *gin.Context) {
-	var input requestSearch
+func AdminUsersActionBan(context *gin.Context) {
+	adminUsersActionBanOrNot(context, constants.LogUserAdminUserBan)
+}
+
+func AdminUsersActionUnban(context *gin.Context) {
+	adminUsersActionBanOrNot(context, constants.LogUserAdminUserUnban)
+}
+
+func adminUsersActionBanOrNot(context *gin.Context, action types.LogUserAction) {
+	var input requestAdminUsersAction
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
 		return
 	}
 
-	creatorId := entity.UserId(0)
-	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
-	if !isUserRootAdmin(adminUserModel.GetId()) {
-		creatorId = adminUserModel.GetId()
+	userModel := user.GetModel(user.QueryHelper{Id: input.Id, DontCheckMerchantId: true})
+	if userModel == nil {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
 	}
 
-	efwginhelpers.ResponseSuccess(context, gin.H{"data": user.GetModels(user.QueryHelper{
-		Search:              input.Search,
-		CreatorId:           creatorId,
-		DontCheckMerchantId: true,
-		QueryHelper: model.QueryHelper{
-			HasPagination: model.HasPagination{
-				HasLimit: true,
-			},
-		},
-	})})
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if isUserRootAdmin(userModel.GetId()) || !isAdminCanUpdateUser(adminUserModel, userModel) {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	actionSuccess := false
+
+	if action == constants.LogUserAdminUserBan && !userModel.IsBanned {
+		userModel.IsBanned = true
+		actionSuccess = true
+	}
+
+	if action == constants.LogUserAdminUserUnban && userModel.IsBanned {
+		userModel.IsBanned = false
+		actionSuccess = true
+	}
+
+	if actionSuccess {
+		user.Save(userModel, user.QueryHelper{})
+		createLogUser(context, adminUserModel, action)
+	}
+
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": userModel})
 }
