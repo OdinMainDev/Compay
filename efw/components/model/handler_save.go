@@ -47,7 +47,7 @@ func saveToDb[T Model](model T) error {
 		return query.Create(context.Background(), &model)
 	}
 
-	chain := query.Scopes()
+	chain := query.Scopes().Select("*")
 	rows, err := chain.Updates(context.Background(), model)
 	if err != nil {
 		return err
