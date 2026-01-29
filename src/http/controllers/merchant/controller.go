@@ -19,6 +19,10 @@ type requestSearch struct {
 	Search string `json:"search" binding:"omitempty,max=255"`
 }
 
+type requestTotp struct {
+	Code string `json:"code" binding:"required,len=6"`
+}
+
 func isUserRootAdmin(userId entity.UserId) bool {
 	return utils.InArray(userId, constants.AdminIds)
 }

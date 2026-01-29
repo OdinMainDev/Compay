@@ -86,6 +86,8 @@ func merchantPanelProfileRoutes(group *gin.RouterGroup) {
 
 	subGroup.POST("/get", controller.ProfileGet)
 	subGroup.POST("/process", controller.ProfileProcess)
+	subGroup.POST("/totp-uri", controller.ProfileTotpUri)
+	subGroup.POST("/totp-activate", controller.ProfileTotpActivate)
 }
 
 func merchantPanelNotificationsRoutes(group *gin.RouterGroup) {
