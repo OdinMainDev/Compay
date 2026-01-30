@@ -8,7 +8,7 @@ import (
 
 func DefaultCurrency(codeAlpha types.CurrencyCodeAlpha) *Model {
 	switch codeAlpha {
-	case constants.CurrencyCodeAlphaBtc:
+	case constants.BtcCodeAlpha:
 		return defaultBtc()
 	}
 
@@ -18,12 +18,14 @@ func DefaultCurrency(codeAlpha types.CurrencyCodeAlpha) *Model {
 
 func defaultBtc() *Model {
 	model := &Model{}
-	model.Currency = constants.CurrencyCodeAlphaBtc
-	model.MinAmount = constants.CurrencyMinAmountBtc
-	model.MaxAmount = constants.CurrencyMaxAmountBtc
-	model.MinConfirms = constants.CurrencyConfirmationBtc
-	model.FeeType = constants.CurrencyFeeTypeBtc
-	model.FeeFixed = constants.CurrencyFeeFixedBtc
-	model.FeePercent = constants.CurrencyFeePercentBtc
+	model.Currency = constants.BtcCodeAlpha
+	model.MinAmount = constants.BtcMinAmount
+	model.MaxAmount = constants.BtcMaxAmount
+	model.MinAmountWithdraw = constants.BtcMinAmountWithdraw
+	model.MaxAmountWithdraw = constants.BtcMaxAmountWithdraw
+	model.MinConfirms = constants.BtcConfirmation
+	model.FeeType = constants.BtcFeeType
+	model.FeeFixed = constants.BtcFeeFixed
+	model.FeePercent = constants.BtcFeePercent
 	return model
 }

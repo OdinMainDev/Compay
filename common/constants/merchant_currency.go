@@ -16,12 +16,16 @@ var CurrencyNetworks = []types.CurrencyNetwork{
 	CurrencyNetworkTrx,
 }
 
+// BTC
 const (
-	CurrencyCodeAlphaBtc    types.CurrencyCodeAlpha = "BTC"
-	CurrencyMinAmountBtc    types.Amount            = 1000 // 0.0001
-	CurrencyMaxAmountBtc    types.Amount            = 5
-	CurrencyConfirmationBtc types.Confirmation      = 3
-	CurrencyFeeTypeBtc      types.FeeType           = FeeTypeOnlyWithdraw
-	CurrencyFeeFixedBtc     types.FeeAmount         = 1000 // 0.0001
-	CurrencyFeePercentBtc   types.FeePercentAmount  = 25   // 0.25
+	BtcNodeUrl           string                  = "http://localhost:8081"
+	BtcCodeAlpha         types.CurrencyCodeAlpha = "BTC"
+	BtcMinAmount         types.Amount            = 10000 // 0.0001
+	BtcMaxAmount         types.Amount            = 0
+	BtcMinAmountWithdraw types.Amount            = 10000     // 0.0001
+	BtcMaxAmountWithdraw types.Amount            = 500000000 // 5 BTC
+	BtcConfirmation      types.Confirmation      = 3
+	BtcFeeType           types.FeeType           = FeeTypeOnlyWithdraw
+	BtcFeeFixed          types.FeeAmount         = 10000 // 0.0001
+	BtcFeePercent        types.FeePercentAmount  = 25    // 0.25
 )
