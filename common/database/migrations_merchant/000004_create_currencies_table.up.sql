@@ -1,6 +1,7 @@
 CREATE TABLE "currencies" (
     "id" bigserial,
     "code_alpha" varchar(20),
+    "is_enabled" boolean,
     "title" varchar(255),
     "network" varchar(255),
     "image" varchar(255),

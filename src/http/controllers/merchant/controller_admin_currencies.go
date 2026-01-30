@@ -28,12 +28,8 @@ type requestAdminCurrencyList struct {
 }
 
 type requestAdminCurrencyProcess struct {
-	Id         types.CurrencyId         `json:"id" binding:"omitempty,gt=0"`
-	CodeAlpha  types.CurrencyCodeAlpha  `json:"code_alpha" efwdt:"code_alpha" binding:"required,min=1"`
-	Title      string                   `json:"title" efwdt:"title" binding:"required,min=1"`
-	Network    types.CurrencyNetwork    `json:"network" efwdt:"network" binding:"required,currencyNetworkExist"`
-	IsCoin     types.CurrencyIsCoin     `json:"is_coin" efwdt:"is_coin" binding:"omitempty"`
-	MinorUnits types.CurrencyMinorUnits `json:"minor_units" efwdt:"minor_units" binding:"omitempty"`
+	Id    types.CurrencyId `json:"id" binding:"required,gt=0"`
+	Title string           `json:"title" efwdt:"title" binding:"required,min=1"`
 }
 
 func AdminCurrencyList(context *gin.Context) {
@@ -101,32 +97,15 @@ func AdminCurrencyProcess(context *gin.Context) {
 		return
 	}
 
-	currencyModel := &currency.Model{}
-	if input.Id != 0 {
-		currencyModel = currency.GetModel(currency.QueryHelper{
-			Id: input.Id,
-		})
-		if currencyModel == nil {
-			efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
-			return
-		}
+	currencyModel := currency.GetModel(currency.QueryHelper{
+		Id: input.Id,
+	})
+	if currencyModel == nil {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
 	}
 
-	if currencyModel.CodeAlpha != input.CodeAlpha {
-		checkCurrencyExist := currency.GetModel(currency.QueryHelper{
-			CodeAlpha: input.CodeAlpha,
-		})
-		if checkCurrencyExist != nil {
-			efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorCurrencyCodeAlphaIsTaken))
-			return
-		}
-	}
-
-	currencyModel.CodeAlpha = input.CodeAlpha
 	currencyModel.Title = input.Title
-	currencyModel.Network = input.Network
-	currencyModel.IsCoin = input.IsCoin
-	currencyModel.MinorUnits = input.MinorUnits
 	currency.Save(currencyModel, currency.QueryHelper{})
 
 	createLogUser(context, adminUserModel, constants.LogUserAdminCurrencyProcess)
