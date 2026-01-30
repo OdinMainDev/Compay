@@ -54,8 +54,10 @@ func StartMerchant() {
 	/* --------------- PANEL ROUTES --------------- */
 
 	/* +++++++++++++++ MERCHANT ROUTES +++++++++++++++ */
-	// merchantRoutes := panelRoutes.Group("/merchant")
-	// merchantRoutes.Use(middleware.CheckMerchant())
+	merchantRoutes := panelRoutes.Group("/merchant")
+	merchantRoutes.Use(middleware.CheckMerchant())
+
+	merchantMerchantRoutes(merchantRoutes)
 
 	/* --------------- MERCHANT ROUTES --------------- */
 
@@ -171,3 +173,12 @@ func merchantAdminLogUserRoutes(group *gin.RouterGroup) {
 }
 
 // MERCHANT ROUTES
+
+func merchantMerchantRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/merchant")
+
+	subGroup.POST("/get", controller.MerchantSettingsGet)
+	subGroup.POST("/process", controller.MerchantSettingsProcess)
+	subGroup.POST("/action/get-token", controller.MerchantSettingsActionGetToken)
+	subGroup.POST("/action/generate-secret", controller.MerchantSettingsActionGenerateSecret)
+}

@@ -5,6 +5,7 @@ import (
 	"compay/common/types"
 	"compay/src/models/logauth"
 	"compay/src/models/loguser"
+	"compay/src/models/merchant"
 	"compay/src/models/notification"
 	"compay/src/models/user"
 	"efw/components/entity"
@@ -32,6 +33,10 @@ func isAdminCanUpdateUser(adminUserModel, userModel *user.Model) bool {
 		return true
 	}
 	return adminUserModel.GetId() == userModel.CreatorId
+}
+
+func isUserCanUpdateMerchant(userModel *user.Model, merchantModel *merchant.Model) bool {
+	return userModel.GetId() == merchantModel.OwnerId
 }
 
 func createNotify(userModel *user.Model, action types.NotificationAction, text types.NotificationText) {

@@ -11,8 +11,13 @@ var LogAuthActions = []types.LogAuthAction{LogAuthLogin}
 
 // Log User
 const (
+	// COMMON
 	LogUserProfileUpdate types.LogUserAction = "ProfileUpdate"
+	LogUserNotifyRead    types.LogUserAction = "NotifyRead"
+	LogUserNotifyReadAll types.LogUserAction = "NotifyReadAll"
 
+	// ADMIN
+	// ADMIN USER
 	LogUserAdminUserCreate      types.LogUserAction = "AdminUserCreate"
 	LogUserAdminUserProcess     types.LogUserAction = "AdminUserProcess"
 	LogUserAdminUserDelete      types.LogUserAction = "AdminUserDelete"
@@ -20,15 +25,18 @@ const (
 	LogUserAdminUserBan         types.LogUserAction = "AdminUserBan"
 	LogUserAdminUserUnban       types.LogUserAction = "AdminUserUnban"
 
+	// ADMIN MERCHANT
 	LogUserAdminMerchantCreate  types.LogUserAction = "AdminMerchantCreate"
 	LogUserAdminMerchantProcess types.LogUserAction = "AdminMerchantProcess"
 
+	// ADMIN CURRENCY
 	LogUserAdminCurrencyProcess types.LogUserAction = "AdminCurrencyProcess"
-	LogUserAdminCurrencyDelete  types.LogUserAction = "AdminCurrencyDelete"
 	LogUserAdminCurrencyImport  types.LogUserAction = "AdminCurrencyImport"
 
-	LogUserNotifyRead    types.LogUserAction = "NotifyRead"
-	LogUserNotifyReadAll types.LogUserAction = "NotifyReadAll"
+	// MERCHANT
+	// MERCHANT SETTINGS
+	LogUserMerchantSettingsProcess        types.LogUserAction = "MerchantSettingsProcess"
+	LogUserMerchantSettingsGenerateSecret types.LogUserAction = "MerchantSettingsGenerateSecret"
 )
 
 var LogUserActions = []types.LogUserAction{
