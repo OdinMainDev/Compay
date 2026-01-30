@@ -9,7 +9,7 @@ import (
 type Entity struct {
 	entity.BaseEntity[types.MerchantId] `gorm:"embedded"`
 	Name                                string                 `json:"name" gorm:"column:name"`
-	Token                               entity.EncryptedString `json:"-" gorm:"column:token"`
+	Token                               string                 `json:"-" gorm:"column:token"`
 	SecretKey                           entity.EncryptedString `json:"-" gorm:"column:secret_key"`
 	CreatorId                           entity.UserId          `json:"creator_id" gorm:"column:creator_id"`
 	OwnerId                             entity.UserId          `json:"owner_id" gorm:"column:owner_id"`

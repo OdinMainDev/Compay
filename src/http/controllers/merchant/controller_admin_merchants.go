@@ -30,14 +30,14 @@ type requestAdminMerchantsList struct {
 }
 
 type requestAdminMerchantsCreate struct {
-	Name          string `json:"name" binding:"required,min=6,max=255"`
+	Name          string `json:"name" binding:"required,min=6,max=50"`
 	AdminUsername string `json:"admin_username" binding:"required,email,min=6,max=255"`
 	AdminPassword string `json:"admin_password" binding:"required,min=6,max=255"`
 }
 
 type requestAdminMerchantsProcess struct {
 	Id                         types.MerchantId                      `json:"id" binding:"required,gt=0"`
-	Name                       string                                `json:"name" binding:"required,min=6,max=255"`
+	Name                       string                                `json:"name" binding:"required,min=6,max=50"`
 	BlockedCountries           []types.Country                       `json:"blocked_countries" binding:"omitempty,dive,countryExist"`
 	AllowedCountries           []types.Country                       `json:"allowed_countries" binding:"omitempty,dive,countryExist"`
 	NotificationTelegramChatId int64                                 `json:"notification_telegram_chat_id" binding:"omitempty"`
@@ -125,7 +125,7 @@ func AdminMerchantsCreate(context *gin.Context) {
 
 	merchantModel := &merchant.Model{}
 	merchantModel.Name = input.Name
-	merchantModel.Token = entity.EncryptedString(token)
+	merchantModel.Token = token
 	merchantModel.CreatorId = adminUserModel.GetId()
 	merchantModel.OwnerId = userModel.GetId()
 	merchantModel.IsEnabled = true
