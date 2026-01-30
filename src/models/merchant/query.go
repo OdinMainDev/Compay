@@ -13,6 +13,7 @@ type QueryHelper struct {
 	model.QueryHelper
 	Id        types.MerchantId
 	CreatorId entity.UserId
+	Token     string
 	Search    string
 }
 
@@ -24,6 +25,9 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	}
 	if helper.CreatorId != 0 {
 		chain = chain.Where("creator_id = ?", helper.CreatorId)
+	}
+	if helper.Token != "" {
+		chain = chain.Where("token = ?", helper.Token)
 	}
 	if helper.Search != "" {
 		chain = chain.Where("name ILIKE ?", "%"+helper.Search+"%")

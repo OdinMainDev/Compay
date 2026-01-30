@@ -26,6 +26,11 @@ func (helper QueryHelper) ApplyCacheFilters(entity *Model) bool {
 			return false
 		}
 	}
+	if helper.Token != "" {
+		if entity.Token != helper.Token {
+			return false
+		}
+	}
 	if helper.Search != "" {
 		if !strings.Contains(entity.Name, helper.Search) {
 			return false
