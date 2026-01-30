@@ -3,7 +3,7 @@ CREATE TABLE "currencies" (
     "code_alpha" varchar(20),
     "is_enabled" boolean,
     "title" varchar(255),
-    "network" varchar(255),
+    "network" varchar(20),
     "image" varchar(255),
     "is_coin" boolean,
     "minor_units" smallint,

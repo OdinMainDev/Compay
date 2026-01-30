@@ -13,6 +13,4 @@ type Entity struct {
 	Text                                    types.NotificationText   `json:"text" gorm:"column:text"`
 }
 
-func (*Entity) TableName() string {
-	return "notifications"
-}
+func (*Entity) TableName() string { return "notifications" }

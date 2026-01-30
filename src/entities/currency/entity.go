@@ -16,6 +16,4 @@ type Entity struct {
 	MinorUnits                          types.CurrencyMinorUnits `json:"minor_units" gorm:"column:minor_units"`
 }
 
-func (*Entity) TableName() string {
-	return "currencies"
-}
+func (*Entity) TableName() string { return "currencies" }

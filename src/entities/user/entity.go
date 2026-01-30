@@ -17,6 +17,4 @@ type Entity struct {
 	IsBanned                         bool                   `json:"is_banned" gorm:"column:is_banned"`
 }
 
-func (*Entity) TableName() string {
-	return "users"
-}
+func (*Entity) TableName() string { return "users" }

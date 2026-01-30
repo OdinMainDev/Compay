@@ -2,7 +2,7 @@ CREATE TABLE "log_user" (
     "id" bigserial,
     "user_id" bigint,
     "merchant_id" int,
-    "action" varchar(255),
+    "action" varchar(20),
     "url" text,
     "request" text,
     "client_data" jsonb,

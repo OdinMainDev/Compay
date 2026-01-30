@@ -15,6 +15,4 @@ type Entity struct {
 	ClientData                         entity.ClientData   `json:"client_data" gorm:"column:client_data"`
 }
 
-func (*Entity) TableName() string {
-	return "log_user"
-}
+func (*Entity) TableName() string { return "log_user" }
