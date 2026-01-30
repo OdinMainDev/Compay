@@ -16,6 +16,9 @@ type CurrencyNetwork string
 type CurrencyIsCoin bool
 type CurrencyMinorUnits int
 
+// Payment Types
+type PaymentId int64
+
 // Log Types
 type LogUserId int64
 type LogUserAction string
