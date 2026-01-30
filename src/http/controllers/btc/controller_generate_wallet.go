@@ -30,7 +30,7 @@ func GenerateWallet(context *gin.Context) {
 
 	// Создаем адрес
 	pubKeyHash := btcutil.Hash160(publicKey.SerializeCompressed())
-	address, err := btcutil.NewAddressPubKeyHash(pubKeyHash, networkConfig)
+	address, err := btcutil.NewAddressWitnessPubKeyHash(pubKeyHash, networkConfig)
 	if err != nil {
 		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorBtcFailedCreateAddress(err.Error())))
 		return
