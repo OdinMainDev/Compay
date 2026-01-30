@@ -15,7 +15,7 @@ func (that *Processing) getRequestUrl(url requetsUrl) string {
 func (that *Processing) getRequestHost() string {
 	switch that.getCurrency().CodeAlpha {
 	case constants.BtcCodeAlpha:
-		return constants.BtcNodeUrl
+		return constants.BtcApiUrl
 	}
 
 	return ""

@@ -6,6 +6,7 @@ import "compay/common/types"
 const (
 	PaymentStatusCreated           types.PaymentStatus = "Created"
 	PaymentStatusInsufficientFunds types.PaymentStatus = "InsufficientFunds"
+	PaymentStatusFundsReceived     types.PaymentStatus = "FundsReceived"
 	PaymentStatusCompleted         types.PaymentStatus = "Completed"
 	PaymentStatusExpired           types.PaymentStatus = "Expired"
 )

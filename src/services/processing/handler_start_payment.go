@@ -1,7 +1,7 @@
 package processing
 
 import (
-	"compay/src/models/currency"
+	"compay/common/constants"
 	"compay/src/models/payment"
 	"efw/components/entity"
 	"efw/core/efwrequest"
@@ -27,33 +27,36 @@ type responseCreateWalletData struct {
 	PublicKeyFull string `json:"public_key_full"`
 }
 
-func (that *Processing) StartPayment(amount float64) (*payment.Model, error) {
-	fmt.Println(that.getRequestUrl(requestCreateWallet))
+func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error) {
 	body, _, err := efwrequest.Request(efwrequest.RequestHelper{
 		Url:           that.getRequestUrl(requestCreateWallet),
 		Method:        "POST",
 		IsLogDisabled: true,
 	})
 	if err != nil {
-		return nil, ErrorProcessingStartPaymentRequestError(err.Error())
+		return nil, ErrorStartPaymentRequestError(err.Error())
 	}
-
-	fmt.Println(string(body))
 
 	var response responseCreateWallet
 	if err := json.Unmarshal(body, &response); err != nil {
-		return nil, ErrorProcessingStartPaymentUnmarshalError(err.Error())
+		return nil, ErrorStartPaymentUnmarshalError(err.Error())
 	}
 	if !response.Success {
-		return nil, ErrorProcessingStartPaymentUnmarshalError(fmt.Sprint(response.Error, " ", response.Errors))
+		return nil, ErrorStartPaymentUnmarshalError(fmt.Sprint(response.Error, " ", response.Errors))
+	}
+
+	amount, err := that.calculateDepositAmount(amountFloat)
+	if err != nil {
+		return nil, err
 	}
 
 	paymentModel := &payment.Model{}
 	paymentModel.TrxId = uuid.NewString()
 	paymentModel.MerchantId = that.getMerchant().GetId()
+	paymentModel.Status = constants.PaymentStatusCreated
 	paymentModel.Currency = that.getCurrency().CodeAlpha
 	paymentModel.Address = response.Data.Address
-	paymentModel.Amount = currency.FloatToAmount(amount, that.getCurrency().MinorUnits)
+	paymentModel.Amount = amount
 	paymentModel.AmountUsd = 0
 	paymentModel.PrivateKey = entity.EncryptedString(response.Data.PrivateKey)
 	paymentModel.PrivateKeyWif = entity.EncryptedString(response.Data.PrivateKeyWif)

@@ -18,6 +18,7 @@ type CurrencyMinorUnits int
 
 // Payment Types
 type PaymentId int64
+type PaymentStatus string
 
 // Log Types
 type LogUserId int64

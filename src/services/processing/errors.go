@@ -3,12 +3,17 @@ package processing
 import "fmt"
 
 // START PAYMENT
-var ErrorProcessingStartPaymentRequestError = func(err string) error {
+var ErrorStartPaymentRequestError = func(err string) error {
 	return fmt.Errorf("%s %s", "StartPaymentRequestError:", err)
 }
-var ErrorProcessingStartPaymentUnmarshalError = func(err string) error {
+var ErrorStartPaymentUnmarshalError = func(err string) error {
 	return fmt.Errorf("%s %s", "StartPaymentUnmarshalError:", err)
 }
-var ErrorProcessingStartPaymentResponseError = func(err string) error {
+var ErrorStartPaymentResponseError = func(err string) error {
 	return fmt.Errorf("%s %s", "StartPaymentResponseError:", err)
 }
+
+// AMOUNT
+var ErrorDepositAmountIsRequired = fmt.Errorf("%s", "DepositAmountIsRequired")
+var ErrorDepositAmountLessThanMin = fmt.Errorf("%s", "DepositAmountLessThanMin")
+var ErrorDepositAmountBiggerThanMax = fmt.Errorf("%s", "DepositAmountBiggerThanMax")
