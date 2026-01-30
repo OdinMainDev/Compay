@@ -1,5 +1,6 @@
 package constants
 
 const (
-	GinUser = "user"
+	GinUser     = "user"
+	GinMerchant = "merchant"
 )

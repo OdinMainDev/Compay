@@ -18,3 +18,8 @@ var ErrorMiddlewareCheckAuthTotpInvalidTypeUserModel = fmt.Errorf("%s", "Middlew
 var ErrorMiddlewareCheckIsUserAdminNilUserModel = fmt.Errorf("%s", "MiddlewareCheckIsUserAdminNilUserModel")
 var ErrorMiddlewareCheckIsUserAdminInvalidTypeUserModel = fmt.Errorf("%s", "MiddlewareCheckIsUserAdminInvalidTypeUserModel")
 var ErrorMiddlewareCheckIsUserAdminPermissionDenied = fmt.Errorf("%s", "MiddlewareCheckIsUserAdminPermissionDenied")
+
+// CheckMerchant
+var ErrorMiddlewareCheckMerchantNilUserModel = fmt.Errorf("%s", "MiddlewareCheckMerchantNilUserModel")
+var ErrorMiddlewareCheckMerchantInvalidTypeUserModel = fmt.Errorf("%s", "MiddlewareCheckMerchantInvalidTypeUserModel")
+var ErrorMiddlewareCheckMerchantIsDisabled = fmt.Errorf("%s", "MiddlewareCheckMerchantIsDisabled")
