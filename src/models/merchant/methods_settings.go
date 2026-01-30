@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	btcMinimumAmounts       = entity.MinimumAmount{Currency: constants.CurrencyCodeAlphaBtc, Amount: constants.CurrencyMinimumAmountBtc}
+	btcMinimumAmounts       = entity.MinimumAmount{Currency: constants.CurrencyCodeAlphaBtc, Amount: constants.CurrencyMinAmountBtc}
 	btcMinimumConfirmations = entity.MinimumConfirmations{Currency: constants.CurrencyCodeAlphaBtc, Count: constants.CurrencyConfirmationBtc}
 	btcFeeAmounts           = entity.FeeAmount{Currency: constants.CurrencyCodeAlphaBtc, FeeType: constants.CurrencyFeeTypeBtc, Amount: constants.CurrencyFeeBtc}
 	btcFeePercentAmounts    = entity.FeePercentAmount{Currency: constants.CurrencyCodeAlphaBtc, FeeType: constants.CurrencyFeePercentTypeBtc, Amount: constants.CurrencyFeePercentBtc}
