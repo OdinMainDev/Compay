@@ -3,7 +3,10 @@ package merchant
 import (
 	"compay/common/cperrors"
 	"compay/common/types"
+	"compay/src/models/currency"
 	"compay/src/models/merchant"
+	"compay/src/models/payment"
+	"compay/src/services/processing"
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 
@@ -11,15 +14,23 @@ import (
 )
 
 type requestV1PaymentCreate struct {
-	Amount   types.Amount            `json:"amount" binding:"required,gt=0"`
+	Amount   float64                 `json:"amount" binding:"required,gt=0"`
 	Token    string                  `json:"token" binding:"required,len=36"`
-	Currency types.CurrencyCodeAlpha `json:"currency" binding:"required,currencyExist"`
+	Currency types.CurrencyCodeAlpha `json:"currency" binding:"required,max=20"`
 	Sign     string                  `json:"sign" binding:"required,len=128"`
 }
 
 func V1PaymentCreate(context *gin.Context) {
 	var input requestV1PaymentCreate
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+
+	currencyModel := currency.GetModel(currency.QueryHelper{
+		CodeAlpha: input.Currency,
+	})
+	if currencyModel == nil {
+		efwginhelpers.ResponseError(context, cperrors.ErrorApiV1BadCurrency)
 		return
 	}
 
@@ -36,12 +47,12 @@ func V1PaymentCreate(context *gin.Context) {
 		return
 	}
 
-	// 1) проверяем валюты мерчанта, у него должны быть заполнены конфирмы, мин и макс сумма
-	// 1.1) если не заполнены - сначала создаем их, потом используем
-	// 2)
+	handler := processing.NewService(merchantModel, currencyModel)
+	paymentModel, err := handler.StartPayment(input.Amount)
+	if err != nil {
+		efwginhelpers.ResponseError(context, err)
+		return
+	}
 
-	efwginhelpers.ResponseSuccess(context, gin.H{
-		"address": "testaddress",
-		"amount":  input.Amount,
-	})
+	efwginhelpers.ResponseSuccess(context, payment.DTO(paymentModel))
 }
