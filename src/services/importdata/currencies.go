@@ -42,7 +42,7 @@ func ImportCurrencies() bool {
 
 func addBtcCurrency() *currency.Model {
 	resp := &currency.Model{}
-	resp.CodeAlpha = constants.CurrencyCodeAlphaBtc
+	resp.CodeAlpha = constants.BtcCodeAlpha
 	resp.Title = "Bitcoin"
 	resp.Network = constants.CurrencyNetworkBtc
 	resp.IsCoin = false
