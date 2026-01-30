@@ -4,7 +4,9 @@ import (
 	"compay/common/constants"
 	"compay/common/cperrors"
 	"compay/common/types"
+	"compay/src/models/currency"
 	"compay/src/models/merchant"
+	"compay/src/models/merchantcurrency"
 	"compay/src/models/user"
 	"efw/components/entity"
 	"efw/components/model"
@@ -127,7 +129,7 @@ func AdminMerchantsCreate(context *gin.Context) {
 	userModel.MerchantId = merchantModel.GetId()
 	user.Save(userModel, user.QueryHelper{})
 
-	createLogUser(context, adminUserModel, constants.LogUserAdminMerchantCreate)
+	go asyncAdminMerchantsCreate(context.Copy(), adminUserModel, merchantModel)
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": merchantModel})
 }
 
@@ -180,4 +182,24 @@ func AdminMerchantsSearch(context *gin.Context) {
 			},
 		},
 	})})
+}
+
+func asyncAdminMerchantsCreate(context *gin.Context, adminUserModel *user.Model, merchantModel *merchant.Model) {
+	currenyModels := currency.GetModels(currency.QueryHelper{
+		IsEnabled: true,
+	})
+	for _, currenyModel := range currenyModels {
+		merchantCurrencyModel := merchantcurrency.GetModel(merchantcurrency.QueryHelper{
+			MerchantId: merchantModel.GetId(),
+			Currency:   currenyModel.CodeAlpha,
+		})
+
+		if merchantCurrencyModel == nil {
+			merchantCurrencyModel = merchantcurrency.DefaultCurrency(currenyModel.CodeAlpha)
+			merchantCurrencyModel.MerchantId = merchantModel.GetId()
+			merchantcurrency.Save(merchantCurrencyModel, merchantcurrency.QueryHelper{})
+		}
+	}
+
+	createLogUser(context, adminUserModel, constants.LogUserAdminMerchantCreate)
 }

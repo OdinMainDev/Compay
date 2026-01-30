@@ -1,6 +1,8 @@
 package merchantcurrency
 
 import (
+	"efw/core/efwlog"
+
 	"gorm.io/gorm"
 )
 
@@ -9,7 +11,7 @@ func (helper QueryHelper) CacheAdditionalKeys(model *Model) []int64 {
 		return []int64{int64(model.MerchantId)}
 	}
 	if helper.MerchantId == 0 {
-		panic("BAD CONFIGURATION CacheAdditionalKeys merchantcurrency")
+		efwlog.Panic("BAD CONFIGURATION CacheAdditionalKeys merchantcurrency")
 	}
 
 	return []int64{int64(helper.MerchantId)}
@@ -17,7 +19,7 @@ func (helper QueryHelper) CacheAdditionalKeys(model *Model) []int64 {
 
 func (helper QueryHelper) ApplyCacheDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
 	if helper.MerchantId == 0 {
-		panic("BAD CONFIGURATION ApplyCacheDBFilters merchantcurrency")
+		efwlog.Panic("BAD CONFIGURATION ApplyCacheDBFilters merchantcurrency")
 	}
 
 	return chain.Where("merchant_id ? ", helper.MerchantId).Order("id DESC")

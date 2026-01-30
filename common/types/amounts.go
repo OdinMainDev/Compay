@@ -1,12 +1,11 @@
 package types
 
 // Amounts
-type Amount float64
-type AmountInt int64
+type Amount int64
 
 // Fees
-type FeeAmount float64
-type FeePercentAmount float64
+type FeeAmount int64
+type FeePercentAmount int64
 type FeeType string
 
 // Confirmations

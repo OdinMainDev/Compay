@@ -10,9 +10,11 @@ import (
 
 type QueryHelper struct {
 	model.QueryHelper
-	Id        types.CurrencyId
-	CodeAlpha types.CurrencyCodeAlpha
-	Search    string
+	Id         types.CurrencyId
+	CodeAlpha  types.CurrencyCodeAlpha
+	IsEnabled  bool
+	IsDisabled bool
+	Search     string
 }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
@@ -23,6 +25,12 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	}
 	if helper.CodeAlpha != "" {
 		chain = chain.Where("code_alpha = ?", helper.CodeAlpha)
+	}
+	if helper.IsEnabled {
+		chain = chain.Where("is_enabled = ?", true)
+	}
+	if helper.IsDisabled {
+		chain = chain.Where("is_enabled = ?", false)
 	}
 	if helper.Search != "" {
 		chain = chain.Where(

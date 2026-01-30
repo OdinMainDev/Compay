@@ -25,6 +25,16 @@ func (helper QueryHelper) ApplyCacheFilters(entity *Model) bool {
 			return false
 		}
 	}
+	if helper.IsEnabled {
+		if !entity.IsEnabled {
+			return false
+		}
+	}
+	if helper.IsDisabled {
+		if entity.IsEnabled {
+			return false
+		}
+	}
 	if helper.Search != "" {
 		if !strings.Contains(utils.ToLower(entity.Title), helper.Search) {
 			if !strings.Contains(utils.ToLower(string(entity.CodeAlpha)), helper.Search) {
