@@ -18,7 +18,8 @@ var CurrencyNetworks = []types.CurrencyNetwork{
 
 const (
 	CurrencyCodeAlphaBtc      types.CurrencyCodeAlpha = "BTC"
-	CurrencyMinimumAmountBtc  types.Amount            = 0.0001
+	CurrencyMinAmountBtc      types.Amount            = 0.0001
+	CurrencyMaxAmountBtc      types.Amount            = 5
 	CurrencyConfirmationBtc   types.Confirmation      = 3
 	CurrencyFeeTypeBtc        types.FeeType           = FeeTypeOnlyWithdraw
 	CurrencyFeePercentTypeBtc types.FeeType           = FeeTypeOnlyWithdraw

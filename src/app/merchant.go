@@ -61,6 +61,11 @@ func StartMerchant() {
 
 	/* --------------- MERCHANT ROUTES --------------- */
 
+	/* +++++++++++++++ V1 ROUTES +++++++++++++++ */
+	v1 := apiRoutes.Group("/v1")
+
+	merchantPublicApiV1Routes(v1)
+	/* --------------- V1 ROUTES --------------- */
 	merchantServer = &http.Server{Addr: ":" + config.AppPort, Handler: router.Handler()}
 	go func() {
 		if err := merchantServer.ListenAndServe(); err != nil {
@@ -181,4 +186,10 @@ func merchantMerchantRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/process", controller.MerchantSettingsProcess)
 	subGroup.POST("/action/get-token", controller.MerchantSettingsActionGetToken)
 	subGroup.POST("/action/generate-secret", controller.MerchantSettingsActionGenerateSecret)
+}
+
+// PUBLIC API
+
+func merchantPublicApiV1Routes(group *gin.RouterGroup) {
+	group.POST("/payment-create", controller.V1PaymentCreate)
 }
