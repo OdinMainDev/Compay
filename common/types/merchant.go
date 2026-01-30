@@ -2,6 +2,7 @@ package types
 
 // Merchant Types
 type MerchantId int64
+type MerchantCurrencyId int64
 
 // Notification Types
 type NotificationId int64

@@ -2,6 +2,7 @@ package types
 
 // Amounts
 type Amount float64
+type AmountInt int64
 
 // Fees
 type FeeAmount float64
