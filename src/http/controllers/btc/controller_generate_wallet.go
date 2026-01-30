@@ -37,11 +37,10 @@ func GenerateWallet(context *gin.Context) {
 	}
 
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": gin.H{
-		"address":           address.EncodeAddress(),
-		"private_key":       fmt.Sprintf("%x", privateKey.Serialize()),
-		"private_key_bytes": privateKey.Serialize(),
-		"private_key_wif":   wif.String(),
-		"public_key":        fmt.Sprintf("%x", publicKey.SerializeCompressed()),
-		"public_key_full":   fmt.Sprintf("%x", publicKey.SerializeUncompressed()),
+		"address":         address.EncodeAddress(),
+		"private_key":     fmt.Sprintf("%x", privateKey.Serialize()),
+		"private_key_wif": wif.String(),
+		"public_key":      fmt.Sprintf("%x", publicKey.SerializeCompressed()),
+		"public_key_full": fmt.Sprintf("%x", publicKey.SerializeUncompressed()),
 	}})
 }
