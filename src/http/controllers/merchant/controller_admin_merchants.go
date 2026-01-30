@@ -4,7 +4,6 @@ import (
 	"compay/common/constants"
 	"compay/common/cperrors"
 	"compay/common/types"
-	merchantEntity "compay/src/entities/merchant"
 	"compay/src/models/merchant"
 	"compay/src/models/user"
 	"efw/components/entity"
@@ -36,15 +35,9 @@ type requestAdminMerchantsCreate struct {
 }
 
 type requestAdminMerchantsProcess struct {
-	Id                         types.MerchantId                      `json:"id" binding:"required,gt=0"`
-	Name                       string                                `json:"name" binding:"required,min=6,max=50"`
-	BlockedCountries           []types.Country                       `json:"blocked_countries" binding:"omitempty,dive,countryExist"`
-	AllowedCountries           []types.Country                       `json:"allowed_countries" binding:"omitempty,dive,countryExist"`
-	NotificationTelegramChatId int64                                 `json:"notification_telegram_chat_id" binding:"omitempty"`
-	MinimumAmounts             []merchantEntity.MinimumAmount        `json:"minimum_amounts" binding:"required,dive"`
-	MinimumConfirmations       []merchantEntity.MinimumConfirmations `json:"minimum_confirmations" binding:"required,dive"`
-	FeeAmounts                 []merchantEntity.FeeAmount            `json:"fee_amounts" binding:"required,dive"`
-	FeePercentAmounts          []merchantEntity.FeePercentAmount     `json:"fee_percent_amounts" binding:"required,dive"`
+	Id                         types.MerchantId `json:"id" binding:"required,gt=0"`
+	Name                       string           `json:"name" binding:"required,min=6,max=50"`
+	NotificationTelegramChatId int64            `json:"notification_telegram_chat_id" binding:"omitempty"`
 }
 
 func AdminMerchantsList(context *gin.Context) {
@@ -129,7 +122,6 @@ func AdminMerchantsCreate(context *gin.Context) {
 	merchantModel.CreatorId = adminUserModel.GetId()
 	merchantModel.OwnerId = userModel.GetId()
 	merchantModel.IsEnabled = true
-	merchantModel.Settings = merchant.ConstructDefaultSettings()
 	merchant.Save(merchantModel, merchant.QueryHelper{})
 
 	userModel.MerchantId = merchantModel.GetId()
@@ -158,14 +150,6 @@ func AdminMerchantsProcess(context *gin.Context) {
 	}
 
 	merchantModel.Name = input.Name
-	// Conditions
-	merchantModel.Settings.Conditions.AllowedCountries = input.AllowedCountries
-	merchantModel.Settings.Conditions.BlockedCountries = input.BlockedCountries
-	// Fees and sums
-	merchantModel.Settings.MinimumAmounts = input.MinimumAmounts
-	merchantModel.Settings.MinimumConfirmations = input.MinimumConfirmations
-	merchantModel.Settings.FeeAmounts = input.FeeAmounts
-	merchantModel.Settings.FeePercentAmounts = input.FeePercentAmounts
 	// Public
 	merchantModel.Settings.PublicSettings.NotificationTelegramChatId = input.NotificationTelegramChatId
 
