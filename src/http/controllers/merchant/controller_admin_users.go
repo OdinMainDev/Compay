@@ -21,7 +21,7 @@ type requestAdminUsersList struct {
 	Id         entity.UserId    `json:"id" efwdt:"id" binding:"omitempty,gt=0"`
 	MerchantId types.MerchantId `json:"merchant_id" efwdt:"merchant_id" binding:"omitempty,merchantExist"`
 	CreatorId  entity.UserId    `json:"creator_id" efwdt:"creator_id" binding:"omitempty,userExist"`
-	Username   string           `json:"username" efwdt:"username" binding:"omitempty,max=255"`
+	Username   string           `json:"username" efwdt:"username" binding:"omitempty,gt=0,max=255"`
 	IsBanned   *bool            `json:"is_banned" efwdt:"is_banned" binding:"omitempty"`
 	efwdt.WithCreatedAt
 }
