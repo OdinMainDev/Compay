@@ -24,6 +24,7 @@ func ImportCurrencies() bool {
 			}
 
 			currencyModel.CodeAlpha = item.CodeAlpha
+			currencyModel.IsEnabled = true
 			currencyModel.Title = item.Title
 			currencyModel.Network = item.Network
 			currencyModel.IsCoin = item.IsCoin
