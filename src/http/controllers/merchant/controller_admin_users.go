@@ -239,7 +239,7 @@ func adminUsersActionBanOrNot(context *gin.Context, action types.LogUserAction) 
 		return
 	}
 
-	userModel := user.GetModel(user.QueryHelper{Id: input.Id, DontCheckMerchantId: true})
+	userModel := user.GetModel(user.QueryHelper{Id: input.Id, DontCheckMerchantId: true, WithMerchant: true})
 	if userModel == nil {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return
@@ -247,6 +247,11 @@ func adminUsersActionBanOrNot(context *gin.Context, action types.LogUserAction) 
 
 	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
 	if isUserRootAdmin(userModel.GetId()) || !isAdminCanUpdateUser(adminUserModel, userModel) {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	if userModel.MerchantId != 0 && (userModel.Merchant == nil || !userModel.Merchant.IsEnabled) {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return
 	}
