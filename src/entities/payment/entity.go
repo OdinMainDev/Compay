@@ -20,7 +20,6 @@ type Entity struct {
 	PrivateKeyWif                      entity.EncryptedString  `json:"private_key_wif" gorm:"column:private_key_wif"`
 	PublicKey                          entity.EncryptedString  `json:"public_key" gorm:"column:public_key"`
 	PublicKeyFull                      entity.EncryptedString  `json:"public_key_full" gorm:"column:public_key_full"`
-	IsActive                           bool                    `json:"is_active" gorm:"column:is_active"`
 	ExpiresAt                          int64                   `json:"expires_at" gorm:"column:expires_at"`
 }
 

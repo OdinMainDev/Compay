@@ -11,3 +11,15 @@ var ErrorBtcFailedCreateWif = func(err string) error {
 var ErrorBtcFailedCreateAddress = func(err string) error {
 	return fmt.Errorf("%s %s", "BtcFailedCreateAddress:", err)
 }
+var ErrorBtcFailedCheckBalance = func(err string) error {
+	return fmt.Errorf("%s %s", "BtcFailedCheckBalance:", err)
+}
+var ErrorBtcFailedGetTransactions = func(err string) error {
+	return fmt.Errorf("%s %s", "BtcFailedGetTransactions:", err)
+}
+var ErrorBtcFailedImportAddress = func(err string) error {
+	return fmt.Errorf("%s %s", "BtcFailedImportAddress:", err)
+}
+var ErrorBtcFailedGetBlockCount = func(err string) error {
+	return fmt.Errorf("%s %s", "BtcFailedGetBlockCount:", err)
+}

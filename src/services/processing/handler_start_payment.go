@@ -3,6 +3,7 @@ package processing
 import (
 	"compay/common/constants"
 	"compay/src/models/payment"
+	"compay/src/services/processing/monitoring"
 	"efw/components/entity"
 	"efw/core/efwrequest"
 	"encoding/json"
@@ -62,10 +63,12 @@ func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error
 	paymentModel.PrivateKeyWif = entity.EncryptedString(response.Data.PrivateKeyWif)
 	paymentModel.PublicKey = entity.EncryptedString(response.Data.PublicKey)
 	paymentModel.PublicKeyFull = entity.EncryptedString(response.Data.PublicKeyFull)
-	paymentModel.IsActive = true
-	paymentModel.ExpiresAt = time.Now().Add(time.Hour * 3).Unix()
+	paymentModel.ExpiresAt = time.Now().Add(time.Hour * 24).Unix() // 24 часа
 
 	payment.Save(paymentModel, payment.QueryHelper{})
+
+	// Добавляем платеж в пул мониторинга сразу после создания
+	go monitoring.AddPayment(paymentModel)
 
 	return paymentModel, nil
 }

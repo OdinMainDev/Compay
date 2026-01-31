@@ -10,6 +10,7 @@ import (
 
 	controller "compay/src/http/controllers/merchant"
 	"compay/src/http/middleware"
+	"compay/src/services/processing"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,6 +18,8 @@ import (
 var merchantServer *http.Server
 
 func StartMerchant() {
+	processing.StartProcessing()
+
 	router := efwgin.CreateRouter(efwgin.RouterOptions{})
 
 	apiRoutes := router.Group("/api")
@@ -75,6 +78,7 @@ func StartMerchant() {
 }
 
 func StopMerchant() {
+	processing.StopProcessing()
 	err := merchantServer.Shutdown(context.Background())
 	if err != nil {
 		efwlog.LogError("Merchant server ended with error:", err.Error())
