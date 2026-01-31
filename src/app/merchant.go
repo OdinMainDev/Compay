@@ -18,11 +18,12 @@ import (
 var merchantServer *http.Server
 
 func StartMerchant() {
-	processing.StartProcessing()
-
 	router := efwgin.CreateRouter(efwgin.RouterOptions{})
 
+	router.POST("/init-app", controller.InitApp)
+
 	apiRoutes := router.Group("/api")
+	apiRoutes.Use(middleware.CheckIsAppInit())
 	apiRoutes.Use(efwmiddleware.CheckClientIp())
 
 	/* +++++++++++++++ AUTH ROUTES +++++++++++++++ */

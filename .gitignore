@@ -19,3 +19,4 @@ cmd/rates/compayrates
 .claude
 compayrates
 .gocache
+init_request.go
