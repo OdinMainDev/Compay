@@ -13,10 +13,9 @@ func (that *Monitoring) worker(id int) {
 	for {
 		select {
 		case <-that.stopChan:
-			fmt.Printf("[Monitoring] Worker %d stopped", id)
+			fmt.Printf("[Monitoring] Worker %d stopped\n", id)
 			return
-		default:
-			job := <-that.jobQueue
+		case job := <-that.jobQueue:
 			that.processPayment(job)
 		}
 	}
