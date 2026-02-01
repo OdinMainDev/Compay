@@ -2,6 +2,8 @@ package processing
 
 import (
 	"compay/common/constants"
+	"compay/common/cperrors"
+	"compay/src/helpers"
 	"compay/src/models/payment"
 	"compay/src/services/processing/monitoring"
 	"efw/components/entity"
@@ -35,15 +37,15 @@ func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error
 		IsLogDisabled: true,
 	})
 	if err != nil {
-		return nil, ErrorStartPaymentRequestError(err.Error())
+		return nil, cperrors.ErrorProcessingStartPaymentRequestError(err.Error())
 	}
 
 	var response responseCreateWallet
 	if err := json.Unmarshal(body, &response); err != nil {
-		return nil, ErrorStartPaymentUnmarshalError(err.Error())
+		return nil, cperrors.ErrorProcessingStartPaymentUnmarshalError(err.Error())
 	}
 	if !response.Success {
-		return nil, ErrorStartPaymentUnmarshalError(fmt.Sprint(response.Error, " ", response.Errors))
+		return nil, cperrors.ErrorProcessingStartPaymentUnmarshalError(fmt.Sprint(response.Error, " ", response.Errors))
 	}
 
 	amount, err := that.calculateDepositAmount(amountFloat)
@@ -68,7 +70,20 @@ func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error
 	payment.Save(paymentModel, payment.QueryHelper{})
 
 	// Добавляем платеж в пул мониторинга сразу после создания
-	go monitoring.AddPayment(paymentModel)
+	go asyncStartPayment(paymentModel)
 
 	return paymentModel, nil
+}
+
+func asyncStartPayment(paymentModel *payment.Model) {
+	monitoring.AddPayment(paymentModel)
+	helpers.NotificationCreatePayment(
+		paymentModel.GetIdInt64(),
+		int64(paymentModel.MerchantId),
+		paymentModel.TrxId,
+		paymentModel.Address,
+		paymentModel.Currency,
+		paymentModel.Amount,
+		paymentModel.AmountUsd,
+	)
 }

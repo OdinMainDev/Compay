@@ -1,6 +1,9 @@
 package processing
 
-import "compay/common/constants"
+import (
+	"compay/common/constants"
+	"efw/core/efwlog"
+)
 
 type requetsUrl string
 
@@ -16,6 +19,9 @@ func (that *Processing) getRequestHost() string {
 	switch that.getCurrency().CodeAlpha {
 	case constants.BtcCodeAlpha:
 		return constants.BtcApiUrl
+
+	default:
+		efwlog.Panic("BAD CONFIGURATION getRequestHost: ", that.getCurrency().CodeAlpha)
 	}
 
 	return ""

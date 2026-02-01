@@ -35,7 +35,7 @@ func NotifyTelegram(message string, args ...int64) error {
 		return ErrorTelegramInvalidChatId
 	}
 
-	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", telegramClient.token)
+	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", config.NotifyTelegramToken)
 	body := map[string]any{
 		"chat_id":    chatId,
 		"text":       message,

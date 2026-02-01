@@ -10,9 +10,9 @@ func DefaultCurrency(codeAlpha types.CurrencyCodeAlpha) *Model {
 	switch codeAlpha {
 	case constants.BtcCodeAlpha:
 		return defaultBtc()
+	default:
+		efwlog.Panic("BAD DEFAULT CURRENCY: ", codeAlpha)
 	}
-
-	efwlog.Panic("BAD DEFAULT CURRENCY: ", codeAlpha)
 	return nil
 }
 

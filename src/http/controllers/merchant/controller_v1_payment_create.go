@@ -42,7 +42,7 @@ func V1PaymentCreate(context *gin.Context) {
 		return
 	}
 
-	if !signVerify(merchantModel, signData{input.Token, input.Currency, input.Sign}) {
+	if !signVerify(string(merchantModel.SecretKey), signData{input.Token, input.Currency, input.Sign}) {
 		efwginhelpers.ResponseError(context, cperrors.ErrorApiV1InvalidSign)
 		return
 	}

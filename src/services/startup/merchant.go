@@ -1,6 +1,7 @@
 package startup
 
 import (
+	"compay/src/models/blockchainstate"
 	"compay/src/models/currency"
 	"compay/src/models/merchant"
 	"compay/src/models/user"
@@ -10,6 +11,7 @@ import (
 func StartMerchant() {
 	registerMerchantAdminAccounts()
 	registerMerchantCacheTypes()
+	fillConfigMerchant()
 }
 
 func registerMerchantAdminAccounts() {
@@ -36,4 +38,5 @@ func registerMerchantAdminAccounts() {
 func registerMerchantCacheTypes() {
 	efwcache.RegisterType(&currency.Model{})
 	efwcache.RegisterType(&merchant.Model{})
+	efwcache.RegisterType(&blockchainstate.Model{})
 }

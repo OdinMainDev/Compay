@@ -7,17 +7,17 @@ import (
 	"net/http"
 
 	controller "compay/src/http/controllers/btc"
+	"compay/src/services/cryptocurrencies/btc"
 )
 
 var btcServer *http.Server
 
 func StartBtc() {
+	btc.Start()
 	router := efwgin.CreateRouter(efwgin.RouterOptions{})
 
 	router.POST("/generate-wallet", controller.GenerateWallet)
-	router.POST("/check-balance", controller.CheckBalance)
 	router.POST("/get-transactions", controller.GetTransactions)
-	router.POST("/import-address", controller.ImportAddress)
 	router.POST("/get-block-count", controller.GetBlockCount)
 
 	// TODO: потом вернуть на конфиг

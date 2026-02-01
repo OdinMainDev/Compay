@@ -2,7 +2,6 @@ package merchant
 
 import (
 	"compay/common/types"
-	"compay/src/models/merchant"
 	"efw/utils"
 )
 
@@ -12,7 +11,7 @@ type signData struct {
 	sign     string
 }
 
-func signVerify(merchantModel *merchant.Model, data signData) bool {
-	sign := "token:" + data.token + ";currency:" + string(data.currency) + ";secret:" + string(merchantModel.SecretKey)
+func signVerify(secretKey string, data signData) bool {
+	sign := "token:" + data.token + ";currency:" + string(data.currency) + ";secret:" + secretKey
 	return data.sign == utils.GetHashString(sign)
 }

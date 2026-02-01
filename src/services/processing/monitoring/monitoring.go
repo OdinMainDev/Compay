@@ -1,59 +1,58 @@
 package monitoring
 
 import (
-	"compay/common/config"
 	"compay/common/types"
+	"compay/src/models/blockchainstate"
 	"compay/src/models/payment"
-	"compay/src/services/cryptocurrencies/btc"
 	"sync"
 	"time"
 )
 
-type ClosePaymentChan struct {
+type job struct {
 	PaymentModel *payment.Model
-	Status       types.PaymentStatus
-	Amount       types.Amount
+	TxData       *types.TxData
 }
 
-// Monitoring мониторит инвойсы в pool worker режиме
-type Monitoring struct {
-	btcService    *btc.BTCService
+type currencyData struct {
+	blockchainStateModel *blockchainstate.Model
+	activePayments       map[string]*payment.Model
+}
+
+// Monitoring мониторит инвойсы по блокам
+type monitoring struct {
+	// интервал дефолтный когда начинать проверку
 	checkInterval time.Duration
-	workerCount   int
+	// количество воркеров
+	workerCount int
+	jobsChan    chan job
 
-	// Ответ в процессинг
-	closePaymentChan chan ClosePaymentChan
-
-	// Очередь заданий
-	jobQueue chan *payment.Model
-
-	// Активные платежи (для быстрой проверки существования)
-	activePayments map[int64]*payment.Model
-	mutex          sync.RWMutex
+	// Данные валют
+	btc           currencyData
+	paymentsMutex sync.RWMutex
 
 	// Контроль жизненного цикла
 	stopChan chan struct{}
-	wg       sync.WaitGroup
 }
 
-var globalMonitor *Monitoring
+var globalMonitor *monitoring
 
 // newInvoiceMonitor создает новый экземпляр Monitoring
-func newInvoiceMonitor(closePaymentChan chan ClosePaymentChan) *Monitoring {
-	return &Monitoring{
-		btcService:       btc.NewBTCService(),
-		checkInterval:    config.MonitoringCheckInterval,
-		workerCount:      config.MonitoringWorkerCount,
-		closePaymentChan: closePaymentChan,
-		jobQueue:         make(chan *payment.Model, 1000), // Буфер для 1000 платежей
-		activePayments:   make(map[int64]*payment.Model),
-		stopChan:         make(chan struct{}),
+func newInvoiceMonitor() *monitoring {
+	return &monitoring{
+		checkInterval: 30 * time.Second, // Проверяем блоки каждые 30 секунд
+		workerCount:   10,
+		jobsChan:      make(chan job),
+		btc: currencyData{
+			blockchainStateModel: nil,
+			activePayments:       make(map[string]*payment.Model),
+		},
+		stopChan: make(chan struct{}),
 	}
 }
 
 // StartMonitoring запускает глобальный мониторинг
-func StartMonitoring(closePaymentChan chan ClosePaymentChan) {
-	globalMonitor = newInvoiceMonitor(closePaymentChan)
+func StartMonitoring() {
+	globalMonitor = newInvoiceMonitor()
 	globalMonitor.Start()
 }
 
@@ -66,10 +65,10 @@ func StopMonitoring() {
 
 // AddPayment добавляет платеж в пул мониторинга
 func AddPayment(paymentModel *payment.Model) {
-	globalMonitor.addPayment(paymentModel)
+	globalMonitor.addPaymentAsync(paymentModel)
 }
 
-// RemovePayment убирает платеж из пула
+// RemovePayment убирает платеж из пула ( для админки к примеру )
 func RemovePayment(paymentModel *payment.Model) {
-	globalMonitor.removePayment(paymentModel.GetIdInt64())
+	globalMonitor.removePaymentAsync(paymentModel.Address, paymentModel.Currency)
 }

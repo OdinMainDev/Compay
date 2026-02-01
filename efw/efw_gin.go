@@ -1,7 +1,6 @@
 package efw
 
 import (
-	"efw/config"
 	"efw/core/efwgin/validator"
 	"efw/core/efwlog"
 	"efw/core/efwmaxmind"
@@ -9,10 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TODO: раскоментировать config.AppDebug
 func (that *eframework) initGin() error {
-	if !config.AppDebug {
-		gin.DefaultWriter = efwlog.NewEfwGinLogWriter()
-	}
+	// if !config.AppDebug {
+	gin.DefaultWriter = efwlog.NewEfwGinLogWriter()
+	// }
+
 	validator.Init(that.initMethods.InitValidation)
 	efwmaxmind.CreateInstance()
 

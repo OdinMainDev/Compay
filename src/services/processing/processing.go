@@ -13,17 +13,13 @@ type Processing struct {
 	currencyModel         *currency.Model
 }
 
-var closePaymentChan chan monitoring.ClosePaymentChan
-
 func StartProcessing() {
-	closePaymentChan = make(chan monitoring.ClosePaymentChan)
 	// go startChecker
-	monitoring.StartMonitoring(closePaymentChan)
+	monitoring.StartMonitoring()
 }
 
 func StopProcessing() {
 	monitoring.StopMonitoring()
-	close(closePaymentChan)
 }
 
 func NewService(merchantModel *merchant.Model, currencyModel *currency.Model) *Processing {

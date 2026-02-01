@@ -2,6 +2,7 @@ package btc
 
 import (
 	"compay/common/cperrors"
+	"compay/src/services/cryptocurrencies/btc"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"fmt"
 
@@ -19,7 +20,7 @@ func GenerateWallet(context *gin.Context) {
 	}
 
 	// Конвертируем privateKey в WIF формат
-	wif, err := btcutil.NewWIF(privateKey, networkConfig, true)
+	wif, err := btcutil.NewWIF(privateKey, btc.GetNetworkConfig(), true)
 	if err != nil {
 		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorBtcFailedCreateWif(err.Error())))
 		return
@@ -30,7 +31,7 @@ func GenerateWallet(context *gin.Context) {
 
 	// Создаем адрес
 	pubKeyHash := btcutil.Hash160(publicKey.SerializeCompressed())
-	address, err := btcutil.NewAddressWitnessPubKeyHash(pubKeyHash, networkConfig)
+	address, err := btcutil.NewAddressWitnessPubKeyHash(pubKeyHash, btc.GetNetworkConfig())
 	if err != nil {
 		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorBtcFailedCreateAddress(err.Error())))
 		return

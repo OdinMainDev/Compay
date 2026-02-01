@@ -8,16 +8,20 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func GetMinorUnits(code types.CurrencyCodeAlpha) types.CurrencyMinorUnits {
-	currency := GetModel(QueryHelper{CodeAlpha: code})
+func GetMinorUnits(codeAlpha types.CurrencyCodeAlpha) types.CurrencyMinorUnits {
+	currency := GetModel(QueryHelper{CodeAlpha: codeAlpha})
 	if currency == nil || currency.GetId() == 0 {
 		return 0
 	}
 	return currency.MinorUnits
 }
 
-func AmountToFloatByCurrency(amount types.Amount, units types.CurrencyMinorUnits) float64 {
+func AmountToFloat(amount types.Amount, units types.CurrencyMinorUnits) float64 {
 	return amountToFloat(amount, units)
+}
+
+func AmountToFloatByCodeAlpha(amount types.Amount, codeAlpha types.CurrencyCodeAlpha) float64 {
+	return amountToFloat(amount, GetMinorUnits(codeAlpha))
 }
 
 func amountToFloat(amount types.Amount, units types.CurrencyMinorUnits) float64 {

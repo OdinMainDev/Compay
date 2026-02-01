@@ -1,59 +1,63 @@
 package btc
 
 import (
-	"github.com/btcsuite/btcd/btcutil"
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/rpcclient"
+	"compay/common/types"
+
+	"github.com/btcsuite/btcd/txscript"
 )
 
-type TxOutput struct {
-	TxId    string
-	Vout    uint32
-	Address string
-	Amount  btcutil.Amount
-	Block   int64
-}
+func GetTransactions(lastHeight int64) ([]types.TxData, int64, error) {
+	currentHeight, err := GetBlockCount()
+	if err != nil {
+		return nil, lastHeight, err
+	}
+	var result []types.TxData
 
-func GetTransactions(
-	client *rpcclient.Client,
-	lastHeight int64,
-	network *chaincfg.Params,
-) ([]TxOutput, int64, error) {
-
-	currentHeight, err := client.GetBlockCount()
+	hash, err := client.GetBlockHash(lastHeight)
 	if err != nil {
 		return nil, lastHeight, err
 	}
 
-	var result []TxOutput
+	block, err := client.GetBlock(hash)
+	if err != nil {
+		return nil, lastHeight, err
+	}
 
-	for h := lastHeight + 1; h <= currentHeight; h++ {
-		hash, err := client.GetBlockHash(h)
-		if err != nil {
-			return nil, lastHeight, err
-		}
+	confirmations := int64(0)
+	if currentHeight >= lastHeight {
+		confirmations = currentHeight - lastHeight + 1
+	}
 
-		block, err := client.GetBlockVerboseTx(hash)
-		if err != nil {
-			return nil, lastHeight, err
-		}
+	timeBlock := block.Header.Timestamp.Unix()
 
-		for _, tx := range block.Tx {
-			for _, vout := range tx.Vout {
-				if vout.ScriptPubKey.Addresses == nil {
-					continue
-				}
+	for _, tx := range block.Transactions {
+		txid := tx.TxID()
 
-				for _, addr := range vout.ScriptPubKey.Addresses {
-					amount, _ := btcutil.NewAmount(vout.Value)
-					result = append(result, TxOutput{
-						TxId:    tx.Txid,
-						Vout:    uint32(vout.N),
-						Address: addr,
-						Amount:  amount,
-						Block:   h,
-					})
-				}
+		for voutIndex, txOut := range tx.TxOut {
+			_, addrs, _, err := txscript.ExtractPkScriptAddrs(
+				txOut.PkScript,
+				networkConfig,
+			)
+			if err != nil || len(addrs) == 0 {
+				continue
+			}
+
+			for _, addr := range addrs {
+				address := addr.EncodeAddress()
+
+				result = append(result, types.TxData{
+					TxId:          txid,
+					TxHash:        txid,
+					Address:       address,
+					BlockHash:     hash.String(),
+					BlockHeight:   lastHeight,
+					Time:          timeBlock,
+					Amount:        types.Amount(txOut.Value),
+					Confirmations: types.Confirmation(confirmations),
+					VoutPosition:  voutIndex,
+					AssetId:       "BTC", // заполняем просто так
+					SentTo:        []string{address},
+				})
 			}
 		}
 	}

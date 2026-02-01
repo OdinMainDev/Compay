@@ -2,6 +2,7 @@ package merchant
 
 import (
 	"compay/common/types"
+	"compay/src/services/processing"
 	"efw/config"
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
@@ -36,7 +37,7 @@ func InitApp(context *gin.Context) {
 	config.Cryptiv = input.Cryptiv
 	config.Cryptkey = input.Cryptkey
 	config.CrypSalt = input.CryptSalt
+	processing.StartProcessing()
 
-	// processing.StartProcessing()
 	efwginhelpers.ResponseSuccess(context, nil)
 }

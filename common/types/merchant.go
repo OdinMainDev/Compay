@@ -16,6 +16,9 @@ type CurrencyNetwork string
 type CurrencyIsCoin bool
 type CurrencyMinorUnits int
 
+// Blockchain
+type BlockchainStateId int64
+
 // Payment Types
 type PaymentId int64
 type PaymentStatus string
@@ -25,3 +28,4 @@ type LogUserId int64
 type LogUserAction string
 type LogAuthId int64
 type LogAuthAction string
+type LogPaymentId int64
