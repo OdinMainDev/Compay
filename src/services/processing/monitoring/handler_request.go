@@ -12,14 +12,14 @@ import (
 	"net/http"
 )
 
-type requetsUrl string
+type requestUrl string
 
 const (
-	requestGetBlockCount   requetsUrl = "/get-block-count"
-	requestGetTransactions requetsUrl = "/get-transactions"
+	requestGetBlockCount   requestUrl = "/get-block-count"
+	requestGetTransactions requestUrl = "/get-transactions"
 )
 
-func (that *monitoring) doRequest(path requetsUrl, codeAlpha types.CurrencyCodeAlpha, body []byte, obj any) error {
+func (that *monitoring) doRequest(path requestUrl, codeAlpha types.CurrencyCodeAlpha, body []byte, obj any) error {
 	url := that.getRequestUrl(path, codeAlpha)
 	body, resp, err := efwrequest.Request(efwrequest.RequestHelper{
 		Url:           url,
@@ -43,7 +43,7 @@ func (that *monitoring) doRequest(path requetsUrl, codeAlpha types.CurrencyCodeA
 	return nil
 }
 
-func (that *monitoring) getRequestUrl(path requetsUrl, codeAlpha types.CurrencyCodeAlpha) string {
+func (that *monitoring) getRequestUrl(path requestUrl, codeAlpha types.CurrencyCodeAlpha) string {
 	switch codeAlpha {
 	case constants.BtcCodeAlpha:
 		return constants.BtcApiUrl + string(path)

@@ -5,13 +5,13 @@ import (
 	"efw/core/efwlog"
 )
 
-type requetsUrl string
+type requestUrl string
 
 const (
-	requestCreateWallet requetsUrl = "/generate-wallet"
+	requestCreateWallet requestUrl = "/generate-wallet"
 )
 
-func (that *Processing) getRequestUrl(url requetsUrl) string {
+func (that *Processing) getRequestUrl(url requestUrl) string {
 	return that.getRequestHost() + string(url)
 }
 
