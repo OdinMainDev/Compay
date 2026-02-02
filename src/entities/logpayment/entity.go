@@ -29,6 +29,6 @@ type Conditions struct {
 	RequiredConfirmations types.Confirmation `json:"required_confirmations"`
 }
 
-func (*Entity) TableName() string              { return "log_auth" }
+func (*Entity) TableName() string              { return "log_payments" }
 func (data *Data) Scan(value any) error        { return entity.ScanStruct(data, value) }
 func (data Data) Value() (driver.Value, error) { return entity.ValueStruct(data) }
