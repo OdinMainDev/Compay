@@ -13,6 +13,7 @@ func (that *monitoring) Stop() {
 	}
 
 	if that.btc.blockchainStateModel != nil {
+		that.btc.blockchainStateModel.CurrentBlock = that.btc.currentBlock.Load()
 		blockchainstate.Save(that.btc.blockchainStateModel, blockchainstate.QueryHelper{})
 	}
 

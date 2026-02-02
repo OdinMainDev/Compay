@@ -6,6 +6,7 @@ import (
 	"compay/src/models/logpayment"
 	"compay/src/models/payment"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -16,7 +17,9 @@ type txParserJob struct {
 
 type currencyData struct {
 	blockchainStateModel *blockchainstate.Model
+	currentBlock         atomic.Int64 // atomic access to current block height
 	activePayments       map[string]*payment.Model
+	mutex                sync.RWMutex
 }
 
 // Monitoring мониторит инвойсы по блокам
@@ -28,7 +31,6 @@ type monitoring struct {
 
 	// Данные валют (платежей)
 	btc             currencyData
-	paymentsMutex   sync.RWMutex
 	txParserJobChan chan txParserJob
 
 	// Данные логов платежей
@@ -49,12 +51,13 @@ func newInvoiceMonitor() *monitoring {
 		workerCount:        10,
 		txParserJobChan:    make(chan txParserJob),
 		activeLogPayments:  make(map[string]*logpayment.Model),
-		paymentsMutex:      sync.RWMutex{},
 		logPaymentsMutex:   sync.RWMutex{},
 		logPaymentsJobChan: make(chan *logpayment.Model),
 		btc: currencyData{
 			blockchainStateModel: nil,
+			currentBlock:         atomic.Int64{},
 			activePayments:       make(map[string]*payment.Model),
+			mutex:                sync.RWMutex{},
 		},
 		stopChan: make(chan struct{}),
 	}

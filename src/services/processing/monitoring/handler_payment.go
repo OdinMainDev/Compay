@@ -77,9 +77,16 @@ func (that *monitoring) isPaymentActive(paymentModel *payment.Model, now int64) 
 
 // addPaymentAsync добавляет новый платеж в пул обработки
 func (that *monitoring) addPaymentAsync(paymentModel *payment.Model) {
-	that.paymentsMutex.Lock()
+	switch paymentModel.Currency {
+	case constants.BtcCodeAlpha:
+		that.btc.mutex.Lock()
+		defer that.btc.mutex.Unlock()
+
+	default:
+		helpers.NotificationError(fmt.Sprint("BAD CONFIGURATION addPaymentAsync: ", paymentModel.Currency))
+		efwlog.Panic("BAD CONFIGURATION addPaymentAsync: ", paymentModel.Currency)
+	}
 	that.addPayment(paymentModel)
-	that.paymentsMutex.Unlock()
 
 	fmt.Printf("[Monitoring] Payment with wallet %s added to monitoring pool\n", paymentModel.Address)
 }
@@ -97,9 +104,16 @@ func (that *monitoring) addPayment(paymentModel *payment.Model) {
 
 // removePaymentAsync удаляет платеж из пула
 func (that *monitoring) removePaymentAsync(address string, codeAlpha types.CurrencyCodeAlpha) {
-	that.paymentsMutex.Lock()
+	switch codeAlpha {
+	case constants.BtcCodeAlpha:
+		that.btc.mutex.Lock()
+		defer that.btc.mutex.Unlock()
+
+	default:
+		helpers.NotificationError(fmt.Sprint("BAD CONFIGURATION removePaymentAsync: ", codeAlpha))
+		efwlog.Panic("BAD CONFIGURATION removePaymentAsync: ", codeAlpha)
+	}
 	that.removePayment(address, codeAlpha)
-	that.paymentsMutex.Unlock()
 
 	fmt.Printf("[Monitoring] Payment with wallet %s removed from monitoring pool\n", address)
 }
@@ -118,8 +132,10 @@ func (that *monitoring) removePayment(address string, codeAlpha types.CurrencyCo
 // Ставим статус заявки "Обнаружен платеж"
 func (that *monitoring) doSetPaymentDetected(paymentId types.PaymentId, txId string) {
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
+	paymentModel.Lock()
 	paymentModel.Status = constants.PaymentStatusFundsDetected
 	payment.Save(paymentModel, payment.QueryHelper{})
+	paymentModel.Unlock()
 
 	go that.afterSetPaymentDetected(paymentModel, txId)
 }
@@ -140,15 +156,18 @@ func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txI
 // Обновляем сумму платежа
 func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, txId string, amount types.Amount) {
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
+	paymentModel.Lock()
 	paymentModel.RecievedAmount += amount
 	paymentModel.Status = constants.PaymentStatusFundsReceived
 
 	if paymentModel.Amount != 0 && paymentModel.RecievedAmount > paymentModel.Amount {
+		paymentModel.Unlock()
 		that.doSetPaymentComplete(paymentModel)
 		return
 	}
 
 	payment.Save(paymentModel, payment.QueryHelper{})
+	paymentModel.Unlock()
 
 	go that.afterSetPaymentReceived(paymentModel, txId)
 }

@@ -59,7 +59,8 @@ func (that *monitoring) processLogChecker(logPaymentModel *logpayment.Model) {
 	var confirmations int64 = 0
 	switch logPaymentModel.Currency {
 	case constants.BtcCodeAlpha:
-		confirmations = that.btc.blockchainStateModel.CurrentBlock - logPaymentModel.StartBlock + 1
+		currentBlock := that.btc.currentBlock.Load()
+		confirmations = currentBlock - logPaymentModel.StartBlock + 1
 
 	default:
 		helpers.NotificationError(fmt.Sprint("BAD CONFIGURATION processLogChecker: ", logPaymentModel.Currency))

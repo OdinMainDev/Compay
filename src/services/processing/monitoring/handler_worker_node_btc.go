@@ -30,10 +30,10 @@ func (that *monitoring) startWorkerBtcNode() {
 func (that *monitoring) handleBtcNode() {
 	fmt.Println("[Monitoring] Start handle btc node")
 
-	that.paymentsMutex.RLock()
+	that.btc.mutex.RLock()
 	activePayments := make(map[string]*payment.Model, len(that.btc.activePayments))
 	maps.Copy(activePayments, that.btc.activePayments)
-	that.paymentsMutex.RUnlock()
+	that.btc.mutex.RUnlock()
 
 	if len(activePayments) == 0 {
 		that.updateBtcBlockCount()
@@ -41,7 +41,8 @@ func (that *monitoring) handleBtcNode() {
 	}
 
 	for {
-		postData, err := json.Marshal(getTransactionsBtcRequest{that.btc.blockchainStateModel.CurrentBlock})
+		currentBlock := that.btc.currentBlock.Load()
+		postData, err := json.Marshal(getTransactionsBtcRequest{currentBlock})
 		if err != nil {
 			helpers.NotificationError(cperrors.ErrorMonitoringErrorOnGetBtcTransactionsMarshal(err.Error()).Error())
 			time.Sleep(2 * time.Second)
@@ -54,7 +55,7 @@ func (that *monitoring) handleBtcNode() {
 			continue
 		}
 		that.parseTransactions(response.Data.Transactions, activePayments)
-		that.btc.blockchainStateModel.CurrentBlock = response.Data.NewHeight
+		that.btc.currentBlock.Store(response.Data.NewHeight)
 		return
 	}
 
@@ -72,5 +73,5 @@ func (that *monitoring) updateBtcBlockCount() {
 		return
 	}
 
-	that.btc.blockchainStateModel.CurrentBlock = response.Data
+	that.btc.currentBlock.Store(response.Data)
 }

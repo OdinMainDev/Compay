@@ -24,6 +24,7 @@ func (that *monitoring) loadBlockchainStates() {
 		switch currencyModel.CodeAlpha {
 		case constants.BtcCodeAlpha:
 			that.btc.blockchainStateModel = blockchainStateModel
+			that.btc.currentBlock.Store(blockchainStateModel.CurrentBlock)
 
 		default:
 			helpers.NotificationError(fmt.Sprint("BAD CONFIGURATION loadBlockchainStates: ", currencyModel.CodeAlpha))
