@@ -22,7 +22,7 @@ func (that *monitoring) Start() {
 	that.startWorkersTxParser()
 
 	// Запускаем воркеров обработчиков логов платежей ( проверки конфирмов )
-	go that.startWorkersLogChecker()
+	that.startWorkersLogChecker()
 
 	helpers.NotificationDebug("[Monitoring] Запущен успешно")
 }
@@ -41,4 +41,5 @@ func (that *monitoring) startWorkersLogChecker() {
 	for i := range that.workerCount {
 		go that.startWorkerLogChecker(i + 1)
 	}
+	go that.startLoopLogChecker()
 }

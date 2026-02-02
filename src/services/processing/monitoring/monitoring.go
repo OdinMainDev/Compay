@@ -45,9 +45,13 @@ var globalMonitor *monitoring
 // newInvoiceMonitor создает новый экземпляр Monitoring
 func newInvoiceMonitor() *monitoring {
 	return &monitoring{
-		checkInterval:   30 * time.Second, // Проверяем блоки каждые 30 секунд
-		workerCount:     10,
-		txParserJobChan: make(chan txParserJob),
+		checkInterval:      30 * time.Second, // Проверяем блоки каждые 30 секунд
+		workerCount:        10,
+		txParserJobChan:    make(chan txParserJob),
+		activeLogPayments:  make(map[string]*logpayment.Model),
+		paymentsMutex:      sync.RWMutex{},
+		logPaymentsMutex:   sync.RWMutex{},
+		logPaymentsJobChan: make(chan *logpayment.Model),
 		btc: currencyData{
 			blockchainStateModel: nil,
 			activePayments:       make(map[string]*payment.Model),

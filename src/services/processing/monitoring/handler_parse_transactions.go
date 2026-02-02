@@ -14,10 +14,11 @@ func (that *monitoring) parseTransactions(transactions []types.TxData, activePay
 	for _, txData := range transactions {
 		paymentModel, ok := activePayments[txData.Address]
 		if !ok {
-			if that.isPaymentActive(paymentModel, now) {
-				continue
-			}
-			that.doSetPaymentExpired(paymentModel)
+			continue
+		}
+
+		if !that.isPaymentActive(paymentModel, now) {
+			that.doSetPaymentExpired(paymentModel.GetId())
 			continue
 		}
 

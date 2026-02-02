@@ -32,13 +32,13 @@ func (that *monitoring) processTxParse(data txParserJob) {
 	}
 
 	if !that.isPaymentActive(data.PaymentModel, time.Now().Unix()) {
-		that.doSetPaymentExpired(data.PaymentModel)
+		that.doSetPaymentExpired(data.PaymentModel.GetId())
 		return
 	}
 
 	// если у платежа статус транзакции "Создана" то тогда обновляем и отправляем уведомление
 	if data.PaymentModel.Status == constants.PaymentStatusCreated {
-		that.doSetPaymentDetected(data.PaymentModel)
+		that.doSetPaymentDetected(data.PaymentModel.GetId(), data.TxData.TxId)
 	}
 
 	logPaymentModel = &logpayment.Model{}

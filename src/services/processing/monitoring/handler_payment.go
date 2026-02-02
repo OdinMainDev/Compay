@@ -40,7 +40,7 @@ func (that *monitoring) loadPayments() {
 		for _, paymentModel := range paymentModels {
 			// Проверяем платеж
 			if !that.isPaymentActive(paymentModel, now) {
-				that.doSetPaymentExpired(paymentModel)
+				that.doSetPaymentExpired(paymentModel.GetId())
 				continue
 			}
 
@@ -116,16 +116,15 @@ func (that *monitoring) removePayment(address string, codeAlpha types.CurrencyCo
 }
 
 // Ставим статус заявки "Обнаружен платеж"
-func (that *monitoring) doSetPaymentDetected(paymentModel *payment.Model) {
-	paymentModel.Lock()
+func (that *monitoring) doSetPaymentDetected(paymentId types.PaymentId, txId string) {
+	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
 	paymentModel.Status = constants.PaymentStatusFundsDetected
 	payment.Save(paymentModel, payment.QueryHelper{})
-	paymentModel.Unlock()
 
-	go that.afterSetPaymentDetected(paymentModel)
+	go that.afterSetPaymentDetected(paymentModel, txId)
 }
 
-func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model) {
+func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txId string) {
 	helpers.NotificationDetectedPayment(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
@@ -133,22 +132,28 @@ func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model) {
 		paymentModel.Currency,
 		paymentModel.Amount,
 		paymentModel.AmountUsd,
+		txId,
 		0,
 	)
 }
 
 // Обновляем сумму платежа
-func (that *monitoring) doSetPaymentReceived(paymentModel *payment.Model, amount types.Amount) {
-	paymentModel.Lock()
-	paymentModel.Status = constants.PaymentStatusFundsReceived
+func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, txId string, amount types.Amount) {
+	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
 	paymentModel.RecievedAmount += amount
-	payment.Save(paymentModel, payment.QueryHelper{})
-	paymentModel.Unlock()
+	paymentModel.Status = constants.PaymentStatusFundsReceived
 
-	go that.afterSetPaymentReceived(paymentModel)
+	if paymentModel.Amount != 0 && paymentModel.RecievedAmount > paymentModel.Amount {
+		that.doSetPaymentComplete(paymentModel)
+		return
+	}
+
+	payment.Save(paymentModel, payment.QueryHelper{})
+
+	go that.afterSetPaymentReceived(paymentModel, txId)
 }
 
-func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model) {
+func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, txId string) {
 	helpers.NotificationFundsRecivedPayment(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
@@ -158,6 +163,7 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model) {
 		paymentModel.AmountUsd,
 		paymentModel.RecievedAmount,
 		paymentModel.RecievedAmountUsd,
+		txId,
 		0,
 	)
 }
@@ -168,6 +174,7 @@ func (that *monitoring) doSetPaymentComplete(paymentModel *payment.Model) {
 	paymentModel.Status = constants.PaymentStatusCompleted
 	payment.Save(paymentModel, payment.QueryHelper{})
 	paymentModel.Unlock()
+	that.removePaymentAsync(paymentModel.Address, paymentModel.Currency)
 
 	go that.afterSetPaymentComplete(paymentModel)
 }
@@ -187,10 +194,13 @@ func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model) {
 }
 
 // Удаляем заявку (истекло время)
-func (that *monitoring) doSetPaymentExpired(paymentModel *payment.Model) {
-	if paymentModel.Amount >= paymentModel.RecievedAmount {
-		that.doSetPaymentComplete(paymentModel)
-		return
+func (that *monitoring) doSetPaymentExpired(paymentId types.PaymentId) {
+	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
+	if paymentModel.RecievedAmount != 0 {
+		if paymentModel.RecievedAmount >= paymentModel.Amount {
+			that.doSetPaymentComplete(paymentModel)
+			return
+		}
 	}
 
 	paymentModel.Lock()

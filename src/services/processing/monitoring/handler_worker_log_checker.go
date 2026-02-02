@@ -66,7 +66,16 @@ func (that *monitoring) processLogChecker(logPaymentModel *logpayment.Model) {
 		efwlog.Panic("BAD CONFIGURATION processLogChecker: ", logPaymentModel.Currency)
 	}
 
-	if confirmations > int64(logPaymentModel.Data.Conditions.RequiredConfirmations) {
+	if confirmations >= int64(logPaymentModel.Data.Conditions.RequiredConfirmations) {
+		that.doSetPaymentReceived(logPaymentModel.PaymentId, logPaymentModel.TxId, logPaymentModel.Data.TxData.Amount)
 
+		// Маркируем лог как завершённый
+		logPaymentModel.Lock()
+		logPaymentModel.IsComplete = true
+		logpayment.Save(logPaymentModel, logpayment.QueryHelper{})
+		logPaymentModel.Unlock()
+
+		// Удаляем из активных
+		that.removeLogPaymentAsync(logPaymentModel.TxId)
 	}
 }
