@@ -3,12 +3,13 @@ package monitoring
 import (
 	"compay/common/types"
 	"compay/src/models/blockchainstate"
+	"compay/src/models/logpayment"
 	"compay/src/models/payment"
 	"sync"
 	"time"
 )
 
-type job struct {
+type txParserJob struct {
 	PaymentModel *payment.Model
 	TxData       *types.TxData
 }
@@ -24,11 +25,16 @@ type monitoring struct {
 	checkInterval time.Duration
 	// количество воркеров
 	workerCount int
-	jobsChan    chan job
 
-	// Данные валют
-	btc           currencyData
-	paymentsMutex sync.RWMutex
+	// Данные валют (платежей)
+	btc             currencyData
+	paymentsMutex   sync.RWMutex
+	txParserJobChan chan txParserJob
+
+	// Данные логов платежей
+	activeLogPayments  map[string]*logpayment.Model
+	logPaymentsMutex   sync.RWMutex
+	logPaymentsJobChan chan *logpayment.Model
 
 	// Контроль жизненного цикла
 	stopChan chan struct{}
@@ -39,9 +45,9 @@ var globalMonitor *monitoring
 // newInvoiceMonitor создает новый экземпляр Monitoring
 func newInvoiceMonitor() *monitoring {
 	return &monitoring{
-		checkInterval: 30 * time.Second, // Проверяем блоки каждые 30 секунд
-		workerCount:   10,
-		jobsChan:      make(chan job),
+		checkInterval:   30 * time.Second, // Проверяем блоки каждые 30 секунд
+		workerCount:     10,
+		txParserJobChan: make(chan txParserJob),
 		btc: currencyData{
 			blockchainStateModel: nil,
 			activePayments:       make(map[string]*payment.Model),

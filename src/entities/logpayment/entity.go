@@ -12,6 +12,8 @@ type Entity struct {
 	PaymentTrxId                          string                  `json:"payment_trx_id" gorm:"column:payment_trx_id"`
 	MerchantId                            types.MerchantId        `json:"merchant_id" gorm:"column:merchant_id"`
 	Currency                              types.CurrencyCodeAlpha `json:"currency" gorm:"column:currency"`
+	IsComplete                            bool                    `json:"is_complete" gorm:"column:is_complete"`
+	StartBlock                            int64                   `json:"start_block" gorm:"column:start_block"`
 	TxId                                  string                  `json:"tx_id" gorm:"column:tx_id"`
 	TxHash                                string                  `json:"tx_hash" gorm:"column:tx_hash"`
 	Address                               string                  `json:"address" gorm:"column:address"`
@@ -19,7 +21,12 @@ type Entity struct {
 }
 
 type Data struct {
-	TxData types.TxData `json:"tx_data"`
+	TxData     types.TxData `json:"tx_data"`
+	Conditions Conditions   `json:"conditions"`
+}
+
+type Conditions struct {
+	RequiredConfirmations types.Confirmation `json:"required_confirmations"`
 }
 
 func (*Entity) TableName() string              { return "log_auth" }

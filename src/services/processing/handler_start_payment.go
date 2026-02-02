@@ -4,6 +4,7 @@ import (
 	"compay/common/constants"
 	"compay/common/cperrors"
 	"compay/src/helpers"
+	"compay/src/models/merchant"
 	"compay/src/models/payment"
 	"compay/src/services/processing/monitoring"
 	"efw/components/entity"
@@ -61,6 +62,7 @@ func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error
 	paymentModel.Address = response.Data.Address
 	paymentModel.Amount = amount
 	paymentModel.AmountUsd = 0
+	paymentModel.RequiredConfirmations = that.getMerchantCurrency().MinConfirms
 	paymentModel.PrivateKey = entity.EncryptedString(response.Data.PrivateKey)
 	paymentModel.PrivateKeyWif = entity.EncryptedString(response.Data.PrivateKeyWif)
 	paymentModel.PublicKey = entity.EncryptedString(response.Data.PublicKey)
@@ -70,12 +72,12 @@ func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error
 	payment.Save(paymentModel, payment.QueryHelper{})
 
 	// Добавляем платеж в пул мониторинга сразу после создания
-	go asyncStartPayment(paymentModel)
+	go asyncStartPayment(paymentModel, that.getMerchant())
 
 	return paymentModel, nil
 }
 
-func asyncStartPayment(paymentModel *payment.Model) {
+func asyncStartPayment(paymentModel *payment.Model, merchantModel *merchant.Model) {
 	monitoring.AddPayment(paymentModel)
 	helpers.NotificationCreatePayment(
 		paymentModel.GetIdInt64(),
@@ -85,5 +87,8 @@ func asyncStartPayment(paymentModel *payment.Model) {
 		paymentModel.Currency,
 		paymentModel.Amount,
 		paymentModel.AmountUsd,
+		0,
 	)
+
+	// сделать логи сюды
 }

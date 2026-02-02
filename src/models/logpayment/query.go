@@ -11,6 +11,7 @@ type QueryHelper struct {
 	model.QueryHelper
 	Id        types.LogPaymentId
 	PaymentId types.PaymentId
+	TxId      string
 }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
@@ -19,6 +20,9 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	}
 	if helper.PaymentId != 0 {
 		chain = chain.Where("payment_id = ?", helper.PaymentId)
+	}
+	if helper.TxId != "" {
+		chain = chain.Where("tx_id = ?", helper.TxId)
 	}
 	return chain.Order("id ASC")
 }

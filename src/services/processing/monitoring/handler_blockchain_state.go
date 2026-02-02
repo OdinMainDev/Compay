@@ -49,6 +49,7 @@ func (that *monitoring) createDefaultMerchantState(codeAlpha types.CurrencyCodeA
 			return that.createDefaultMerchantState(codeAlpha, attempt+1, err)
 		}
 		resp.CurrentBlock = response.Data
+
 	default:
 		helpers.NotificationError(fmt.Sprint("BAD CONFIGURATION createDefaultMerchantState: ", codeAlpha))
 		efwlog.Panic("BAD CONFIGURATION createDefaultMerchantState: ", codeAlpha)

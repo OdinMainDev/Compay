@@ -9,6 +9,7 @@ CREATE TABLE "payments" (
     "amount_usd" int,
     "received_amount" int,
     "received_amount_usd" int,
+    "required_confirmations" int,
     "private_key" text,
     "private_key_wif" text,
     "public_key" text,

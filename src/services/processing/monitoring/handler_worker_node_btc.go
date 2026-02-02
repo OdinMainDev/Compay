@@ -53,7 +53,8 @@ func (that *monitoring) handleBtcNode() {
 			time.Sleep(2 * time.Second)
 			continue
 		}
-		that.parseBtcTransactions(&response, activePayments)
+		that.parseTransactions(response.Data.Transactions, activePayments)
+		that.btc.blockchainStateModel.CurrentBlock = response.Data.NewHeight
 		return
 	}
 
@@ -72,15 +73,4 @@ func (that *monitoring) updateBtcBlockCount() {
 	}
 
 	that.btc.blockchainStateModel.CurrentBlock = response.Data
-}
-
-func (that *monitoring) parseBtcTransactions(response *getTransactionsBtcResponse, activePayments map[string]*payment.Model) {
-	fmt.Println("[Monitoring] Start parse btc transactions")
-
-	for _, tx := range response.Data.Transactions {
-		if paymentModel, ok := activePayments[tx.Address]; !ok {
-			continue
-		}
-
-	}
 }
