@@ -11,20 +11,33 @@ func (that *monitoring) parseTransactions(transactions []types.TxData, activePay
 	fmt.Println("[Monitoring] Start parse transactions")
 	now := time.Now().Unix()
 
-	for _, txData := range transactions {
-		paymentModel, ok := activePayments[txData.Address]
-		if !ok {
+	for _, paymentModel := range activePayments {
+		address := paymentModel.Address
+		hasTx := false
+		for _, txData := range transactions {
+			if txData.Address != address {
+				continue
+			}
+
+			hasTx = true
+			if !that.isPaymentActive(paymentModel, now) {
+				that.doSetPaymentExpired(paymentModel.GetId())
+				continue
+			}
+
+			that.txParserJobChan <- txParserJob{
+				PaymentModel: paymentModel,
+				TxData:       &txData,
+			}
+		}
+
+		if hasTx {
 			continue
 		}
 
 		if !that.isPaymentActive(paymentModel, now) {
 			that.doSetPaymentExpired(paymentModel.GetId())
 			continue
-		}
-
-		that.txParserJobChan <- txParserJob{
-			PaymentModel: paymentModel,
-			TxData:       &txData,
 		}
 	}
 }
