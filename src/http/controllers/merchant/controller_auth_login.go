@@ -52,5 +52,4 @@ func AuthLogin(context *gin.Context) {
 
 func asyncAuthLogin(context *gin.Context, userModel *user.Model) {
 	createLogAuth(context, userModel, constants.LogAuthLogin)
-	createNotify(userModel, constants.NotificationActionTest, constants.NotificationTextTest("login"))
 }

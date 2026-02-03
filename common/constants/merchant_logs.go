@@ -5,6 +5,7 @@ import "compay/common/types"
 // Log Auth
 const (
 	LogAuthLogin types.LogAuthAction = "Login"
+	LogAuthTotp  types.LogAuthAction = "Totp"
 )
 
 var LogAuthActions = []types.LogAuthAction{LogAuthLogin}
