@@ -23,7 +23,8 @@ func defaultBtc() *Model {
 	model.MaxAmount = constants.BtcMaxAmount
 	model.MinAmountWithdraw = constants.BtcMinAmountWithdraw
 	model.MaxAmountWithdraw = constants.BtcMaxAmountWithdraw
-	model.MinConfirms = constants.BtcConfirmation
+	model.Confirms = constants.BtcConfirmation
+	model.InvoiceTime = constants.BtcInvoiceTime
 	model.FeeType = constants.BtcFeeType
 	model.FeeFixed = constants.BtcFeeFixed
 	model.FeePercent = constants.BtcFeePercent

@@ -13,8 +13,9 @@ type Entity struct {
 	MaxAmount                                   types.Amount            `json:"max_amount" gorm:"column:max_amount"`
 	MinAmountWithdraw                           types.Amount            `json:"min_amount_withdraw" gorm:"column:min_amount_withdraw"`
 	MaxAmountWithdraw                           types.Amount            `json:"max_amount_withdraw" gorm:"column:max_amount_withdraw"`
-	MinConfirms                                 types.Confirmation      `json:"min_confirms" gorm:"column:min_confirms"`
-	FeeType                                     types.FeeType           `json:"fee_type" gorm:"column:min_confirms"`
+	Confirms                                    types.Confirmation      `json:"confirms" gorm:"column:confirms"`
+	InvoiceTime                                 int64                   `json:"invoice_time" gorm:"column:invoice_time"`
+	FeeType                                     types.FeeType           `json:"fee_type" gorm:"column:fee_type"`
 	FeeFixed                                    types.FeeAmount         `json:"fee_fixed" gorm:"column:fee_fixed"`
 	FeePercent                                  types.FeePercentAmount  `json:"fee_percent" gorm:"column:fee_percent"`
 }

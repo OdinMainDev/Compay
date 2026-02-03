@@ -63,12 +63,12 @@ func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error
 	paymentModel.Address = response.Data.Address
 	paymentModel.Amount = amount
 	paymentModel.AmountUsd = 0
-	paymentModel.RequiredConfirmations = that.getMerchantCurrency().MinConfirms
+	paymentModel.RequiredConfirmations = that.getMerchantCurrency().Confirms
 	paymentModel.PrivateKey = entity.EncryptedString(response.Data.PrivateKey)
 	paymentModel.PrivateKeyWif = entity.EncryptedString(response.Data.PrivateKeyWif)
 	paymentModel.PublicKey = entity.EncryptedString(response.Data.PublicKey)
 	paymentModel.PublicKeyFull = entity.EncryptedString(response.Data.PublicKeyFull)
-	paymentModel.ExpiresAt = time.Now().Add(time.Hour * 24).Unix() // 24 часа
+	paymentModel.ExpiresAt = time.Now().Add(time.Second * time.Duration(that.getMerchantCurrency().InvoiceTime)).Unix()
 
 	payment.Save(paymentModel, payment.QueryHelper{})
 

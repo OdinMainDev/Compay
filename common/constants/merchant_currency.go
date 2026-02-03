@@ -26,6 +26,7 @@ const (
 	BtcMinAmountWithdraw types.Amount            = 10000     // 0.0001
 	BtcMaxAmountWithdraw types.Amount            = 500000000 // 5 BTC
 	BtcConfirmation      types.Confirmation      = 3
+	BtcInvoiceTime       int64                   = 86400 // Время инвойса в секундах
 	BtcFeeType           types.FeeType           = FeeTypeOnlyWithdraw
 	BtcFeeFixed          types.FeeAmount         = 10000 // 0.0001
 	BtcFeePercent        types.FeePercentAmount  = 25    // 0.25
