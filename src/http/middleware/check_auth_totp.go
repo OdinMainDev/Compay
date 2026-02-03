@@ -6,7 +6,6 @@ import (
 	"compay/src/models/user"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"efw/services/efwtotp"
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -34,11 +33,7 @@ func CheckAuthTotp() gin.HandlerFunc {
 		}
 
 		if err := efwtotp.ValidateRequest(context, userModel.Username); err != nil {
-			if errors.Is(err, efwtotp.ErrorTokenExpired) {
-				efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorAuthTotpExpired))
-			} else {
-				efwginhelpers.ResponseError(context, err, http.StatusUnauthorized)
-			}
+			efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorAuthTotpExpired))
 			context.Abort()
 			return
 		}
