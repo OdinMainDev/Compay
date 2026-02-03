@@ -4,6 +4,7 @@ import (
 	"compay/src/models/blockchainstate"
 	"compay/src/models/currency"
 	"compay/src/models/merchant"
+	"compay/src/models/merchantcurrency"
 	"compay/src/models/user"
 	"efw/core/efwcache"
 )
@@ -39,4 +40,5 @@ func registerMerchantCacheTypes() {
 	efwcache.RegisterType(&currency.Model{})
 	efwcache.RegisterType(&merchant.Model{})
 	efwcache.RegisterType(&blockchainstate.Model{})
+	efwcache.RegisterType(&merchantcurrency.Model{})
 }

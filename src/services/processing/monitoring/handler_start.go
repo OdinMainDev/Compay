@@ -14,13 +14,16 @@ func (that *monitoring) Start() {
 	helpers.NotificationDebug("[Monitoring] Загружаем платежи...")
 	// Подгружаем платежи
 	that.loadPayments()
-	helpers.NotificationDebug("[Monitoring] Загружаем платежи 2...")
+
+	helpers.NotificationDebug("[Monitoring] Запускаем обработчиков нод...")
 	// Запускаем воркеров нод
 	that.startWorkersNodes()
 
+	helpers.NotificationDebug("[Monitoring] Запускаем обработчиков транзакций...")
 	// Запускаем воркеров обработчиков
 	that.startWorkersTxParser()
 
+	helpers.NotificationDebug("[Monitoring] Запускаем обработчиков логов...")
 	// Запускаем воркеров обработчиков логов платежей ( проверки конфирмов )
 	that.startWorkersLogChecker()
 

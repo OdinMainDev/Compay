@@ -28,7 +28,7 @@ func (that *monitoring) loadPayments() {
 			QueryHelper: model.QueryHelper{
 				HasPagination: model.HasPagination{
 					HasPagination: true,
-					PageNumber:    i,
+					PageNumber:    i + 1,
 					ElementsCount: 100,
 				},
 			},
@@ -62,7 +62,7 @@ func (that *monitoring) loadPayments() {
 		}
 	}
 
-	fmt.Printf("[Monitoring] Loaded %d active payments from DB\n", count)
+	helpers.NotificationDebug(fmt.Sprintf("[Monitoring] Загружено %d активных платежей", count))
 }
 
 // isPaymentActive проверяет нужно ли проверять платеж
@@ -132,10 +132,10 @@ func (that *monitoring) removePayment(address string, codeAlpha types.CurrencyCo
 // Ставим статус заявки "Обнаружен платеж"
 func (that *monitoring) doSetPaymentDetected(paymentId types.PaymentId, txId string) {
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
-	paymentModel.Lock()
-	paymentModel.Status = constants.PaymentStatusFundsDetected
-	payment.Save(paymentModel, payment.QueryHelper{})
-	paymentModel.Unlock()
+	if paymentModel.Status == constants.PaymentStatusCreated {
+		paymentModel.Status = constants.PaymentStatusFundsDetected
+		payment.Save(paymentModel, payment.QueryHelper{})
+	}
 
 	go that.afterSetPaymentDetected(paymentModel, txId)
 }
@@ -156,18 +156,15 @@ func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txI
 // Обновляем сумму платежа
 func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, txId string, amount types.Amount) {
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
-	paymentModel.Lock()
 	paymentModel.RecievedAmount += amount
 	paymentModel.Status = constants.PaymentStatusFundsReceived
 
 	if paymentModel.Amount != 0 && paymentModel.RecievedAmount > paymentModel.Amount {
-		paymentModel.Unlock()
 		that.doSetPaymentComplete(paymentModel)
 		return
 	}
 
 	payment.Save(paymentModel, payment.QueryHelper{})
-	paymentModel.Unlock()
 
 	go that.afterSetPaymentReceived(paymentModel, txId)
 }
@@ -189,10 +186,8 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, txI
 
 // Обновляем сумму платежа
 func (that *monitoring) doSetPaymentComplete(paymentModel *payment.Model) {
-	paymentModel.Lock()
 	paymentModel.Status = constants.PaymentStatusCompleted
 	payment.Save(paymentModel, payment.QueryHelper{})
-	paymentModel.Unlock()
 	that.removePaymentAsync(paymentModel.Address, paymentModel.Currency)
 
 	go that.afterSetPaymentComplete(paymentModel)
@@ -222,14 +217,12 @@ func (that *monitoring) doSetPaymentExpired(paymentId types.PaymentId) {
 		}
 	}
 
-	paymentModel.Lock()
 	if paymentModel.RecievedAmount == 0 {
 		paymentModel.Status = constants.PaymentStatusExpired
 	} else {
 		paymentModel.Status = constants.PaymentStatusInsufficientFunds
 	}
 	payment.Save(paymentModel, payment.QueryHelper{})
-	paymentModel.Unlock()
 	that.removePaymentAsync(paymentModel.Address, paymentModel.Currency)
 
 	go that.afterSetPaymentExpired(paymentModel)
