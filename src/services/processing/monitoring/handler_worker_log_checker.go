@@ -40,7 +40,7 @@ func (that *monitoring) startWorkerLogChecker(id int) {
 }
 
 func (that *monitoring) handleLoopLogChecker() {
-	fmt.Println("[Monitoring] Start loop checker")
+	fmt.Println("[Monitoring] Start log loop checker")
 
 	that.logPaymentsMutex.RLock()
 	activeLogs := make(map[types.PaymentTxId]*logpayment.Model, len(that.activeLogPayments))
@@ -72,10 +72,7 @@ func (that *monitoring) processLogChecker(logPaymentModel *logpayment.Model) {
 		that.doSetPaymentReceived(logPaymentModel.PaymentId, logPaymentModel.TxId, logPaymentModel.Data.TxData.Amount)
 
 		// Маркируем лог как завершённый
-		logPaymentModel.Lock()
-		logPaymentModel.IsComplete = true
-		logpayment.Save(logPaymentModel, logpayment.QueryHelper{})
-		logPaymentModel.Unlock()
+		logpayment.UpdateStatus(logPaymentModel.GetId())
 
 		// Удаляем из активных
 		that.removeLogPaymentAsync(logPaymentModel.TxId)

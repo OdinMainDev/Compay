@@ -2,6 +2,8 @@ package logpayment
 
 import (
 	"compay/common/types"
+	"context"
+	"efw"
 	"efw/components/model"
 
 	"gorm.io/gorm"
@@ -25,4 +27,11 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 		chain = chain.Where("tx_id = ?", helper.TxId)
 	}
 	return chain.Order("id ASC")
+}
+
+func UpdateStatus(logId types.LogPaymentId) {
+	efw.DBTransaction[Model]().
+		Where("id = ?", logId).
+		Update(context.Background(), "is_complete", true)
+
 }

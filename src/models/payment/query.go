@@ -2,6 +2,8 @@ package payment
 
 import (
 	"compay/common/types"
+	"context"
+	"efw"
 	"efw/components/model"
 
 	"gorm.io/gorm"
@@ -35,4 +37,17 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 		chain = chain.Where("status IN (?)", helper.Statuses)
 	}
 	return chain.Order("id DESC")
+}
+
+func IncreaseAmount(paymentId types.PaymentId, amount types.Amount) {
+	efw.DBTransaction[Model]().
+		Where("id = ?", paymentId).
+		Update(context.Background(), "received_amount", gorm.Expr("received_amount + ?", amount))
+}
+
+func UpdateStatus(paymentId types.PaymentId, status types.PaymentStatus) {
+	efw.DBTransaction[Model]().
+		Where("id = ?", paymentId).
+		Update(context.Background(), "status", status)
+
 }
