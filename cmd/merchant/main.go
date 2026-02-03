@@ -33,7 +33,6 @@ func main() {
 	}
 
 	startup.FillConfig()
-	startup.StartMerchant()
 
 	efwapp.CreateApp("merchant", []func(){app.StartMerchant}, []func(){app.StopMerchant})
 }
