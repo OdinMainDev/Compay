@@ -6,6 +6,7 @@ import (
 	"compay/src/models/currency"
 	"efw/core/efwnotify"
 	"fmt"
+	"strconv"
 )
 
 // 🆕 - новая заявка
@@ -28,8 +29,8 @@ func NotificationCreatePayment(paymentId, merchantId int64, uuid, address string
 	}
 	text += "<b>Тип инвойса:</b> <code>" + invoiceType + "</code>\n"
 	text += "<b>Валюта:</b> <code>" + string(codeAlpha) + "</code>\n"
-	text += "<b>Сумма:</b> <code>" + fmt.Sprint(currency.AmountToFloatByCodeAlpha(amount, codeAlpha)) + "</code>\n"
-	text += "<b>Сумма в $:</b> <code>" + fmt.Sprint(currency.AmountToFloat(amountUsd, 2)) + "</code>\n"
+	text += "<b>Сумма:</b> <code>" + strconv.FormatFloat(currency.AmountToFloatByCodeAlpha(amount, codeAlpha), 'f', -1, 64) + "</code>\n"
+	text += "<b>Сумма в $:</b> <code>" + strconv.FormatFloat(currency.AmountToFloat(amountUsd, 2), 'f', -1, 64) + "</code>\n"
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
@@ -52,8 +53,8 @@ func NotificationDetectedPayment(paymentId, merchantId int64, uuid, address stri
 	text += "<b>Tx Id:</b> <code>" + txId + "</code>\n"
 	text += "<b>Тип инвойса:</b> <code>" + invoiceType + "</code>\n"
 	text += "<b>Валюта:</b> <code>" + string(codeAlpha) + "</code>\n"
-	text += "<b>Сумма:</b> <code>" + fmt.Sprint(currency.AmountToFloatByCodeAlpha(amount, codeAlpha)) + "</code>\n"
-	text += "<b>Сумма в $:</b> <code>" + fmt.Sprint(currency.AmountToFloat(amountUsd, 2)) + "</code>\n"
+	text += "<b>Сумма:</b> <code>" + strconv.FormatFloat(currency.AmountToFloatByCodeAlpha(amount, codeAlpha), 'f', -1, 64) + "</code>\n"
+	text += "<b>Сумма в $:</b> <code>" + strconv.FormatFloat(currency.AmountToFloat(amountUsd, 2), 'f', -1, 64) + "</code>\n"
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
@@ -74,10 +75,10 @@ func NotificationCompletedPayment(paymentId, merchantId int64, uuid, address str
 	}
 	text += "<b>Тип инвойса:</b> <code>" + invoiceType + "</code>\n"
 	text += "<b>Валюта:</b> <code>" + string(codeAlpha) + "</code>\n"
-	text += "<b>Сумма:</b> <code>" + fmt.Sprint(currency.AmountToFloatByCodeAlpha(amount, codeAlpha)) + "</code>\n"
-	text += "<b>Сумма в $:</b> <code>" + fmt.Sprint(currency.AmountToFloat(amountUsd, 2)) + "</code>\n"
-	text += "<b>Полученная сумма:</b> <code>" + fmt.Sprint(currency.AmountToFloatByCodeAlpha(receivedAmount, codeAlpha)) + "</code>\n"
-	text += "<b>Полученная сумма в $:</b> <code>" + fmt.Sprint(currency.AmountToFloat(receivedAmountUsd, 2)) + "</code>\n"
+	text += "<b>Сумма:</b> <code>" + strconv.FormatFloat(currency.AmountToFloatByCodeAlpha(amount, codeAlpha), 'f', -1, 64) + "</code>\n"
+	text += "<b>Сумма в $:</b> <code>" + strconv.FormatFloat(currency.AmountToFloat(amountUsd, 2), 'f', -1, 64) + "</code>\n"
+	text += "<b>Полученная сумма:</b> <code>" + strconv.FormatFloat(currency.AmountToFloatByCodeAlpha(receivedAmount, codeAlpha), 'f', -1, 64) + "</code>\n"
+	text += "<b>Полученная сумма в $:</b> <code>" + strconv.FormatFloat(currency.AmountToFloat(receivedAmountUsd, 2), 'f', -1, 64) + "</code>\n"
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
@@ -85,7 +86,7 @@ func NotificationCompletedPayment(paymentId, merchantId int64, uuid, address str
 	}
 	efwnotify.NotifyTelegram(text, chatId)
 }
-func NotificationFundsRecivedPayment(paymentId, merchantId int64, uuid, address string, codeAlpha types.CurrencyCodeAlpha, amount, amountUsd, receivedAmount, receivedAmountUsd types.Amount, txId string, chatId int64) {
+func NotificationFundsRecivedPayment(paymentId, merchantId int64, uuid, address string, codeAlpha types.CurrencyCodeAlpha, amount, amountUsd, receivedAmount types.Amount, txId string, chatId int64) {
 	invoiceType := "Фиксированная сумма"
 	if amount == 0 {
 		invoiceType = "Произвольная сумма"
@@ -99,10 +100,9 @@ func NotificationFundsRecivedPayment(paymentId, merchantId int64, uuid, address 
 	text += "<b>Tx Id:</b> <code>" + txId + "</code>\n"
 	text += "<b>Тип инвойса:</b> <code>" + invoiceType + "</code>\n"
 	text += "<b>Валюта:</b> <code>" + string(codeAlpha) + "</code>\n"
-	text += "<b>Сумма:</b> <code>" + fmt.Sprint(currency.AmountToFloatByCodeAlpha(amount, codeAlpha)) + "</code>\n"
-	text += "<b>Сумма в $:</b> <code>" + fmt.Sprint(currency.AmountToFloat(amountUsd, 2)) + "</code>\n"
-	text += "<b>Полученная сумма:</b> <code>" + fmt.Sprint(currency.AmountToFloatByCodeAlpha(receivedAmount, codeAlpha)) + "</code>\n"
-	text += "<b>Полученная сумма в $:</b> <code>" + fmt.Sprint(currency.AmountToFloat(receivedAmountUsd, 2)) + "</code>\n"
+	text += "<b>Сумма:</b> <code>" + strconv.FormatFloat(currency.AmountToFloatByCodeAlpha(amount, codeAlpha), 'f', -1, 64) + "</code>\n"
+	text += "<b>Сумма в $:</b> <code>" + strconv.FormatFloat(currency.AmountToFloat(amountUsd, 2), 'f', -1, 64) + "</code>\n"
+	text += "<b>Полученная сумма:</b> <code>" + strconv.FormatFloat(currency.AmountToFloatByCodeAlpha(receivedAmount, codeAlpha), 'f', -1, 64) + "</code>\n"
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
@@ -123,8 +123,8 @@ func NotificationExpirePayment(paymentId, merchantId int64, uuid, address string
 	}
 	text += "<b>Тип инвойса:</b> <code>" + invoiceType + "</code>\n"
 	text += "<b>Валюта:</b> <code>" + string(codeAlpha) + "</code>\n"
-	text += "<b>Сумма:</b> <code>" + fmt.Sprint(currency.AmountToFloatByCodeAlpha(amount, codeAlpha)) + "</code>\n"
-	text += "<b>Сумма в $:</b> <code>" + fmt.Sprint(currency.AmountToFloat(amountUsd, 2)) + "</code>\n"
+	text += "<b>Сумма:</b> <code>" + strconv.FormatFloat(currency.AmountToFloatByCodeAlpha(amount, codeAlpha), 'f', -1, 64) + "</code>\n"
+	text += "<b>Сумма в $:</b> <code>" + strconv.FormatFloat(currency.AmountToFloat(amountUsd, 2), 'f', -1, 64) + "</code>\n"
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
@@ -145,10 +145,10 @@ func NotificationInsufficientFundsPayment(paymentId, merchantId int64, uuid, add
 	}
 	text += "<b>Тип инвойса:</b> <code>" + invoiceType + "</code>\n"
 	text += "<b>Валюта:</b> <code>" + string(codeAlpha) + "</code>\n"
-	text += "<b>Сумма:</b> <code>" + fmt.Sprint(currency.AmountToFloatByCodeAlpha(amount, codeAlpha)) + "</code>\n"
-	text += "<b>Сумма в $:</b> <code>" + fmt.Sprint(currency.AmountToFloat(amountUsd, 2)) + "</code>\n"
-	text += "<b>Полученная сумма:</b> <code>" + fmt.Sprint(currency.AmountToFloatByCodeAlpha(receivedAmount, codeAlpha)) + "</code>\n"
-	text += "<b>Полученная сумма в $:</b> <code>" + fmt.Sprint(currency.AmountToFloat(receivedAmountUsd, 2)) + "</code>\n"
+	text += "<b>Сумма:</b> <code>" + strconv.FormatFloat(currency.AmountToFloatByCodeAlpha(amount, codeAlpha), 'f', -1, 64) + "</code>\n"
+	text += "<b>Сумма в $:</b> <code>" + strconv.FormatFloat(currency.AmountToFloat(amountUsd, 2), 'f', -1, 64) + "</code>\n"
+	text += "<b>Полученная сумма:</b> <code>" + strconv.FormatFloat(currency.AmountToFloatByCodeAlpha(receivedAmount, codeAlpha), 'f', -1, 64) + "</code>\n"
+	text += "<b>Полученная сумма в $:</b> <code>" + strconv.FormatFloat(currency.AmountToFloat(receivedAmountUsd, 2), 'f', -1, 64) + "</code>\n"
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {

@@ -171,10 +171,10 @@ func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, txId typ
 		payment.UpdateStatus(paymentId, constants.PaymentStatusFundsReceived)
 	}
 
-	go that.afterSetPaymentReceived(paymentModel, txId)
+	go that.afterSetPaymentReceived(paymentModel, amount, txId)
 }
 
-func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, txId types.PaymentTxId) {
+func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amount types.Amount, txId types.PaymentTxId) {
 	helpers.NotificationFundsRecivedPayment(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
@@ -182,8 +182,7 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, txI
 		paymentModel.Currency,
 		paymentModel.Amount,
 		paymentModel.AmountUsd,
-		paymentModel.RecievedAmount,
-		paymentModel.RecievedAmountUsd,
+		amount,
 		string(txId),
 		0,
 	)
