@@ -11,7 +11,7 @@ type Entity struct {
 	MerchantId                         types.MerchantId        `json:"merchant_id" gorm:"column:merchant_id"`
 	Currency                           types.CurrencyCodeAlpha `json:"currency" gorm:"column:currency"`
 	Status                             types.PaymentStatus     `json:"status" gorm:"column:status"`
-	Address                            string                  `json:"address" gorm:"column:address"`
+	Address                            types.PaymentAddress    `json:"address" gorm:"column:address"`
 	Amount                             types.Amount            `json:"amount" gorm:"column:amount"`
 	AmountUsd                          types.Amount            `json:"amount_usd" gorm:"column:amount_usd"`
 	RecievedAmount                     types.Amount            `json:"received_amount" gorm:"column:received_amount"`

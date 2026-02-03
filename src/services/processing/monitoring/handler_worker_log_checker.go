@@ -2,6 +2,7 @@ package monitoring
 
 import (
 	"compay/common/constants"
+	"compay/common/types"
 	"compay/src/helpers"
 	"compay/src/models/logpayment"
 	"efw/core/efwlog"
@@ -42,7 +43,7 @@ func (that *monitoring) handleLoopLogChecker() {
 	fmt.Println("[Monitoring] Start loop checker")
 
 	that.logPaymentsMutex.RLock()
-	activeLogs := make(map[string]*logpayment.Model, len(that.activeLogPayments))
+	activeLogs := make(map[types.PaymentTxId]*logpayment.Model, len(that.activeLogPayments))
 	maps.Copy(activeLogs, that.activeLogPayments)
 	that.logPaymentsMutex.RUnlock()
 

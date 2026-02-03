@@ -14,9 +14,9 @@ type Entity struct {
 	Currency                              types.CurrencyCodeAlpha `json:"currency" gorm:"column:currency"`
 	IsComplete                            bool                    `json:"is_complete" gorm:"column:is_complete"`
 	StartBlock                            int64                   `json:"start_block" gorm:"column:start_block"`
-	TxId                                  string                  `json:"tx_id" gorm:"column:tx_id"`
-	TxHash                                string                  `json:"tx_hash" gorm:"column:tx_hash"`
-	Address                               string                  `json:"address" gorm:"column:address"`
+	TxId                                  types.PaymentTxId       `json:"tx_id" gorm:"column:tx_id"`
+	TxHash                                types.PaymentTxHash     `json:"tx_hash" gorm:"column:tx_hash"`
+	Address                               types.PaymentAddress    `json:"address" gorm:"column:address"`
 	Data                                  Data                    `json:"data" gorm:"column:data"`
 }
 

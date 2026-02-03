@@ -1,6 +1,7 @@
 package monitoring
 
 import (
+	"compay/common/types"
 	"compay/src/models/logpayment"
 	"fmt"
 )
@@ -19,7 +20,7 @@ func (that *monitoring) addLogPayment(logPaymentModel *logpayment.Model) {
 }
 
 // removeLogPaymentAsync удаляет лог платежа из пула
-func (that *monitoring) removeLogPaymentAsync(txId string) {
+func (that *monitoring) removeLogPaymentAsync(txId types.PaymentTxId) {
 	that.logPaymentsMutex.Lock()
 	that.removeLogPayment(txId)
 	that.logPaymentsMutex.Unlock()
@@ -27,6 +28,6 @@ func (that *monitoring) removeLogPaymentAsync(txId string) {
 	fmt.Printf("[Monitoring] LogPayment with tx_id %s removed from monitoring pool\n", txId)
 }
 
-func (that *monitoring) removeLogPayment(txId string) {
+func (that *monitoring) removeLogPayment(txId types.PaymentTxId) {
 	delete(that.activeLogPayments, txId)
 }

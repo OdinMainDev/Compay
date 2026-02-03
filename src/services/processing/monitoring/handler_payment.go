@@ -103,7 +103,7 @@ func (that *monitoring) addPayment(paymentModel *payment.Model) {
 }
 
 // removePaymentAsync удаляет платеж из пула
-func (that *monitoring) removePaymentAsync(address string, codeAlpha types.CurrencyCodeAlpha) {
+func (that *monitoring) removePaymentAsync(address types.PaymentAddress, codeAlpha types.CurrencyCodeAlpha) {
 	switch codeAlpha {
 	case constants.BtcCodeAlpha:
 		that.btc.mutex.Lock()
@@ -118,7 +118,7 @@ func (that *monitoring) removePaymentAsync(address string, codeAlpha types.Curre
 	fmt.Printf("[Monitoring] Payment with wallet %s removed from monitoring pool\n", address)
 }
 
-func (that *monitoring) removePayment(address string, codeAlpha types.CurrencyCodeAlpha) {
+func (that *monitoring) removePayment(address types.PaymentAddress, codeAlpha types.CurrencyCodeAlpha) {
 	switch codeAlpha {
 	case constants.BtcCodeAlpha:
 		delete(that.btc.activePayments, address)
@@ -130,7 +130,7 @@ func (that *monitoring) removePayment(address string, codeAlpha types.CurrencyCo
 }
 
 // Ставим статус заявки "Обнаружен платеж"
-func (that *monitoring) doSetPaymentDetected(paymentId types.PaymentId, txId string) {
+func (that *monitoring) doSetPaymentDetected(paymentId types.PaymentId, txId types.PaymentTxId) {
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
 	if paymentModel.Status == constants.PaymentStatusCreated {
 		paymentModel.Status = constants.PaymentStatusFundsDetected
@@ -140,26 +140,26 @@ func (that *monitoring) doSetPaymentDetected(paymentId types.PaymentId, txId str
 	go that.afterSetPaymentDetected(paymentModel, txId)
 }
 
-func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txId string) {
+func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txId types.PaymentTxId) {
 	helpers.NotificationDetectedPayment(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
-		paymentModel.Address,
+		string(paymentModel.Address),
 		paymentModel.Currency,
 		paymentModel.Amount,
 		paymentModel.AmountUsd,
-		txId,
+		string(txId),
 		0,
 	)
 }
 
 // Обновляем сумму платежа
-func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, txId string, amount types.Amount) {
+func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, txId types.PaymentTxId, amount types.Amount) {
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
 	paymentModel.RecievedAmount += amount
 	paymentModel.Status = constants.PaymentStatusFundsReceived
 
-	if paymentModel.Amount != 0 && paymentModel.RecievedAmount > paymentModel.Amount {
+	if paymentModel.Amount != 0 && paymentModel.RecievedAmount >= paymentModel.Amount {
 		that.doSetPaymentComplete(paymentModel)
 		return
 	}
@@ -169,17 +169,17 @@ func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, txId str
 	go that.afterSetPaymentReceived(paymentModel, txId)
 }
 
-func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, txId string) {
+func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, txId types.PaymentTxId) {
 	helpers.NotificationFundsRecivedPayment(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
-		paymentModel.Address,
+		string(paymentModel.Address),
 		paymentModel.Currency,
 		paymentModel.Amount,
 		paymentModel.AmountUsd,
 		paymentModel.RecievedAmount,
 		paymentModel.RecievedAmountUsd,
-		txId,
+		string(txId),
 		0,
 	)
 }
@@ -197,7 +197,7 @@ func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model) {
 	helpers.NotificationCompletedPayment(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
-		paymentModel.Address,
+		string(paymentModel.Address),
 		paymentModel.Currency,
 		paymentModel.Amount,
 		paymentModel.AmountUsd,
@@ -233,7 +233,7 @@ func (that *monitoring) afterSetPaymentExpired(paymentModel *payment.Model) {
 		helpers.NotificationExpirePayment(paymentModel.GetIdInt64(),
 			int64(paymentModel.MerchantId),
 			paymentModel.TrxId,
-			paymentModel.Address,
+			string(paymentModel.Address),
 			paymentModel.Currency,
 			paymentModel.Amount,
 			paymentModel.AmountUsd,
@@ -243,7 +243,7 @@ func (that *monitoring) afterSetPaymentExpired(paymentModel *payment.Model) {
 		helpers.NotificationInsufficientFundsPayment(paymentModel.GetIdInt64(),
 			int64(paymentModel.MerchantId),
 			paymentModel.TrxId,
-			paymentModel.Address,
+			string(paymentModel.Address),
 			paymentModel.Currency,
 			paymentModel.Amount,
 			paymentModel.AmountUsd,

@@ -11,7 +11,7 @@ type QueryHelper struct {
 	model.QueryHelper
 	Id        types.LogPaymentId
 	PaymentId types.PaymentId
-	TxId      string
+	TxId      types.PaymentTxId
 }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {

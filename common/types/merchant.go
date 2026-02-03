@@ -22,6 +22,9 @@ type BlockchainStateId int64
 // Payment Types
 type PaymentId int64
 type PaymentStatus string
+type PaymentAddress string
+type PaymentTxId string
+type PaymentTxHash string
 
 // Log Types
 type LogUserId int64

@@ -46,9 +46,9 @@ func GetTransactions(lastHeight int64) ([]types.TxData, int64, error) {
 				address := addr.EncodeAddress()
 
 				result = append(result, types.TxData{
-					TxId:          txid,
-					TxHash:        txid,
-					Address:       address,
+					TxId:          types.PaymentTxId(txid),
+					TxHash:        types.PaymentTxHash(txid),
+					Address:       types.PaymentAddress(address),
 					BlockHash:     hash.String(),
 					BlockHeight:   lastHeight,
 					Time:          timeBlock,

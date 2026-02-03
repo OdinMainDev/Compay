@@ -3,6 +3,7 @@ package monitoring
 import (
 	"compay/common/constants"
 	"compay/common/cperrors"
+	"compay/common/types"
 	"compay/src/helpers"
 	"compay/src/models/payment"
 	"encoding/json"
@@ -31,7 +32,7 @@ func (that *monitoring) handleBtcNode() {
 	fmt.Println("[Monitoring] Start handle btc node")
 
 	that.btc.mutex.RLock()
-	activePayments := make(map[string]*payment.Model, len(that.btc.activePayments))
+	activePayments := make(map[types.PaymentAddress]*payment.Model, len(that.btc.activePayments))
 	maps.Copy(activePayments, that.btc.activePayments)
 	that.btc.mutex.RUnlock()
 

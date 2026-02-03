@@ -3,6 +3,7 @@ package processing
 import (
 	"compay/common/constants"
 	"compay/common/cperrors"
+	"compay/common/types"
 	"compay/src/helpers"
 	"compay/src/models/merchant"
 	"compay/src/models/payment"
@@ -24,11 +25,11 @@ type responseCreateWallet struct {
 	Errors  map[string][]string      `json:"errors"`
 }
 type responseCreateWalletData struct {
-	Address       string `json:"address"`
-	PrivateKey    string `json:"private_key"`
-	PrivateKeyWif string `json:"private_key_wif"`
-	PublicKey     string `json:"public_key"`
-	PublicKeyFull string `json:"public_key_full"`
+	Address       types.PaymentAddress `json:"address"`
+	PrivateKey    string               `json:"private_key"`
+	PrivateKeyWif string               `json:"private_key_wif"`
+	PublicKey     string               `json:"public_key"`
+	PublicKeyFull string               `json:"public_key_full"`
 }
 
 func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error) {
@@ -83,7 +84,7 @@ func asyncStartPayment(paymentModel *payment.Model, merchantModel *merchant.Mode
 		paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
-		paymentModel.Address,
+		string(paymentModel.Address),
 		paymentModel.Currency,
 		paymentModel.Amount,
 		paymentModel.AmountUsd,

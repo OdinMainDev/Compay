@@ -18,7 +18,7 @@ type txParserJob struct {
 type currencyData struct {
 	blockchainStateModel *blockchainstate.Model
 	currentBlock         atomic.Int64 // atomic access to current block height
-	activePayments       map[string]*payment.Model
+	activePayments       map[types.PaymentAddress]*payment.Model
 	mutex                sync.RWMutex
 }
 
@@ -34,7 +34,7 @@ type monitoring struct {
 	txParserJobChan chan txParserJob
 
 	// Данные логов платежей
-	activeLogPayments  map[string]*logpayment.Model
+	activeLogPayments  map[types.PaymentTxId]*logpayment.Model
 	logPaymentsMutex   sync.RWMutex
 	logPaymentsJobChan chan *logpayment.Model
 
@@ -50,13 +50,13 @@ func newInvoiceMonitor() *monitoring {
 		checkInterval:      30 * time.Second, // Проверяем блоки каждые 30 секунд
 		workerCount:        10,
 		txParserJobChan:    make(chan txParserJob),
-		activeLogPayments:  make(map[string]*logpayment.Model),
+		activeLogPayments:  make(map[types.PaymentTxId]*logpayment.Model),
 		logPaymentsMutex:   sync.RWMutex{},
 		logPaymentsJobChan: make(chan *logpayment.Model),
 		btc: currencyData{
 			blockchainStateModel: nil,
 			currentBlock:         atomic.Int64{},
-			activePayments:       make(map[string]*payment.Model),
+			activePayments:       make(map[types.PaymentAddress]*payment.Model),
 			mutex:                sync.RWMutex{},
 		},
 		stopChan: make(chan struct{}),

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (that *monitoring) parseTransactions(transactions []types.TxData, activePayments map[string]*payment.Model) {
+func (that *monitoring) parseTransactions(transactions []types.TxData, activePayments map[types.PaymentAddress]*payment.Model) {
 	fmt.Println("[Monitoring] Start parse transactions")
 	now := time.Now().Unix()
 
