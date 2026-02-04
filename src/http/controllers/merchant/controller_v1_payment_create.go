@@ -14,7 +14,7 @@ import (
 )
 
 type requestV1PaymentCreate struct {
-	Amount   float64                 `json:"amount" binding:"required,min=0"`
+	Amount   float64                 `json:"amount" binding:"omitempty,min=0"`
 	Token    string                  `json:"token" binding:"required,len=36"`
 	Currency types.CurrencyCodeAlpha `json:"currency" binding:"required,max=20"`
 	Sign     string                  `json:"sign" binding:"required,len=128"`
