@@ -32,7 +32,7 @@ func (helper QueryHelper) ApplyCacheFilters(entity *Model) bool {
 		}
 	}
 	if helper.Search != "" {
-		if !strings.Contains(entity.Name, helper.Search) {
+		if !strings.Contains(utils.ToLower(entity.Name), helper.Search) {
 			return false
 		}
 	}
