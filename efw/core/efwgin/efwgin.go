@@ -1,6 +1,7 @@
 package efwgin
 
 import (
+	"efw/config"
 	efwmiddleware "efw/core/efwgin/efw_middleware"
 	"efw/services/efwtotp"
 	"efw/utils"
@@ -15,11 +16,10 @@ type RouterOptions struct {
 	AdditionalHeaders []string
 }
 
-// TODO: раскоментировать config.AppDebug
 func CreateRouter(routerOptions RouterOptions) *gin.Engine {
-	// if !config.AppDebug {
-	gin.SetMode(gin.ReleaseMode)
-	// }
+	if !config.AppDebug {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	router := gin.New()
 
