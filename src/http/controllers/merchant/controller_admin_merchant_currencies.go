@@ -29,7 +29,7 @@ type requetsAdminMerchantCurrencyProcess struct {
 	MaxAmountWithdraw float64                  `json:"max_amount_withdraw" binding:"required,gt=0"`
 	FeeType           types.FeeType            `json:"fee_type" binding:"required,feeTypeExist"`
 	FeeFixed          float64                  `json:"fee_fixed" binding:"required,min=0"`
-	FeePercent        float64                  `json:"fee_percent" binding:"required,min=0"`
+	FeePercent        float64                  `json:"fee_percent" binding:"required,min=0,max=100"`
 }
 
 func AdminMerchantCurrenciesGet(context *gin.Context) {
