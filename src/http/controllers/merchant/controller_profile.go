@@ -15,8 +15,8 @@ import (
 type requestProfileProcess struct {
 	OldUsername string `json:"old_username" binding:"omitempty,min=6,max=255"`
 	NewUsername string `json:"new_username" binding:"omitempty,required_with=OldUsername,min=6,max=255"`
-	OldPassword string `json:"old_password" binding:"omitempty,min=6,max=255"`
-	NewPassword string `json:"new_password" binding:"omitempty,required_with=OldPassword,min=6,max=255"`
+	OldPassword string `json:"old_password" binding:"omitempty,min=6,max=62"`
+	NewPassword string `json:"new_password" binding:"omitempty,required_with=OldPassword,min=6,max=62"`
 }
 
 func ProfileGet(context *gin.Context) {

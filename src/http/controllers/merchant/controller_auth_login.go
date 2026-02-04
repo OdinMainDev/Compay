@@ -14,7 +14,7 @@ import (
 
 type requestLogin struct {
 	Email    string `json:"email" binding:"required,email,min=5,max=255"`
-	Password string `json:"password" binding:"required,min=6,max=255"`
+	Password string `json:"password" binding:"required,min=6,max=62"`
 }
 
 func AuthLogin(context *gin.Context) {
