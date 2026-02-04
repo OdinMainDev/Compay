@@ -6,6 +6,7 @@ import (
 	"efw/core/efwlog"
 	"net/http"
 
+	"compay/src/helpers"
 	controller "compay/src/http/controllers/btc"
 	"compay/src/services/cryptocurrencies/btc"
 )
@@ -13,7 +14,11 @@ import (
 var btcServer *http.Server
 
 func StartBtc() {
-	btc.Start()
+	err := btc.Start()
+	if err != nil {
+		helpers.NotificationError("FATAL ERROR ON STARTUP BTC NODE: " + err.Error())
+		panic("FATAL ERROR ON STARTUP BTC NODE: " + err.Error())
+	}
 	router := efwgin.CreateRouter(efwgin.RouterOptions{})
 
 	router.POST("/generate-wallet", controller.GenerateWallet)
