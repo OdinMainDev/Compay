@@ -33,6 +33,10 @@ func V1PaymentCreate(context *gin.Context) {
 		efwginhelpers.ResponseError(context, cperrors.ErrorApiV1BadCurrency)
 		return
 	}
+	if !currencyModel.IsEnabled {
+		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorApiV1CurrencyOnMaintenance))
+		return
+	}
 
 	merchantModel := merchant.GetModel(merchant.QueryHelper{
 		Token: input.Token,
