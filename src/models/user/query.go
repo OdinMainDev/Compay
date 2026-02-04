@@ -7,6 +7,7 @@ import (
 	"efw"
 	"efw/components/entity"
 	"efw/components/model"
+	"efw/core/efwlog"
 	"efw/utils"
 
 	"gorm.io/gorm"
@@ -52,14 +53,20 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 }
 
 func BanMerchantUsers(merchantId types.MerchantId) {
-	efw.DBTransaction[userEntity.Entity]().
+	_, err := efw.DBTransaction[userEntity.Entity]().
 		Where("merchant_id = ?", merchantId).
 		Update(context.Background(), "is_banned", true)
+	if err != nil {
+		efwlog.LogByLoggerName("gorm_error", 0, efwlog.FmtGormError(0, 0, err.Error(), "BanMerchantUsers"))
+	}
 }
 
 func UnbanMerchantUser(id entity.UserId, merchantId types.MerchantId) {
-	efw.DBTransaction[userEntity.Entity]().
+	_, err := efw.DBTransaction[userEntity.Entity]().
 		Where("merchant_id = ?", merchantId).
 		Where("id = ?", id).
 		Update(context.Background(), "is_banned", false)
+	if err != nil {
+		efwlog.LogByLoggerName("gorm_error", 0, efwlog.FmtGormError(0, 0, err.Error(), "UnbanMerchantUser"))
+	}
 }

@@ -42,19 +42,25 @@ func (gl *EsGormLogger) Trace(_ context.Context, start time.Time, fc func() (str
 	elapsed := time.Since(start)
 	sql, rows := fc()
 	if err != nil {
-		message := fmt.Sprintf(
-			"Rows affected: %d\n"+
-				"Duration: %d\n"+
-				"Error: %s\n"+
-				"%s\n",
-			rows, elapsed, err.Error(), sql)
-		logGormError(message)
+		logGormError(FmtGormError(rows, elapsed, err.Error(), sql))
 	} else {
-		message := fmt.Sprintf(
-			"Rows affected: %d\n"+
-				"Duration: %v\n"+
-				"SQL: %s\n",
-			rows, elapsed, sql)
-		logGormDebug(message)
+		logGormDebug(FmtGormDebug(rows, elapsed, sql))
 	}
+}
+
+func FmtGormError(rows int64, elapsed time.Duration, err, sql string) string {
+	return fmt.Sprintf(
+		"Rows affected: %d\n"+
+			"Duration: %d\n"+
+			"Error: %s\n"+
+			"%s\n",
+		rows, elapsed, err, sql)
+}
+
+func FmtGormDebug(rows int64, elapsed time.Duration, sql string) string {
+	return fmt.Sprintf(
+		"Rows affected: %d\n"+
+			"Duration: %v\n"+
+			"SQL: %s\n",
+		rows, elapsed, sql)
 }

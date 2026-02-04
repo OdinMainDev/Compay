@@ -6,6 +6,7 @@ import (
 	"context"
 	"efw"
 	"efw/components/model"
+	"efw/core/efwlog"
 
 	"gorm.io/gorm"
 )
@@ -41,14 +42,19 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 }
 
 func IncreaseAmount(paymentId types.PaymentId, amount types.Amount) {
-	efw.DBTransaction[paymentEntity.Entity]().
+	_, err := efw.DBTransaction[paymentEntity.Entity]().
 		Where("id = ?", paymentId).
 		Update(context.Background(), "received_amount", gorm.Expr("received_amount + ?", amount))
+	if err != nil {
+		efwlog.LogByLoggerName("gorm_error", 0, efwlog.FmtGormError(0, 0, err.Error(), "IncreaseAmount"))
+	}
 }
 
 func UpdateStatus(paymentId types.PaymentId, status types.PaymentStatus) {
-	efw.DBTransaction[paymentEntity.Entity]().
+	_, err := efw.DBTransaction[paymentEntity.Entity]().
 		Where("id = ?", paymentId).
 		Update(context.Background(), "status", status)
-
+	if err != nil {
+		efwlog.LogByLoggerName("gorm_error", 0, efwlog.FmtGormError(0, 0, err.Error(), "UpdateStatus"))
+	}
 }

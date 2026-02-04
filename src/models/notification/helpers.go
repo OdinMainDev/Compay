@@ -5,6 +5,7 @@ import (
 	"compay/src/entities/notification"
 	"context"
 	"efw"
+	"efw/core/efwlog"
 )
 
 func FastCreate(merchantId types.MerchantId, action types.NotificationAction, text types.NotificationText) {
@@ -18,10 +19,14 @@ func FastCreate(merchantId types.MerchantId, action types.NotificationAction, te
 }
 
 func ReadAll(merchantId types.MerchantId) int {
-	res, _ := efw.DBTransaction[any]().
+	res, err := efw.DBTransaction[any]().
 		Where("merchant_id", merchantId).
 		Where("is_read", false).
 		Updates(context.Background(), Model{Entity: notification.Entity{IsRead: true}})
 
+	if err != nil {
+		efwlog.LogByLoggerName("gorm_error", 0, efwlog.FmtGormError(0, 0, err.Error(), "ReadAll"))
+		return 0
+	}
 	return res
 }
