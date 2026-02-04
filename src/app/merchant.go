@@ -160,12 +160,14 @@ func merchantAdminApiRoutes(group *gin.RouterGroup) {
 func merchantAdminCurrenciesRoutes(group *gin.RouterGroup) {
 	subGroup := group.Group("/dev/currencies")
 
-	subGroup.POST("/list", controller.AdminCurrencyList)
-	subGroup.POST("/list/filters", controller.AdminCurrencyListFilters)
-	subGroup.POST("/get/:id", controller.AdminCurrencyGet)
-	subGroup.POST("/process", controller.AdminCurrencyProcess)
-	subGroup.POST("/search", controller.AdminCurrencySearch)
-	subGroup.POST("/action/import", controller.AdminCurrencyActionImport)
+	subGroup.POST("/list", controller.AdminCurrenciesList)
+	subGroup.POST("/list/filters", controller.AdminCurrenciesListFilters)
+	subGroup.POST("/get/:id", controller.AdminCurrenciesGet)
+	subGroup.POST("/process", controller.AdminCurrenciesProcess)
+	subGroup.POST("/search", controller.AdminCurrenciesSearch)
+	subGroup.POST("/action/import", controller.AdminCurrenciesActionImport)
+	subGroup.POST("/action/disable", controller.AdminCurrenciesActionDisable)
+	subGroup.POST("/action/enable", controller.AdminCurrenciesActionEnable)
 }
 
 func merchantAdminLogAuthRoutes(group *gin.RouterGroup) {

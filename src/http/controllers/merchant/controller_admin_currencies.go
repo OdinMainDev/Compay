@@ -17,7 +17,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type requestAdminCurrencyList struct {
+type requestAdminCurrenciesList struct {
 	Id         types.CurrencyId         `json:"id" efwdt:"id" binding:"omitempty,gt=0"`
 	CodeAlpha  types.CurrencyCodeAlpha  `json:"code_alpha" efwdt:"code_alpha" binding:"omitempty,gt=0"`
 	Title      string                   `json:"title" efwdt:"title" binding:"omitempty,gt=0"`
@@ -27,13 +27,17 @@ type requestAdminCurrencyList struct {
 	efwdt.WithCreatedAt
 }
 
-type requestAdminCurrencyProcess struct {
+type requestAdminCurrenciesProcess struct {
 	Id    types.CurrencyId `json:"id" binding:"required,gt=0"`
 	Title string           `json:"title" efwdt:"title" binding:"required,min=1"`
 }
 
-func AdminCurrencyList(context *gin.Context) {
-	efwcontroller.Datable[currency.Model, requestAdminCurrencyList](
+type requestAdminCurrenciesAction struct {
+	Id types.CurrencyId `json:"id" binding:"required,gt=0"`
+}
+
+func AdminCurrenciesList(context *gin.Context) {
+	efwcontroller.Datable[currency.Model, requestAdminCurrenciesList](
 		context,
 		[]string{"id", "code_alpha", "title", "network", "is_coin", "minor_units", "created_at"},
 		nil,
@@ -62,7 +66,7 @@ func AdminCurrencyList(context *gin.Context) {
 	)
 }
 
-func AdminCurrencyListFilters(context *gin.Context) {
+func AdminCurrenciesListFilters(context *gin.Context) {
 	efwcontroller.DatatableFilters(context, []efwdt.Filter{
 		{Name: "id", Type: types.EFWDT_FilterTypeInteger},
 		{Name: "code_alpha", Type: types.EFWDT_FilterTypeText},
@@ -74,7 +78,7 @@ func AdminCurrencyListFilters(context *gin.Context) {
 	})
 }
 
-func AdminCurrencyGet(context *gin.Context) {
+func AdminCurrenciesGet(context *gin.Context) {
 	efwcontroller.GetModel(
 		context,
 		currency.GetModel,
@@ -85,8 +89,8 @@ func AdminCurrencyGet(context *gin.Context) {
 	)
 }
 
-func AdminCurrencyProcess(context *gin.Context) {
-	var input requestAdminCurrencyProcess
+func AdminCurrenciesProcess(context *gin.Context) {
+	var input requestAdminCurrenciesProcess
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
 		return
 	}
@@ -112,7 +116,7 @@ func AdminCurrencyProcess(context *gin.Context) {
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": currencyModel})
 }
 
-func AdminCurrencySearch(context *gin.Context) {
+func AdminCurrenciesSearch(context *gin.Context) {
 	var input requestSearch
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
 		return
@@ -128,7 +132,7 @@ func AdminCurrencySearch(context *gin.Context) {
 	})})
 }
 
-func AdminCurrencyActionImport(context *gin.Context) {
+func AdminCurrenciesActionImport(context *gin.Context) {
 	isWorking := importdata.ImportCurrencies()
 	if isWorking {
 		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorCurrencyImportIsAlreadyStarted))
@@ -138,4 +142,50 @@ func AdminCurrencyActionImport(context *gin.Context) {
 	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
 	createLogUser(context, adminUserModel, constants.LogUserAdminCurrencyImport)
 	efwginhelpers.ResponseSuccess(context, nil)
+}
+
+func AdminCurrenciesActionDisable(context *gin.Context) {
+	adminCurrenciesActionDisableOrNot(context, constants.LogUserAdminCurrencyDisable)
+}
+
+func AdminCurrenciesActionEnable(context *gin.Context) {
+	adminCurrenciesActionDisableOrNot(context, constants.LogUserAdminCurrencyEnable)
+}
+
+func adminCurrenciesActionDisableOrNot(context *gin.Context, action types.LogUserAction) {
+	var input requestAdminCurrenciesAction
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+
+	currencyModel := currency.GetModel(currency.QueryHelper{Id: input.Id})
+	if currencyModel == nil {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if !isUserRootAdmin(adminUserModel.GetId()) {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	actionSuccess := false
+
+	if action == constants.LogUserAdminCurrencyDisable && currencyModel.IsEnabled {
+		currencyModel.IsEnabled = false
+		actionSuccess = true
+	}
+
+	if action == constants.LogUserAdminCurrencyEnable && !currencyModel.IsEnabled {
+		currencyModel.IsEnabled = true
+		actionSuccess = true
+	}
+
+	if actionSuccess {
+		currency.Save(currencyModel, currency.QueryHelper{})
+		createLogUser(context, adminUserModel, action)
+	}
+
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": currencyModel})
 }

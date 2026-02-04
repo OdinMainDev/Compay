@@ -35,6 +35,8 @@ const (
 	// ADMIN CURRENCY
 	LogUserAdminCurrencyProcess types.LogUserAction = "AdminCurrencyProcess"
 	LogUserAdminCurrencyImport  types.LogUserAction = "AdminCurrencyImport"
+	LogUserAdminCurrencyDisable types.LogUserAction = "AdminCurrencyDisable"
+	LogUserAdminCurrencyEnable  types.LogUserAction = "AdminCurrencyEnable"
 
 	// MERCHANT
 	// MERCHANT SETTINGS
