@@ -34,7 +34,7 @@ type monitoring struct {
 	txParserJobChan chan txParserJob
 
 	// Данные логов платежей
-	activeLogPayments  map[types.PaymentTxId]*logpayment.Model
+	activeLogPayments  map[activeTxId]*logpayment.Model
 	logPaymentsMutex   sync.RWMutex
 	logPaymentsJobChan chan *logpayment.Model
 
@@ -50,7 +50,7 @@ func newInvoiceMonitor() *monitoring {
 		checkInterval:      30 * time.Second, // Проверяем блоки каждые 30 секунд
 		workerCount:        10,
 		txParserJobChan:    make(chan txParserJob),
-		activeLogPayments:  make(map[types.PaymentTxId]*logpayment.Model),
+		activeLogPayments:  make(map[activeTxId]*logpayment.Model),
 		logPaymentsMutex:   sync.RWMutex{},
 		logPaymentsJobChan: make(chan *logpayment.Model),
 		btc: currencyData{

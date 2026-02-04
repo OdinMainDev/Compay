@@ -27,3 +27,9 @@ type getTransactionsBtcResponseData struct {
 	Transactions []types.TxData `json:"transactions"`
 	NewHeight    int64          `json:"new_height"`
 }
+
+type activeTxId string
+
+func toTxId(txId types.PaymentTxId, address types.PaymentAddress) activeTxId {
+	return activeTxId(txId) + activeTxId(address)
+}

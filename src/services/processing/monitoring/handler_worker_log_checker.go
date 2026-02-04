@@ -2,7 +2,6 @@ package monitoring
 
 import (
 	"compay/common/constants"
-	"compay/common/types"
 	"compay/src/helpers"
 	"compay/src/models/logpayment"
 	"efw/core/efwlog"
@@ -43,7 +42,7 @@ func (that *monitoring) handleLoopLogChecker() {
 	fmt.Println("[Monitoring] Start log loop checker")
 
 	that.logPaymentsMutex.RLock()
-	activeLogs := make(map[types.PaymentTxId]*logpayment.Model, len(that.activeLogPayments))
+	activeLogs := make(map[activeTxId]*logpayment.Model, len(that.activeLogPayments))
 	maps.Copy(activeLogs, that.activeLogPayments)
 	that.logPaymentsMutex.RUnlock()
 
@@ -75,6 +74,6 @@ func (that *monitoring) processLogChecker(logPaymentModel *logpayment.Model) {
 		logpayment.UpdateStatus(logPaymentModel.GetId())
 
 		// Удаляем из активных
-		that.removeLogPaymentAsync(logPaymentModel.TxId)
+		that.removeLogPaymentAsync(logPaymentModel.TxId, logPaymentModel.Address)
 	}
 }

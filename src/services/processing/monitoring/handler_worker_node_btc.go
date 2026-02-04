@@ -56,7 +56,9 @@ func (that *monitoring) handleBtcNode() {
 			continue
 		}
 		that.parseTransactions(response.Data.Transactions, activePayments)
-		that.btc.currentBlock.Store(response.Data.NewHeight)
+		if response.Data.NewHeight > currentBlock {
+			that.btc.currentBlock.Store(currentBlock + 1)
+		}
 		return
 	}
 
@@ -74,5 +76,8 @@ func (that *monitoring) updateBtcBlockCount() {
 		return
 	}
 
-	that.btc.currentBlock.Store(response.Data)
+	currentBlock := that.btc.currentBlock.Load()
+	if response.Data > currentBlock {
+		that.btc.currentBlock.Store(currentBlock + 1)
+	}
 }

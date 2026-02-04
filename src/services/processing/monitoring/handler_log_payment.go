@@ -16,18 +16,18 @@ func (that *monitoring) addLogPaymentAsync(logPaymentModel *logpayment.Model) {
 }
 
 func (that *monitoring) addLogPayment(logPaymentModel *logpayment.Model) {
-	that.activeLogPayments[logPaymentModel.TxId] = logPaymentModel
+	that.activeLogPayments[toTxId(logPaymentModel.TxId, logPaymentModel.Address)] = logPaymentModel
 }
 
 // removeLogPaymentAsync удаляет лог платежа из пула
-func (that *monitoring) removeLogPaymentAsync(txId types.PaymentTxId) {
+func (that *monitoring) removeLogPaymentAsync(txId types.PaymentTxId, address types.PaymentAddress) {
 	that.logPaymentsMutex.Lock()
-	that.removeLogPayment(txId)
+	that.removeLogPayment(txId, address)
 	that.logPaymentsMutex.Unlock()
 
 	fmt.Printf("[Monitoring] LogPayment with tx_id %s removed from monitoring pool\n", txId)
 }
 
-func (that *monitoring) removeLogPayment(txId types.PaymentTxId) {
-	delete(that.activeLogPayments, txId)
+func (that *monitoring) removeLogPayment(txId types.PaymentTxId, address types.PaymentAddress) {
+	delete(that.activeLogPayments, toTxId(txId, address))
 }
