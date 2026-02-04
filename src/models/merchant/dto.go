@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DTO(model *Model) gin.H {
+func DTO(model *Model) any {
 	return gin.H{
 		"name": model.Name,
 		"settings": gin.H{
 			"notification_settings": gin.H{
-				"notification_settings": model.Settings.NotificationSettings.TelegramChatId,
+				"telegram_chat_id": model.Settings.NotificationSettings.TelegramChatId,
 			},
 		},
 	}
