@@ -24,7 +24,7 @@ type NotificationSettings struct {
 	TelegramChatId             int64 `json:"telegram_chat_id"`
 	DisableCreateInvoice       bool  `json:"disable_create_invoice"`
 	DisableDetectedTransaction bool  `json:"disable_detected_transaction"`
-	DisableFundsRecieved       bool  `json:"disable_funds_recieved"`
+	DisableFundsReceived       bool  `json:"disable_funds_recieved"`
 	DisableCompletedInvoice    bool  `json:"disable_completed_invoice"`
 	DisableExpireInvoice       bool  `json:"disable_expire_invoice"`
 	DisableInsufficientFunds   bool  `json:"disable_insufficient_funds"`

@@ -14,8 +14,8 @@ type Entity struct {
 	Address                            types.PaymentAddress    `json:"address" gorm:"column:address"`
 	Amount                             types.Amount            `json:"amount" gorm:"column:amount"`
 	AmountUsd                          types.Amount            `json:"amount_usd" gorm:"column:amount_usd"`
-	RecievedAmount                     types.Amount            `json:"received_amount" gorm:"column:received_amount"`
-	RecievedAmountUsd                  types.Amount            `json:"received_amount_usd" gorm:"column:received_amount_usd"`
+	ReceivedAmount                     types.Amount            `json:"received_amount" gorm:"column:received_amount"`
+	ReceivedAmountUsd                  types.Amount            `json:"received_amount_usd" gorm:"column:received_amount_usd"`
 	RequiredConfirmations              types.Confirmation      `json:"required_confirmations" gorm:"column:required_confirmations"`
 	PrivateKey                         entity.EncryptedString  `json:"private_key" gorm:"column:private_key"`
 	PrivateKeyWif                      entity.EncryptedString  `json:"private_key_wif" gorm:"column:private_key_wif"`

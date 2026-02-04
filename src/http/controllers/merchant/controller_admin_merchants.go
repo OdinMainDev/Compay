@@ -42,7 +42,7 @@ type requestAdminMerchantsProcess struct {
 	NotificationTelegramChatId             int64            `json:"notification_telegram_chat_id" binding:"omitempty"`
 	NotificationDisableCreateInvoice       bool             `json:"notification_disable_create_invoice"`
 	NotificationDisableDetectedTransaction bool             `json:"notification_disable_detected_transaction"`
-	NotificationDisableFundsRecieved       bool             `json:"notification_disable_funds_recieved"`
+	NotificationDisableFundsReceived       bool             `json:"notification_disable_funds_recieved"`
 	NotificationDisableCompletedInvoice    bool             `json:"notification_disable_completed_invoice"`
 	NotificationDisableExpireInvoice       bool             `json:"notification_disable_expire_invoice"`
 	NotificationDisableInsufficientFunds   bool             `json:"notification_disable_insufficient_funds"`
@@ -185,7 +185,7 @@ func AdminMerchantsProcess(context *gin.Context) {
 	merchantModel.Settings.NotificationSettings.TelegramChatId = input.NotificationTelegramChatId
 	merchantModel.Settings.NotificationSettings.DisableCreateInvoice = input.NotificationDisableCreateInvoice
 	merchantModel.Settings.NotificationSettings.DisableDetectedTransaction = input.NotificationDisableDetectedTransaction
-	merchantModel.Settings.NotificationSettings.DisableFundsRecieved = input.NotificationDisableFundsRecieved
+	merchantModel.Settings.NotificationSettings.DisableFundsReceived = input.NotificationDisableFundsReceived
 	merchantModel.Settings.NotificationSettings.DisableCompletedInvoice = input.NotificationDisableCompletedInvoice
 	merchantModel.Settings.NotificationSettings.DisableExpireInvoice = input.NotificationDisableExpireInvoice
 	merchantModel.Settings.NotificationSettings.DisableInsufficientFunds = input.NotificationDisableInsufficientFunds

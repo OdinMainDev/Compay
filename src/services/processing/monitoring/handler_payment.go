@@ -179,7 +179,7 @@ func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, txId typ
 	payment.IncreaseAmount(paymentId, amount)
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
 
-	if paymentModel.Amount != 0 && paymentModel.RecievedAmount >= paymentModel.Amount {
+	if paymentModel.Amount != 0 && paymentModel.ReceivedAmount >= paymentModel.Amount {
 		that.doSetPaymentComplete(paymentModel)
 		return
 	}
@@ -205,7 +205,7 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amo
 	)
 
 	merchantModel := merchant.GetModel(merchant.QueryHelper{Id: paymentModel.MerchantId})
-	if merchantModel != nil && !merchantModel.Settings.NotificationSettings.DisableFundsRecieved {
+	if merchantModel != nil && !merchantModel.Settings.NotificationSettings.DisableFundsReceived {
 		if merchantModel.Settings.NotificationSettings.TelegramChatId != 0 {
 			helpers.NotificationFundsReceived(paymentModel.GetIdInt64(),
 				int64(paymentModel.MerchantId),
@@ -238,8 +238,8 @@ func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model) {
 		paymentModel.Currency,
 		paymentModel.Amount,
 		paymentModel.AmountUsd,
-		paymentModel.RecievedAmount,
-		paymentModel.RecievedAmountUsd,
+		paymentModel.ReceivedAmount,
+		paymentModel.ReceivedAmountUsd,
 		0,
 	)
 
@@ -253,8 +253,8 @@ func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model) {
 				paymentModel.Currency,
 				paymentModel.Amount,
 				paymentModel.AmountUsd,
-				paymentModel.RecievedAmount,
-				paymentModel.RecievedAmountUsd,
+				paymentModel.ReceivedAmount,
+				paymentModel.ReceivedAmountUsd,
 				merchantModel.Settings.NotificationSettings.TelegramChatId,
 			)
 		}
@@ -264,15 +264,15 @@ func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model) {
 // Удаляем заявку (истекло время)
 func (that *monitoring) doSetPaymentExpired(paymentId types.PaymentId) {
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
-	if paymentModel.RecievedAmount != 0 {
-		if paymentModel.RecievedAmount >= paymentModel.Amount {
+	if paymentModel.ReceivedAmount != 0 {
+		if paymentModel.ReceivedAmount >= paymentModel.Amount {
 			that.doSetPaymentComplete(paymentModel)
 			return
 		}
 	}
 
 	status := constants.PaymentStatusExpired
-	if paymentModel.RecievedAmount != 0 {
+	if paymentModel.ReceivedAmount != 0 {
 		status = constants.PaymentStatusInsufficientFunds
 	}
 	payment.UpdateStatus(paymentId, status)
@@ -284,7 +284,7 @@ func (that *monitoring) doSetPaymentExpired(paymentId types.PaymentId) {
 func (that *monitoring) afterSetPaymentExpired(paymentModel *payment.Model) {
 	merchantModel := merchant.GetModel(merchant.QueryHelper{Id: paymentModel.MerchantId})
 
-	if paymentModel.RecievedAmount == 0 {
+	if paymentModel.ReceivedAmount == 0 {
 		helpers.NotificationExpireInvoice(paymentModel.GetIdInt64(),
 			int64(paymentModel.MerchantId),
 			paymentModel.TrxId,
@@ -316,8 +316,8 @@ func (that *monitoring) afterSetPaymentExpired(paymentModel *payment.Model) {
 			paymentModel.Currency,
 			paymentModel.Amount,
 			paymentModel.AmountUsd,
-			paymentModel.RecievedAmount,
-			paymentModel.RecievedAmountUsd,
+			paymentModel.ReceivedAmount,
+			paymentModel.ReceivedAmountUsd,
 			0,
 		)
 
@@ -330,8 +330,8 @@ func (that *monitoring) afterSetPaymentExpired(paymentModel *payment.Model) {
 					paymentModel.Currency,
 					paymentModel.Amount,
 					paymentModel.AmountUsd,
-					paymentModel.RecievedAmount,
-					paymentModel.RecievedAmountUsd,
+					paymentModel.ReceivedAmount,
+					paymentModel.ReceivedAmountUsd,
 					merchantModel.Settings.NotificationSettings.TelegramChatId,
 				)
 			}
