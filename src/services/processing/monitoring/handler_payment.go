@@ -5,6 +5,7 @@ import (
 	"compay/common/types"
 	"compay/src/helpers"
 	"compay/src/models/logpayment"
+	"compay/src/models/merchant"
 	"compay/src/models/payment"
 	"efw/components/model"
 	"efw/core/efwlog"
@@ -145,7 +146,7 @@ func (that *monitoring) doSetPaymentDetected(paymentId types.PaymentId, txId typ
 }
 
 func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txId types.PaymentTxId) {
-	helpers.NotificationDetectedPayment(paymentModel.GetIdInt64(),
+	helpers.NotificationDetectedTransaction(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
 		string(paymentModel.Address),
@@ -155,6 +156,22 @@ func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txI
 		string(txId),
 		0,
 	)
+
+	merchantModel := merchant.GetModel(merchant.QueryHelper{Id: paymentModel.MerchantId})
+	if merchantModel != nil && !merchantModel.Settings.NotificationSettings.DisableDetectedTransaction {
+		if merchantModel.Settings.NotificationSettings.TelegramChatId != 0 {
+			helpers.NotificationDetectedTransaction(paymentModel.GetIdInt64(),
+				int64(paymentModel.MerchantId),
+				paymentModel.TrxId,
+				string(paymentModel.Address),
+				paymentModel.Currency,
+				paymentModel.Amount,
+				paymentModel.AmountUsd,
+				string(txId),
+				merchantModel.Settings.NotificationSettings.TelegramChatId,
+			)
+		}
+	}
 }
 
 // Обновляем сумму платежа
@@ -175,7 +192,7 @@ func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, txId typ
 }
 
 func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amount types.Amount, txId types.PaymentTxId) {
-	helpers.NotificationFundsRecivedPayment(paymentModel.GetIdInt64(),
+	helpers.NotificationFundsRecieved(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
 		string(paymentModel.Address),
@@ -186,6 +203,23 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amo
 		string(txId),
 		0,
 	)
+
+	merchantModel := merchant.GetModel(merchant.QueryHelper{Id: paymentModel.MerchantId})
+	if merchantModel != nil && !merchantModel.Settings.NotificationSettings.DisableFundsRecieved {
+		if merchantModel.Settings.NotificationSettings.TelegramChatId != 0 {
+			helpers.NotificationFundsRecieved(paymentModel.GetIdInt64(),
+				int64(paymentModel.MerchantId),
+				paymentModel.TrxId,
+				string(paymentModel.Address),
+				paymentModel.Currency,
+				paymentModel.Amount,
+				paymentModel.AmountUsd,
+				amount,
+				string(txId),
+				merchantModel.Settings.NotificationSettings.TelegramChatId,
+			)
+		}
+	}
 }
 
 // Обновляем сумму платежа
@@ -197,7 +231,7 @@ func (that *monitoring) doSetPaymentComplete(paymentModel *payment.Model) {
 }
 
 func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model) {
-	helpers.NotificationCompletedPayment(paymentModel.GetIdInt64(),
+	helpers.NotificationCompletedInvoice(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
 		string(paymentModel.Address),
@@ -208,6 +242,23 @@ func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model) {
 		paymentModel.RecievedAmountUsd,
 		0,
 	)
+
+	merchantModel := merchant.GetModel(merchant.QueryHelper{Id: paymentModel.MerchantId})
+	if merchantModel != nil && !merchantModel.Settings.NotificationSettings.DisableCompletedInvoice {
+		if merchantModel.Settings.NotificationSettings.TelegramChatId != 0 {
+			helpers.NotificationCompletedInvoice(paymentModel.GetIdInt64(),
+				int64(paymentModel.MerchantId),
+				paymentModel.TrxId,
+				string(paymentModel.Address),
+				paymentModel.Currency,
+				paymentModel.Amount,
+				paymentModel.AmountUsd,
+				paymentModel.RecievedAmount,
+				paymentModel.RecievedAmountUsd,
+				merchantModel.Settings.NotificationSettings.TelegramChatId,
+			)
+		}
+	}
 }
 
 // Удаляем заявку (истекло время)
@@ -231,8 +282,10 @@ func (that *monitoring) doSetPaymentExpired(paymentId types.PaymentId) {
 }
 
 func (that *monitoring) afterSetPaymentExpired(paymentModel *payment.Model) {
+	merchantModel := merchant.GetModel(merchant.QueryHelper{Id: paymentModel.MerchantId})
+
 	if paymentModel.RecievedAmount == 0 {
-		helpers.NotificationExpirePayment(paymentModel.GetIdInt64(),
+		helpers.NotificationExpireInvoice(paymentModel.GetIdInt64(),
 			int64(paymentModel.MerchantId),
 			paymentModel.TrxId,
 			string(paymentModel.Address),
@@ -241,8 +294,22 @@ func (that *monitoring) afterSetPaymentExpired(paymentModel *payment.Model) {
 			paymentModel.AmountUsd,
 			0,
 		)
+
+		if merchantModel != nil && !merchantModel.Settings.NotificationSettings.DisableExpireInvoice {
+			if merchantModel.Settings.NotificationSettings.TelegramChatId != 0 {
+				helpers.NotificationExpireInvoice(paymentModel.GetIdInt64(),
+					int64(paymentModel.MerchantId),
+					paymentModel.TrxId,
+					string(paymentModel.Address),
+					paymentModel.Currency,
+					paymentModel.Amount,
+					paymentModel.AmountUsd,
+					merchantModel.Settings.NotificationSettings.TelegramChatId,
+				)
+			}
+		}
 	} else {
-		helpers.NotificationInsufficientFundsPayment(paymentModel.GetIdInt64(),
+		helpers.NotificationInsufficientFunds(paymentModel.GetIdInt64(),
 			int64(paymentModel.MerchantId),
 			paymentModel.TrxId,
 			string(paymentModel.Address),
@@ -253,5 +320,21 @@ func (that *monitoring) afterSetPaymentExpired(paymentModel *payment.Model) {
 			paymentModel.RecievedAmountUsd,
 			0,
 		)
+
+		if merchantModel != nil && !merchantModel.Settings.NotificationSettings.DisableInsufficientFunds {
+			if merchantModel.Settings.NotificationSettings.TelegramChatId != 0 {
+				helpers.NotificationInsufficientFunds(paymentModel.GetIdInt64(),
+					int64(paymentModel.MerchantId),
+					paymentModel.TrxId,
+					string(paymentModel.Address),
+					paymentModel.Currency,
+					paymentModel.Amount,
+					paymentModel.AmountUsd,
+					paymentModel.RecievedAmount,
+					paymentModel.RecievedAmountUsd,
+					merchantModel.Settings.NotificationSettings.TelegramChatId,
+				)
+			}
+		}
 	}
 }

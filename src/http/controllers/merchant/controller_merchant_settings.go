@@ -36,7 +36,7 @@ func MerchantSettingsProcess(context *gin.Context) {
 		return
 	}
 
-	merchantModel.Settings.PublicSettings.NotificationTelegramChatId = input.NotificationTelegramChatId
+	merchantModel.Settings.NotificationSettings.TelegramChatId = input.NotificationTelegramChatId
 	merchant.Save(merchantModel, merchant.QueryHelper{})
 
 	createLogUser(context, userModel, constants.LogUserMerchantSettingsProcess)

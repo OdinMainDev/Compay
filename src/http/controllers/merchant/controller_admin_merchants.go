@@ -37,9 +37,15 @@ type requestAdminMerchantsCreate struct {
 }
 
 type requestAdminMerchantsProcess struct {
-	Id                         types.MerchantId `json:"id" binding:"required,gt=0"`
-	Name                       string           `json:"name" binding:"required,min=6,max=50"`
-	NotificationTelegramChatId int64            `json:"notification_telegram_chat_id" binding:"omitempty"`
+	Id                                     types.MerchantId `json:"id" binding:"required,gt=0"`
+	Name                                   string           `json:"name" binding:"required,min=6,max=50"`
+	NotificationTelegramChatId             int64            `json:"notification_telegram_chat_id" binding:"omitempty"`
+	NotificationDisableCreateInvoice       bool             `json:"notification_disable_create_invoice"`
+	NotificationDisableDetectedTransaction bool             `json:"notification_disable_detected_transaction"`
+	NotificationDisableFundsRecieved       bool             `json:"notification_disable_funds_recieved"`
+	NotificationDisableCompletedInvoice    bool             `json:"notification_disable_completed_invoice"`
+	NotificationDisableExpireInvoice       bool             `json:"notification_disable_expire_invoice"`
+	NotificationDisableInsufficientFunds   bool             `json:"notification_disable_insufficient_funds"`
 }
 
 func AdminMerchantsList(context *gin.Context) {
@@ -153,7 +159,13 @@ func AdminMerchantsProcess(context *gin.Context) {
 
 	merchantModel.Name = input.Name
 	// Public
-	merchantModel.Settings.PublicSettings.NotificationTelegramChatId = input.NotificationTelegramChatId
+	merchantModel.Settings.NotificationSettings.TelegramChatId = input.NotificationTelegramChatId
+	merchantModel.Settings.NotificationSettings.DisableCreateInvoice = input.NotificationDisableCreateInvoice
+	merchantModel.Settings.NotificationSettings.DisableDetectedTransaction = input.NotificationDisableDetectedTransaction
+	merchantModel.Settings.NotificationSettings.DisableFundsRecieved = input.NotificationDisableFundsRecieved
+	merchantModel.Settings.NotificationSettings.DisableCompletedInvoice = input.NotificationDisableCompletedInvoice
+	merchantModel.Settings.NotificationSettings.DisableExpireInvoice = input.NotificationDisableExpireInvoice
+	merchantModel.Settings.NotificationSettings.DisableInsufficientFunds = input.NotificationDisableInsufficientFunds
 
 	merchant.Save(merchantModel, merchant.QueryHelper{})
 

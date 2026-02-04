@@ -80,7 +80,7 @@ func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error
 
 func asyncStartPayment(paymentModel *payment.Model, merchantModel *merchant.Model) {
 	monitoring.AddPayment(paymentModel)
-	helpers.NotificationCreatePayment(
+	helpers.NotificationCreateInvoice(
 		paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
@@ -92,4 +92,18 @@ func asyncStartPayment(paymentModel *payment.Model, merchantModel *merchant.Mode
 	)
 
 	// сделать логи сюды
+	if !merchantModel.Settings.NotificationSettings.DisableCreateInvoice {
+		if merchantModel.Settings.NotificationSettings.TelegramChatId != 0 {
+			helpers.NotificationCreateInvoice(
+				paymentModel.GetIdInt64(),
+				int64(paymentModel.MerchantId),
+				paymentModel.TrxId,
+				string(paymentModel.Address),
+				paymentModel.Currency,
+				paymentModel.Amount,
+				paymentModel.AmountUsd,
+				merchantModel.Settings.NotificationSettings.TelegramChatId,
+			)
+		}
+	}
 }

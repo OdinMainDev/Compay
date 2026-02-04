@@ -8,7 +8,9 @@ func DTO(model *Model) gin.H {
 	return gin.H{
 		"name": model.Name,
 		"settings": gin.H{
-			"notification_telegram_chat_id": model.Settings.PublicSettings.NotificationTelegramChatId,
+			"notification_settings": gin.H{
+				"notification_settings": model.Settings.NotificationSettings.TelegramChatId,
+			},
 		},
 	}
 }
