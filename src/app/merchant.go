@@ -144,8 +144,8 @@ func merchantAdminMerchantsRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/create", controller.AdminMerchantsCreate)
 	subGroup.POST("/process", controller.AdminMerchantsProcess)
 	subGroup.POST("/search", controller.AdminMerchantsSearch)
-	// subGroup.POST("/action/disable", controller.AdminMerchantsActionDisable)
-	// subGroup.POST("/action/enable", controller.AdminMerchantsActionEnable)
+	subGroup.POST("/action/disable", controller.AdminMerchantsActionDisable)
+	subGroup.POST("/action/enable", controller.AdminMerchantsActionEnable)
 }
 
 func merchantAdminApiRoutes(group *gin.RouterGroup) {

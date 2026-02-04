@@ -2,6 +2,9 @@ package user
 
 import (
 	"compay/common/types"
+	userEntity "compay/src/entities/user"
+	"context"
+	"efw"
 	"efw/components/entity"
 	"efw/components/model"
 	"efw/utils"
@@ -46,4 +49,17 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 		chain = chain.Where("username ILIKE ?", "%"+helper.Search+"%")
 	}
 	return chain.Order("id DESC")
+}
+
+func BanMerchantUsers(merchantId types.MerchantId) {
+	efw.DBTransaction[userEntity.Entity]().
+		Where("merchant_id = ?", merchantId).
+		Update(context.Background(), "is_banned", true)
+}
+
+func UnbanMerchantUser(id entity.UserId, merchantId types.MerchantId) {
+	efw.DBTransaction[userEntity.Entity]().
+		Where("merchant_id = ?", merchantId).
+		Where("id = ?", id).
+		Update(context.Background(), "is_banned", false)
 }

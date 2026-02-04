@@ -8,5 +8,5 @@ import (
 type Model struct {
 	entity.Entity `gorm:"embedded"`
 	NewPassword   string           `json:"-" gorm:"-"`
-	Merchant      *merchant.Entity `json:"merchant,omitempty" gorm:"foreignKey:MerchantId;references:Id"`
+	Merchant      *merchant.Entity `json:"merchant,omitempty" gorm:"-,foreignKey:MerchantId;references:Id"`
 }

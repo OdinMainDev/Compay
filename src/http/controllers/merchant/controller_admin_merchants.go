@@ -48,6 +48,10 @@ type requestAdminMerchantsProcess struct {
 	NotificationDisableInsufficientFunds   bool             `json:"notification_disable_insufficient_funds"`
 }
 
+type requestAdminMerchantsAction struct {
+	Id types.MerchantId `json:"id" binding:"required,gt=0"`
+}
+
 func AdminMerchantsList(context *gin.Context) {
 	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
 	efwcontroller.Datable[merchant.Model, requestAdminMerchantsList](
@@ -139,6 +143,26 @@ func AdminMerchantsCreate(context *gin.Context) {
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": merchantModel})
 }
 
+func asyncAdminMerchantsCreate(context *gin.Context, adminUserModel *user.Model, merchantModel *merchant.Model) {
+	currenyModels := currency.GetModels(currency.QueryHelper{
+		IsEnabled: true,
+	})
+	for _, currenyModel := range currenyModels {
+		merchantCurrencyModel := merchantcurrency.GetModel(merchantcurrency.QueryHelper{
+			MerchantId: merchantModel.GetId(),
+			Currency:   currenyModel.CodeAlpha,
+		})
+
+		if merchantCurrencyModel == nil {
+			merchantCurrencyModel = merchantcurrency.DefaultCurrency(currenyModel.CodeAlpha)
+			merchantCurrencyModel.MerchantId = merchantModel.GetId()
+			merchantcurrency.Save(merchantCurrencyModel, merchantcurrency.QueryHelper{})
+		}
+	}
+
+	createLogUser(context, adminUserModel, constants.LogUserAdminMerchantCreate)
+}
+
 func AdminMerchantsProcess(context *gin.Context) {
 	var input requestAdminMerchantsProcess
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
@@ -152,7 +176,7 @@ func AdminMerchantsProcess(context *gin.Context) {
 	}
 
 	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
-	if !isUserRootAdmin(adminUserModel.GetId()) && merchantModel.CreatorId != adminUserModel.GetId() {
+	if !isUserRootAdmin(adminUserModel.GetId()) && !isUserCanUpdateMerchant(adminUserModel, merchantModel) {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return
 	}
@@ -196,22 +220,50 @@ func AdminMerchantsSearch(context *gin.Context) {
 	})})
 }
 
-func asyncAdminMerchantsCreate(context *gin.Context, adminUserModel *user.Model, merchantModel *merchant.Model) {
-	currenyModels := currency.GetModels(currency.QueryHelper{
-		IsEnabled: true,
-	})
-	for _, currenyModel := range currenyModels {
-		merchantCurrencyModel := merchantcurrency.GetModel(merchantcurrency.QueryHelper{
-			MerchantId: merchantModel.GetId(),
-			Currency:   currenyModel.CodeAlpha,
-		})
+func AdminMerchantsActionDisable(context *gin.Context) {
+	adminMerchantsActionDisableOrNot(context, constants.LogUserAdminMerchantDisable)
+}
 
-		if merchantCurrencyModel == nil {
-			merchantCurrencyModel = merchantcurrency.DefaultCurrency(currenyModel.CodeAlpha)
-			merchantCurrencyModel.MerchantId = merchantModel.GetId()
-			merchantcurrency.Save(merchantCurrencyModel, merchantcurrency.QueryHelper{})
-		}
+func AdminMerchantsActionEnable(context *gin.Context) {
+	adminMerchantsActionDisableOrNot(context, constants.LogUserAdminMerchantEnable)
+}
+
+func adminMerchantsActionDisableOrNot(context *gin.Context, action types.LogUserAction) {
+	var input requestAdminMerchantsAction
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
 	}
 
-	createLogUser(context, adminUserModel, constants.LogUserAdminMerchantCreate)
+	merchantModel := merchant.GetModel(merchant.QueryHelper{Id: input.Id})
+	if merchantModel == nil {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if !isUserRootAdmin(adminUserModel.GetId()) && !isUserCanUpdateMerchant(adminUserModel, merchantModel) {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	actionSuccess := false
+
+	if action == constants.LogUserAdminMerchantDisable && merchantModel.IsEnabled {
+		merchantModel.IsEnabled = false
+		user.BanMerchantUsers(merchantModel.GetId())
+		actionSuccess = true
+	}
+
+	if action == constants.LogUserAdminMerchantEnable && !merchantModel.IsEnabled {
+		merchantModel.IsEnabled = true
+		user.UnbanMerchantUser(merchantModel.OwnerId, merchantModel.GetId())
+		actionSuccess = true
+	}
+
+	if actionSuccess {
+		merchant.Save(merchantModel, merchant.QueryHelper{})
+		createLogUser(context, adminUserModel, action)
+	}
+
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": merchantModel})
 }

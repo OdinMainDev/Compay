@@ -29,6 +29,8 @@ const (
 	// ADMIN MERCHANT
 	LogUserAdminMerchantCreate  types.LogUserAction = "AdminMerchantCreate"
 	LogUserAdminMerchantProcess types.LogUserAction = "AdminMerchantProcess"
+	LogUserAdminMerchantDisable types.LogUserAction = "AdminMerchantDisable"
+	LogUserAdminMerchantEnable  types.LogUserAction = "AdminMerchantEnable"
 
 	// ADMIN CURRENCY
 	LogUserAdminCurrencyProcess types.LogUserAction = "AdminCurrencyProcess"
