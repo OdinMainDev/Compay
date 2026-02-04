@@ -3,16 +3,20 @@ package importdata
 import (
 	"compay/common/constants"
 	"compay/src/models/currency"
+	"sync"
 	"time"
 )
 
 var isImportCurrenciesWorking = false
+var mutex = sync.Mutex{}
 
 func ImportCurrencies() bool {
 	if isImportCurrenciesWorking {
 		return true
 	}
+	mutex.Lock()
 	isImportCurrenciesWorking = true
+	mutex.Unlock()
 	go func() {
 		currencies := []*currency.Model{}
 		currencies = append(currencies, addBtcCurrency())
@@ -34,7 +38,9 @@ func ImportCurrencies() bool {
 			currency.Save(currencyModel, currency.QueryHelper{})
 		}
 		time.Sleep(30 * time.Second)
+		mutex.Lock()
 		isImportCurrenciesWorking = false
+		mutex.Unlock()
 	}()
 
 	return false
