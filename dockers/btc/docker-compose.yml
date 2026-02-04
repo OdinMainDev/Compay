@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  bitcoind:
+    image: ruimarinho/bitcoin-core:26.0
+    container_name: bitcoin-core
+    restart: unless-stopped
+
+    command:
+      -printtoconsole
+      -server=1
+      -txindex=1
+
+      -rpcuser=btcuser
+      -rpcpassword=strong_super_secret_password
+      -rpcallowip=0.0.0.0/0
+      -rpcbind=0.0.0.0
+
+      -rpcworkqueue=64
+      -rpcthreads=8
+
+      -dbcache=4096
+      -maxmempool=500
+
+      -maxconnections=80
+
+      -listen=1
+      -discover=1
+
+    volumes:
+      - ./data:/bitcoin/.bitcoin
+
+    ports:
+      - "8332:8332"   # RPC
+      - "8333:8333"   # P2P
+      - "28332:28332" # ZMQ tx
+      - "28333:28333" # ZMQ block
