@@ -37,6 +37,10 @@ func FloatToAmount(amount float64, units types.CurrencyMinorUnits) types.Amount 
 	return floatToAmount(amount, units)
 }
 
+func FloatToAmountByCodeAlpha(amount float64, codeAlpha types.CurrencyCodeAlpha) types.Amount {
+	return floatToAmount(amount, GetMinorUnits(codeAlpha))
+}
+
 func floatToAmount(amount float64, units types.CurrencyMinorUnits) types.Amount {
 	if amount == 0 {
 		return 0

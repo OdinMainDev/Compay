@@ -19,8 +19,7 @@ func (that *Processing) getMerchantCurrency() *merchantcurrency.Model {
 		return that.merchantCurrencyModel
 	}
 
-	merchantCurrencyModel = merchantcurrency.DefaultCurrency(that.getCurrency().CodeAlpha)
-	merchantCurrencyModel.MerchantId = that.getMerchant().GetId()
+	merchantCurrencyModel = merchantcurrency.DefaultCurrency(that.getCurrency().CodeAlpha, that.getMerchant().GetId(), that.getMerchant().CreatorId)
 	merchantcurrency.Save(merchantCurrencyModel, merchantcurrency.QueryHelper{})
 
 	that.merchantCurrencyModel = merchantCurrencyModel

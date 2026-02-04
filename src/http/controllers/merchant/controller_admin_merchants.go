@@ -154,8 +154,7 @@ func asyncAdminMerchantsCreate(context *gin.Context, adminUserModel *user.Model,
 		})
 
 		if merchantCurrencyModel == nil {
-			merchantCurrencyModel = merchantcurrency.DefaultCurrency(currenyModel.CodeAlpha)
-			merchantCurrencyModel.MerchantId = merchantModel.GetId()
+			merchantCurrencyModel = merchantcurrency.DefaultCurrency(currenyModel.CodeAlpha, merchantModel.GetId(), merchantModel.CreatorId)
 			merchantcurrency.Save(merchantCurrencyModel, merchantcurrency.QueryHelper{})
 		}
 	}

@@ -2,6 +2,7 @@ CREATE TABLE "merchant_currencies" (
     "id" bigserial,
     "merchant_id" int,
     "currency" varchar(20),
+    "creator_id" bigint,
     "min_amount" int,
     "max_amount" int,
     "min_amount_withdraw" int,

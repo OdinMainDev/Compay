@@ -45,6 +45,7 @@ func StartMerchant() {
 	adminRoutes.Use(middleware.CheckIsUserAdmin())
 	merchantAdminUsersRoutes(adminRoutes)
 	merchantAdminMerchantsRoutes(adminRoutes)
+	merchantAdminMerchantCurrenciesRoutes(adminRoutes)
 	merchantAdminCurrenciesRoutes(adminRoutes)
 
 	merchantAdminApiRoutes(adminRoutes)
@@ -146,6 +147,14 @@ func merchantAdminMerchantsRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/search", controller.AdminMerchantsSearch)
 	subGroup.POST("/action/disable", controller.AdminMerchantsActionDisable)
 	subGroup.POST("/action/enable", controller.AdminMerchantsActionEnable)
+}
+
+func merchantAdminMerchantCurrenciesRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/dev/merchant/currencies")
+
+	subGroup.POST("/get/:merchantId/:id", controller.AdminMerchantCurrenciesGet)
+	subGroup.POST("/get/all/:id", controller.AdminMerchantCurrenciesGetAll)
+	subGroup.POST("/process", controller.AdminMerchantCurrenciesProcess)
 }
 
 func merchantAdminApiRoutes(group *gin.RouterGroup) {

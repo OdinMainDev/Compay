@@ -27,10 +27,11 @@ const (
 	LogUserAdminUserUnban       types.LogUserAction = "AdminUserUnban"
 
 	// ADMIN MERCHANT
-	LogUserAdminMerchantCreate  types.LogUserAction = "AdminMerchantCreate"
-	LogUserAdminMerchantProcess types.LogUserAction = "AdminMerchantProcess"
-	LogUserAdminMerchantDisable types.LogUserAction = "AdminMerchantDisable"
-	LogUserAdminMerchantEnable  types.LogUserAction = "AdminMerchantEnable"
+	LogUserAdminMerchantCreate          types.LogUserAction = "AdminMerchantCreate"
+	LogUserAdminMerchantProcess         types.LogUserAction = "AdminMerchantProcess"
+	LogUserAdminMerchantDisable         types.LogUserAction = "AdminMerchantDisable"
+	LogUserAdminMerchantEnable          types.LogUserAction = "AdminMerchantEnable"
+	LogUserAdminMerchantCurrencyProcess types.LogUserAction = "AdminMerchantCurrencyProcess"
 
 	// ADMIN CURRENCY
 	LogUserAdminCurrencyProcess types.LogUserAction = "AdminCurrencyProcess"

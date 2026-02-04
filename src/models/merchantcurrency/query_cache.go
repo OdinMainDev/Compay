@@ -26,6 +26,9 @@ func (helper QueryHelper) ApplyCacheDBFilters(chain gorm.ChainInterface[*Model])
 }
 
 func (helper QueryHelper) ApplyCacheFilters(entity *Model) bool {
+	if entity.MerchantId != helper.MerchantId {
+		return false
+	}
 	if helper.Id != 0 {
 		if entity.GetId() != helper.Id {
 			return false
@@ -33,6 +36,11 @@ func (helper QueryHelper) ApplyCacheFilters(entity *Model) bool {
 	}
 	if helper.Currency != "" {
 		if entity.Currency != helper.Currency {
+			return false
+		}
+	}
+	if helper.CreatorId != 0 {
+		if entity.CreatorId != helper.CreatorId {
 			return false
 		}
 	}

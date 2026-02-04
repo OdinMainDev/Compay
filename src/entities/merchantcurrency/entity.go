@@ -9,6 +9,7 @@ type Entity struct {
 	entity.BaseEntity[types.MerchantCurrencyId] `gorm:"embedded"`
 	MerchantId                                  types.MerchantId        `json:"merchant_id" gorm:"column:merchant_id"`
 	Currency                                    types.CurrencyCodeAlpha `json:"currency" gorm:"column:currency"`
+	CreatorId                                   entity.UserId           `json:"creator_id" gorm:"column:creator_id"`
 	MinAmount                                   types.Amount            `json:"min_amount" gorm:"column:min_amount"`
 	MaxAmount                                   types.Amount            `json:"max_amount" gorm:"column:max_amount"`
 	MinAmountWithdraw                           types.Amount            `json:"min_amount_withdraw" gorm:"column:min_amount_withdraw"`
