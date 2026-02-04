@@ -22,7 +22,7 @@ func (helper QueryHelper) ApplyCacheDBFilters(chain gorm.ChainInterface[*Model])
 		efwlog.Panic("BAD CONFIGURATION ApplyCacheDBFilters merchantcurrency")
 	}
 
-	return chain.Where("merchant_id ? ", helper.MerchantId).Order("id DESC")
+	return chain.Where("merchant_id = ? ", helper.MerchantId).Order("id DESC")
 }
 
 func (helper QueryHelper) ApplyCacheFilters(entity *Model) bool {
