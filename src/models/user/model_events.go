@@ -23,5 +23,6 @@ func (that *Model) BeforeSave(*gorm.DB) error {
 		return err
 	}
 	that.Password = string(passwordHash)
+	that.NewPassword = ""
 	return nil
 }
