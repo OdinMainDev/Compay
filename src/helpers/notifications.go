@@ -56,7 +56,7 @@ func NotificationDetectedTransaction(paymentId, merchantId int64, uuid, address 
 	}
 	efwnotify.NotifyTelegram(text, chatId)
 }
-func NotificationFundsRecieved(paymentId, merchantId int64, uuid, address string, codeAlpha types.CurrencyCodeAlpha, amount, amountUsd, receivedAmount types.Amount, txId string, chatId int64) {
+func NotificationFundsReceived(paymentId, merchantId int64, uuid, address string, codeAlpha types.CurrencyCodeAlpha, amount, amountUsd, receivedAmount types.Amount, txId string, chatId int64) {
 	invoiceType := "Фиксированная сумма"
 	if amount == 0 {
 		invoiceType = "Произвольная сумма"

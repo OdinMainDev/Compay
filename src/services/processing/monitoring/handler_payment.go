@@ -192,7 +192,7 @@ func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, txId typ
 }
 
 func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amount types.Amount, txId types.PaymentTxId) {
-	helpers.NotificationFundsRecieved(paymentModel.GetIdInt64(),
+	helpers.NotificationFundsReceived(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
 		string(paymentModel.Address),
@@ -207,7 +207,7 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amo
 	merchantModel := merchant.GetModel(merchant.QueryHelper{Id: paymentModel.MerchantId})
 	if merchantModel != nil && !merchantModel.Settings.NotificationSettings.DisableFundsRecieved {
 		if merchantModel.Settings.NotificationSettings.TelegramChatId != 0 {
-			helpers.NotificationFundsRecieved(paymentModel.GetIdInt64(),
+			helpers.NotificationFundsReceived(paymentModel.GetIdInt64(),
 				int64(paymentModel.MerchantId),
 				paymentModel.TrxId,
 				string(paymentModel.Address),
