@@ -57,9 +57,9 @@ func (that *monitoring) handleLoopLogChecker() {
 
 func (that *monitoring) processLogChecker(logPaymentModel *logpayment.Model) {
 	var confirmations int64 = 0
+	currentBlock := that.btc.currentBlock.Load()
 	switch logPaymentModel.Currency {
 	case constants.BtcCodeAlpha:
-		currentBlock := that.btc.currentBlock.Load()
 		confirmations = currentBlock - logPaymentModel.StartBlock + 1
 
 	default:
