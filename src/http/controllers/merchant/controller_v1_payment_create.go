@@ -58,5 +58,5 @@ func V1PaymentCreate(context *gin.Context) {
 		return
 	}
 
-	efwginhelpers.ResponseSuccess(context, payment.DTO(paymentModel))
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": payment.DTO(paymentModel)})
 }
