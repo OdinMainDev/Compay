@@ -37,10 +37,6 @@ func newRedisStorage() (*RedisStorage, error) {
 		client: client,
 	}
 
-	if config.RedisClearAtStartUp {
-		resp.clear(context.Background())
-	}
-
 	return resp, nil
 }
 

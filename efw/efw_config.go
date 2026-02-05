@@ -150,7 +150,6 @@ func (that *eframework) fillConfigCache() {
 	config.RedisHost = os.Getenv("REDIS_HOST")
 	config.RedisUsername = os.Getenv("REDIS_USERNAME")
 	config.RedisPassword = os.Getenv("REDIS_PASSWORD")
-	config.RedisClearAtStartUp = os.Getenv("REDIS_CLEAR_AT_STARTUP") == "true"
 
 	if value := os.Getenv("CACHE_SHARDS"); value != "" {
 		if parsed, err := strconv.Atoi(value); err == nil && parsed > 0 {
