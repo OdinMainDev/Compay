@@ -28,6 +28,11 @@ type WithUpdatedAt struct {
 	UpdatedAtTo   int64 `json:"updated_at_to" efwdt:"updated_at_to" binding:"min=0"`
 }
 
+type WithExpiresAt struct {
+	ExpiresAtFrom int64 `json:"expires_at_from" efwdt:"expires_at_from" binding:"min=0"`
+	ExpiresAtTo   int64 `json:"expires_at_to" efwdt:"expires_at_to" binding:"min=0"`
+}
+
 func (request *Request[T]) ValidateOrderColumn(availColumns []string) error {
 	if request.OrderColumn == "" {
 		return nil

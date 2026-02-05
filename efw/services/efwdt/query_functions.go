@@ -118,6 +118,12 @@ func applySpecialFilters(fieldName string, value any, specialFilters *[]SpecialF
 	case "updated_at_to":
 		*specialFilters = append(*specialFilters, SpecialFilters{Query: "updated_at < ?", Args: []any{value}})
 		return true
+	case "expires_at_from":
+		*specialFilters = append(*specialFilters, SpecialFilters{Query: "expires_at > ?", Args: []any{value}})
+		return true
+	case "expires_at_to":
+		*specialFilters = append(*specialFilters, SpecialFilters{Query: "expires_at < ?", Args: []any{value}})
+		return true
 	default:
 		return false
 	}
