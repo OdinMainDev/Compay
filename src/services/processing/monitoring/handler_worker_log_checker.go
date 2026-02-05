@@ -65,7 +65,7 @@ func (that *monitoring) processLogChecker(logPaymentModel *logpayment.Model) {
 	}
 
 	if confirmations >= int64(logPaymentModel.Data.Conditions.RequiredConfirmations) {
-		that.doSetPaymentReceived(logPaymentModel.PaymentId, logPaymentModel.TxId, logPaymentModel.Data.TxData.Amount)
+		that.doSetPaymentReceived(logPaymentModel.PaymentId, logPaymentModel.Currency, logPaymentModel.TxId, logPaymentModel.Data.TxData.Amount)
 
 		// Маркируем лог как завершённый
 		logpayment.UpdateStatus(logPaymentModel.GetId())

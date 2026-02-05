@@ -8,6 +8,7 @@ import (
 	"compay/src/models/merchant"
 	"compay/src/models/merchantwallet"
 	"compay/src/models/payment"
+	"compay/src/services/cconverter"
 	"compay/src/services/processing/monitoring"
 	"efw/components/entity"
 	"efw/core/efwrequest"
@@ -63,7 +64,7 @@ func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error
 	paymentModel.Currency = that.getCurrency().CodeAlpha
 	paymentModel.Address = response.Data.Address
 	paymentModel.Amount = amount
-	paymentModel.AmountUsd = 0
+	paymentModel.AmountUsd = cconverter.Convert(amount, that.getCurrency().CodeAlpha)
 	paymentModel.RequiredConfirmations = that.getMerchantCurrency().Confirms
 	paymentModel.ExpiresAt = time.Now().Add(time.Second * time.Duration(that.getMerchantCurrency().InvoiceTime)).Unix()
 	payment.Save(paymentModel, payment.QueryHelper{})
