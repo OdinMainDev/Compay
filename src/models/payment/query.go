@@ -17,6 +17,7 @@ type QueryHelper struct {
 	TrxId               string
 	DontCheckMerchantId bool
 	MerchantId          types.MerchantId
+	MerchantIds         []types.MerchantId
 	Statuses            []types.PaymentStatus
 	Currency            types.CurrencyCodeAlpha
 }
@@ -28,6 +29,9 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	}
 	if !helper.DontCheckMerchantId {
 		chain = chain.Where("merchant_id = ?", helper.MerchantId)
+	}
+	if len(helper.MerchantIds) != 0 {
+		chain = chain.Where("merchant_id IN (?)", helper.MerchantIds)
 	}
 	if helper.TrxId != "" {
 		chain = chain.Where("trx_id = ?", helper.TrxId)
