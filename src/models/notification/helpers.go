@@ -20,8 +20,8 @@ func FastCreate(merchantId types.MerchantId, action types.NotificationAction, te
 
 func ReadAll(merchantId types.MerchantId) int {
 	res, err := efw.DBTransaction[any]().
-		Where("merchant_id", merchantId).
-		Where("is_read", false).
+		Where("merchant_id = ?", merchantId).
+		Where("is_read = ?", false).
 		Updates(context.Background(), Model{Entity: notification.Entity{IsRead: true}})
 
 	if err != nil {
