@@ -8,9 +8,14 @@ import (
 
 func FillConfig() {
 	config.AppPort = os.Getenv("APP_PORT")
+
+	// Bitcoin RPC Configuration
+	config.BtcNodeHost = os.Getenv("BTC_RPC_HOST")
+	config.BtcNodeUsername = os.Getenv("BTC_RPC_USERNAME")
+	config.BtcNodePassword = os.Getenv("BTC_RPC_PASSWORD")
 }
 
 func fillConfigMerchant() {
-	configEfw.NotifyTelegramToken = "8287820061:AAGxEL9uA0-fnSx_EPJ8exxyAh2EpUrBe-M"
-	configEfw.NotifyTelegramChatId = -1003675944523
+	configEfw.NotifyTelegramToken = config.TelegramToken
+	configEfw.NotifyTelegramChatId = config.TelegramChatId
 }
