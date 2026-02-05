@@ -4,7 +4,9 @@ import (
 	"compay/common/constants"
 	"compay/common/types"
 	"compay/src/helpers"
+	"compay/src/models/logmerchantwallet"
 	"compay/src/models/merchant"
+	"compay/src/models/merchantwallet"
 	"compay/src/models/payment"
 )
 
@@ -49,7 +51,8 @@ func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txI
 
 // Обновляем сумму платежа
 func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, txId types.PaymentTxId, amount types.Amount) {
-	payment.IncreaseAmount(paymentId, amount)
+	// amountUsd := cconverter.
+	payment.IncreaseReceivedAmount(paymentId, amount, 0)
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
 
 	if paymentModel.Amount != 0 && paymentModel.ReceivedAmount >= paymentModel.Amount {
@@ -93,6 +96,17 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amo
 			)
 		}
 	}
+
+	logmerchantwallet.FastCreate(
+		paymentModel.MerchantId,
+		paymentModel.GetId(),
+		0,
+		paymentModel.TrxId,
+		"",
+		paymentModel.Currency,
+		amount,
+		amount,
+	)
 }
 
 // Обновляем сумму платежа
@@ -132,6 +146,11 @@ func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model) {
 			)
 		}
 	}
+
+	merchantWalletModel := merchantwallet.GetModel(merchantwallet.QueryHelper{PaymentId: paymentModel.GetId()})
+	merchantWalletModel.Amount += paymentModel.ReceivedAmount
+	merchantWalletModel.ReceivedAmount += paymentModel.ReceivedAmount
+	merchantwallet.Save(merchantWalletModel, merchantwallet.QueryHelper{})
 }
 
 // Удаляем заявку (истекло время)
@@ -216,4 +235,20 @@ func (that *monitoring) afterSetPaymentInsufficientFunds(paymentModel *payment.M
 			)
 		}
 	}
+
+	merchantWalletModel := merchantwallet.GetModel(merchantwallet.QueryHelper{PaymentId: paymentModel.GetId()})
+	merchantWalletModel.Amount += paymentModel.ReceivedAmount
+	merchantWalletModel.ReceivedAmount += paymentModel.ReceivedAmount
+	merchantwallet.Save(merchantWalletModel, merchantwallet.QueryHelper{})
+
+	logmerchantwallet.FastCreate(
+		paymentModel.MerchantId,
+		paymentModel.GetId(),
+		0,
+		paymentModel.TrxId,
+		"",
+		paymentModel.Currency,
+		paymentModel.ReceivedAmount,
+		paymentModel.ReceivedAmountUsd,
+	)
 }

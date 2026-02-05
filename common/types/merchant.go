@@ -33,3 +33,4 @@ type LogUserAction string
 type LogAuthId int64
 type LogAuthAction string
 type LogPaymentId int64
+type LogMerchantWalletId int64

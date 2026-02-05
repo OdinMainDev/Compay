@@ -41,12 +41,15 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	return chain.Order("id DESC")
 }
 
-func IncreaseAmount(paymentId types.PaymentId, amount types.Amount) {
-	_, err := efw.DBTransaction[paymentEntity.Entity]().
+func IncreaseReceivedAmount(paymentId types.PaymentId, amount, amountUsd types.Amount) {
+	_, err := efw.DBTransaction[any]().Table("payments").
 		Where("id = ?", paymentId).
-		Update(context.Background(), "received_amount", gorm.Expr("received_amount + ?", amount))
+		Updates(context.Background(), map[string]any{
+			"received_amount":     gorm.Expr("received_amount + ?", amount),
+			"received_amount_usd": gorm.Expr("received_amount_usd + ?", amountUsd),
+		})
 	if err != nil {
-		efwlog.LogByLoggerName("gorm_error", 0, efwlog.FmtGormError(0, 0, err.Error(), "IncreaseAmount(payment)"))
+		efwlog.LogByLoggerName("gorm_error", 0, efwlog.FmtGormError(0, 0, err.Error(), "IncreaseReceivedAmount"))
 	}
 }
 
