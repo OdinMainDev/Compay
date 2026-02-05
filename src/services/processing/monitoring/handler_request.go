@@ -25,7 +25,9 @@ func (that *monitoring) doRequest(path requestUrl, codeAlpha types.CurrencyCodeA
 		Url:           url,
 		Method:        "POST",
 		Body:          body,
-		IsLogDisabled: true,
+		IsLogDisabled: false,
+
+		RequestTimeout: 180,
 	})
 
 	if err != nil {

@@ -13,20 +13,27 @@ var ErrorCreateJar = func(err string) error {
 	return fmt.Errorf("%s %s", "[EFW: REQUEST] ErrorCreateJar: ", err)
 }
 
-func newTransport() *http.Transport {
+func newTransport(requestTimeout time.Duration) *http.Transport {
+	if requestTimeout == 0 {
+		requestTimeout = time.Duration(config.RequestTimeout)
+	}
 	return &http.Transport{
 		Dial: (&net.Dialer{
-			Timeout:   time.Duration(config.RequestTimeout) * time.Second,
-			KeepAlive: time.Duration(config.RequestTimeout) * time.Second,
+			Timeout:   requestTimeout * time.Second,
+			KeepAlive: requestTimeout * time.Second,
 		}).Dial,
-		TLSHandshakeTimeout:   time.Duration(config.RequestTimeout) * time.Second,
-		ResponseHeaderTimeout: time.Duration(config.RequestTimeout) * time.Second,
+		TLSHandshakeTimeout:   requestTimeout * time.Second,
+		ResponseHeaderTimeout: requestTimeout * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
 	}
 }
 
 func NewClient(data RequestHelper) (*http.Client, Proxy, error) {
-	transport := newTransport()
+	requestTimeout := data.RequestTimeout
+	if requestTimeout == 0 {
+		requestTimeout = time.Duration(config.RequestTimeout)
+	}
+	transport := newTransport(requestTimeout)
 	proxyData, err := addProxy(transport, data)
 	if err != nil {
 		return nil, Proxy{}, err
@@ -34,7 +41,7 @@ func NewClient(data RequestHelper) (*http.Client, Proxy, error) {
 
 	client := &http.Client{
 		Transport: transport,
-		Timeout:   time.Duration(config.RequestTimeout) * time.Second,
+		Timeout:   requestTimeout * time.Second,
 	}
 
 	if data.HasCookies {

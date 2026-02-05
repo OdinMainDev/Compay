@@ -2,6 +2,7 @@ package efwrequest
 
 import (
 	"strings"
+	"time"
 )
 
 type RequestHelper struct {
@@ -18,6 +19,8 @@ type RequestHelper struct {
 	ProxyType     string
 	ProxyData     Proxy
 	isProxyCheck  bool
+
+	RequestTimeout time.Duration
 }
 
 func (that *RequestHelper) getMethod() string {
