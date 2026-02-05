@@ -8,7 +8,10 @@ const (
 	LogAuthTotp  types.LogAuthAction = "Totp"
 )
 
-var LogAuthActions = []types.LogAuthAction{LogAuthLogin}
+var LogAuthActions = []types.LogAuthAction{
+	LogAuthLogin,
+	LogAuthTotp,
+}
 
 // Log User
 const (

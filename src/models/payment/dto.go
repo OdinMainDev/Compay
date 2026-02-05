@@ -10,10 +10,26 @@ func DTO(model *Model) any {
 	return gin.H{
 		"id":         model.TrxId,
 		"currency":   model.Currency,
+		"status":     model.Status,
 		"address":    model.Address,
-		"amount":     model.Amount,
-		"amount_usd": model.AmountUsd,
+		"amount":     currency.AmountToFloatByCodeAlpha(model.Amount, model.Currency),
+		"amount_usd": currency.AmountToFloat(model.AmountUsd, 2),
 		"expires_at": model.ExpiresAt,
+	}
+}
+
+func DTOMerchant(model *Model) any {
+	return gin.H{
+		"id":                     model.TrxId,
+		"currency":               model.Currency,
+		"status":                 model.Status,
+		"address":                model.Address,
+		"amount":                 currency.AmountToFloatByCodeAlpha(model.Amount, model.Currency),
+		"amount_usd":             currency.AmountToFloat(model.AmountUsd, 2),
+		"received_amount":        currency.AmountToFloatByCodeAlpha(model.ReceivedAmount, model.Currency),
+		"received_amount_usd":    currency.AmountToFloat(model.ReceivedAmountUsd, 2),
+		"required_confirmations": model.RequiredConfirmations,
+		"expires_at":             model.ExpiresAt,
 	}
 }
 
