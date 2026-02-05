@@ -22,7 +22,7 @@ func doRequest(url string) ([]byte, error) {
 			"sec-fetch-user":            "?1",
 			"upgrade-insecure-requests": "1",
 		},
-		IsLogDisabled: false,
+		IsLogDisabled: true,
 		// IsProxyEnable: true,
 	})
 	if err != nil {
