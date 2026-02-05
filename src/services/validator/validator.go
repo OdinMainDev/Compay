@@ -22,5 +22,8 @@ func CustomValidators() []func() (string, validator.Func) {
 	resp = append(resp, validateCountryExist)
 	resp = append(resp, validateCurrencyNetworkExist)
 	resp = append(resp, validateFeeTypeExist)
+	resp = append(resp, validatePaymentStatusExist)
+	resp = append(resp, validateAmount)
+
 	return resp
 }

@@ -40,3 +40,31 @@ func validateFeeTypeExist() (string, validator.Func) {
 	}
 	return "feeTypeExist", fn
 }
+
+func validatePaymentStatusExist() (string, validator.Func) {
+	var fn validator.Func = func(fl validator.FieldLevel) bool {
+		data, ok := fl.Field().Interface().(types.PaymentStatus)
+		if ok {
+			return utils.InArray(data, constants.PaymentStatuses)
+		}
+		return false
+	}
+	return "paymentStatusExist", fn
+}
+
+func validateAmount() (string, validator.Func) {
+	var fn validator.Func = func(fl validator.FieldLevel) bool {
+		data, ok := fl.Field().Interface().(float64)
+		currency := fl.Parent().FieldByName("Currency")
+		if !ok {
+			return false
+		}
+
+		if data > 0 && currency.IsZero() {
+			return false
+		}
+
+		return true
+	}
+	return "amount", fn
+}

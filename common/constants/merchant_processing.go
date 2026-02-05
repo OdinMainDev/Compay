@@ -11,3 +11,12 @@ const (
 	PaymentStatusInsufficientFunds types.PaymentStatus = "InsufficientFunds" // ошибка (недостаточно средств отправили, и по истечению времени заявка умерла)
 	PaymentStatusExpired           types.PaymentStatus = "Expired"
 )
+
+var PaymentStatuses = []types.PaymentStatus{
+	PaymentStatusCreated,
+	PaymentStatusFundsDetected,
+	PaymentStatusFundsReceived,
+	PaymentStatusCompleted,
+	PaymentStatusInsufficientFunds,
+	PaymentStatusExpired,
+}
