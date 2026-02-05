@@ -23,7 +23,8 @@ func (that *monitoring) startWorkerTxParser(id int) {
 func (that *monitoring) processTxParse(data txParserJob) {
 	// проверяем наличие транзакции в проверках
 	logPaymentModel := logpayment.GetModel(logpayment.QueryHelper{
-		TxId: data.TxData.TxId,
+		PaymentId: data.PaymentModel.GetId(),
+		TxId:      data.TxData.TxId,
 	})
 
 	// если она есть то дальше не обрабатываем тут
