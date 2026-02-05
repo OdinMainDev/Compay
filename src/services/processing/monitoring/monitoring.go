@@ -25,7 +25,8 @@ type currencyData struct {
 // Monitoring мониторит инвойсы по блокам
 type monitoring struct {
 	// интервал дефолтный когда начинать проверку
-	checkInterval time.Duration
+	checkLogInterval  time.Duration
+	checkNodeInterval time.Duration
 	// количество воркеров
 	workerCount int
 
@@ -47,7 +48,8 @@ var globalMonitor *monitoring
 // newInvoiceMonitor создает новый экземпляр Monitoring
 func newInvoiceMonitor() *monitoring {
 	return &monitoring{
-		checkInterval:      30 * time.Second, // Проверяем блоки каждые 30 секунд
+		checkLogInterval:   30 * time.Second, // Проверяем логи каждые 30 секунд
+		checkNodeInterval:  10 * time.Second, // Проверяем ноды каждые 10 секунд
 		workerCount:        10,
 		txParserJobChan:    make(chan txParserJob),
 		activeLogPayments:  make(map[activeTxId]*logpayment.Model),

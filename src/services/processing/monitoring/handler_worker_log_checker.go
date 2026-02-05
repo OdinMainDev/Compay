@@ -10,7 +10,7 @@ import (
 )
 
 func (that *monitoring) startLoopLogChecker() {
-	ticker := time.NewTicker(that.checkInterval)
+	ticker := time.NewTicker(that.checkLogInterval)
 	// Первая проверка сразу при старте
 	that.handleLoopLogChecker()
 

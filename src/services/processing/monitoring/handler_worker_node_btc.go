@@ -13,7 +13,7 @@ import (
 )
 
 func (that *monitoring) startWorkerBtcNode() {
-	ticker := time.NewTicker(that.checkInterval)
+	ticker := time.NewTicker(that.checkNodeInterval)
 	// Первая проверка сразу при старте
 	that.handleBtcNode()
 
