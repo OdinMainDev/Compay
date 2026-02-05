@@ -6,6 +6,9 @@ services:
     container_name: bitcoin-core
     restart: unless-stopped
 
+    environment:
+      BITCOIN_NETWORK: ${BITCOIN_NETWORK:-mainnet}
+
     command:
       -printtoconsole
       -server=1
@@ -21,17 +24,17 @@ services:
 
       -dbcache=4096
       -maxmempool=500
-
       -maxconnections=80
 
       -listen=1
       -discover=1
 
+      # выбор сети
+      -${BITCOIN_NETWORK}
+
     volumes:
       - ./data:/bitcoin/.bitcoin
 
     ports:
-      - "8332:8332"   # RPC
-      - "8333:8333"   # P2P
-      - "28332:28332" # ZMQ tx
-      - "28333:28333" # ZMQ block
+      - "8332:8332"   # RPC mainnet
+      - "18332:18332" # RPC testnet
