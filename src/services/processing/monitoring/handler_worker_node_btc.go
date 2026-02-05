@@ -32,14 +32,19 @@ func (that *monitoring) handleBtcNode() {
 	fmt.Println("[Monitoring] Start handle btc node")
 
 	that.btc.mutex.RLock()
-	activePayments := make(map[types.PaymentAddress]*payment.Model, len(that.btc.activePayments))
-	maps.Copy(activePayments, that.btc.activePayments)
+	lenActivePayments := len(that.btc.activePayments)
+	hasActivePayments := lenActivePayments > 0
 	that.btc.mutex.RUnlock()
 
-	if len(activePayments) == 0 {
+	if !hasActivePayments {
 		that.updateBtcBlockCount()
 		return
 	}
+
+	activePayments := make(map[types.PaymentAddress]*payment.Model, lenActivePayments)
+	that.btc.mutex.RLock()
+	maps.Copy(activePayments, that.btc.activePayments)
+	that.btc.mutex.RUnlock()
 
 	for {
 		currentBlock := that.btc.currentBlock.Load()
