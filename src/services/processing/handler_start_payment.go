@@ -6,6 +6,7 @@ import (
 	"compay/common/types"
 	"compay/src/helpers"
 	"compay/src/models/merchant"
+	"compay/src/models/merchantwallet"
 	"compay/src/models/payment"
 	"compay/src/services/processing/monitoring"
 	"efw/components/entity"
@@ -64,13 +65,22 @@ func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error
 	paymentModel.Amount = amount
 	paymentModel.AmountUsd = 0
 	paymentModel.RequiredConfirmations = that.getMerchantCurrency().Confirms
-	paymentModel.PrivateKey = entity.EncryptedString(response.Data.PrivateKey)
-	paymentModel.PrivateKeyWif = entity.EncryptedString(response.Data.PrivateKeyWif)
-	paymentModel.PublicKey = entity.EncryptedString(response.Data.PublicKey)
-	paymentModel.PublicKeyFull = entity.EncryptedString(response.Data.PublicKeyFull)
 	paymentModel.ExpiresAt = time.Now().Add(time.Second * time.Duration(that.getMerchantCurrency().InvoiceTime)).Unix()
-
 	payment.Save(paymentModel, payment.QueryHelper{})
+
+	merchantWalletModel := &merchantwallet.Model{}
+	merchantWalletModel.MerchantId = that.getMerchant().GetId()
+	merchantWalletModel.PaymentId = paymentModel.GetId()
+	merchantWalletModel.Currency = that.getCurrency().CodeAlpha
+	merchantWalletModel.Address = response.Data.Address
+	merchantWalletModel.Amount = 0
+	merchantWalletModel.ReceivedAmount = 0
+	merchantWalletModel.SentAmount = 0
+	merchantWalletModel.PrivateKey = entity.EncryptedString(response.Data.PrivateKey)
+	merchantWalletModel.PrivateKeyWif = entity.EncryptedString(response.Data.PrivateKeyWif)
+	merchantWalletModel.PublicKey = entity.EncryptedString(response.Data.PublicKey)
+	merchantWalletModel.PublicKeyFull = entity.EncryptedString(response.Data.PublicKeyFull)
+	merchantwallet.Save(merchantWalletModel, merchantwallet.QueryHelper{})
 
 	// Добавляем платеж в пул мониторинга сразу после создания
 	go asyncStartPayment(paymentModel, that.getMerchant())

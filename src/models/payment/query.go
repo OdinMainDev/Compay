@@ -46,7 +46,7 @@ func IncreaseAmount(paymentId types.PaymentId, amount types.Amount) {
 		Where("id = ?", paymentId).
 		Update(context.Background(), "received_amount", gorm.Expr("received_amount + ?", amount))
 	if err != nil {
-		efwlog.LogByLoggerName("gorm_error", 0, efwlog.FmtGormError(0, 0, err.Error(), "IncreaseAmount"))
+		efwlog.LogByLoggerName("gorm_error", 0, efwlog.FmtGormError(0, 0, err.Error(), "IncreaseAmount(payment)"))
 	}
 }
 
