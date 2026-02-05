@@ -26,6 +26,7 @@ func AdminLogUserList(context *gin.Context) {
 		[]string{"id", "user_id", "merchant_id", "action", "url", "created_at"},
 		nil,
 		nil,
+		nil,
 	)
 }
 

@@ -57,8 +57,8 @@ func AdminMerchantsList(context *gin.Context) {
 	efwcontroller.Datable[merchant.Model, requestAdminMerchantsList](
 		context,
 		[]string{"id", "name", "creator_id", "owner_id", "is_enabled", "created_at"},
-		[]efwdt.ChainFilter[merchant.Model]{
-			func(chain gorm.ChainInterface[merchant.Model]) gorm.ChainInterface[merchant.Model] {
+		[]efwdt.ChainFilter[*merchant.Model]{
+			func(chain gorm.ChainInterface[*merchant.Model]) gorm.ChainInterface[*merchant.Model] {
 				if !isUserRootAdmin(adminUserModel.GetId()) {
 					return chain.Where("creator_id = ?", adminUserModel.GetId())
 				}
@@ -77,6 +77,7 @@ func AdminMerchantsList(context *gin.Context) {
 				}, true
 			},
 		},
+		nil,
 	)
 }
 

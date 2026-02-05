@@ -27,11 +27,12 @@ func NotificationsList(context *gin.Context) {
 	efwcontroller.Datable[notification.Model, requestNotificationsList](
 		context,
 		[]string{"id", "action", "is_read", "created_at"},
-		[]efwdt.ChainFilter[notification.Model]{
-			func(chain gorm.ChainInterface[notification.Model]) gorm.ChainInterface[notification.Model] {
+		[]efwdt.ChainFilter[*notification.Model]{
+			func(chain gorm.ChainInterface[*notification.Model]) gorm.ChainInterface[*notification.Model] {
 				return chain.Where("merchant_id = ?", userModel.MerchantId)
 			},
 		},
+		nil,
 		nil,
 	)
 }

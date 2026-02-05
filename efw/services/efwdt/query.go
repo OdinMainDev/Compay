@@ -24,16 +24,16 @@ var ErrorQueryResponse = func(queryErr, recordsFilteredErr, recordsTotalErr erro
 
 func GetQueryResponse[TModel, TRequest any](
 	input Request[TRequest],
-	additionalFilters []ChainFilter[TModel],
+	additionalFilters []ChainFilter[*TModel],
 	specialFilters SpecialFilterMap,
-) (any, int64, int64, int64, error) {
-	dbTx := efw.DBTransaction[TModel]()
+) ([]*TModel, int64, int64, int64, error) {
+	dbTx := efw.DBTransaction[*TModel]()
 
 	baseTx := applyAdditionalFilters(dbTx, additionalFilters)
 	filteredTx := applyRequestFilters(baseTx, input, specialFilters)
 
 	var wg sync.WaitGroup
-	var result any
+	var result []*TModel
 	var recordsFiltered int64
 	var recordsTotal int64
 	var queryErr, recordsFilteredErr, recordsTotalErr error

@@ -29,6 +29,7 @@ func AdminLogAuthList(context *gin.Context) {
 		[]string{"id", "user_id", "merchant_id", "action", "url", "fingerprint", "ip", "user_agent", "created_at"},
 		nil,
 		nil,
+		nil,
 	)
 }
 

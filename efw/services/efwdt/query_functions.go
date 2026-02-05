@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func applyAdditionalFilters[T any](chain gorm.ChainInterface[T], filters []ChainFilter[T]) gorm.ChainInterface[T] {
+func applyAdditionalFilters[T any](chain gorm.ChainInterface[*T], filters []ChainFilter[*T]) gorm.ChainInterface[*T] {
 	for _, filter := range filters {
 		if filter == nil {
 			continue
@@ -18,7 +18,7 @@ func applyAdditionalFilters[T any](chain gorm.ChainInterface[T], filters []Chain
 	return chain
 }
 
-func applyRequestFilters[TModel, TRequest any](chain gorm.ChainInterface[TModel], request Request[TRequest], customSpecialFilters SpecialFilterMap) gorm.ChainInterface[TModel] {
+func applyRequestFilters[TModel, TRequest any](chain gorm.ChainInterface[*TModel], request Request[TRequest], customSpecialFilters SpecialFilterMap) gorm.ChainInterface[*TModel] {
 	filters, specialFilters := buildFiltersMap(reflect.ValueOf(request.Filters), customSpecialFilters)
 	if len(filters) == 0 && len(specialFilters) == 0 {
 		return chain
@@ -167,7 +167,9 @@ func normalizeConditionValue(value reflect.Value) (any, bool) {
 	return value.Interface(), true
 }
 
-func buildDataQuery[TModel, TRequest any](dbTrx gorm.ChainInterface[TModel], request Request[TRequest]) gorm.ChainInterface[TModel] {
+func buildDataQuery[TModel, TRequest any](
+	dbTrx gorm.ChainInterface[*TModel],
+	request Request[TRequest]) gorm.ChainInterface[*TModel] {
 	return dbTrx.Order(request.OrderColumn + " " + request.OrderDirection).Offset(int(request.Start)).Limit(request.Length)
 }
 

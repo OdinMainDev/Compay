@@ -48,11 +48,11 @@ func AdminUsersList(context *gin.Context) {
 	efwcontroller.Datable[user.Model, requestAdminUsersList](
 		context,
 		[]string{"id", "username", "is_banned", "merchant_id", "creator_id", "created_at"},
-		[]efwdt.ChainFilter[user.Model]{
-			func(chain gorm.ChainInterface[user.Model]) gorm.ChainInterface[user.Model] {
+		[]efwdt.ChainFilter[*user.Model]{
+			func(chain gorm.ChainInterface[*user.Model]) gorm.ChainInterface[*user.Model] {
 				return chain.Where("id NOT IN (?)", constants.AdminIds)
 			},
-			func(chain gorm.ChainInterface[user.Model]) gorm.ChainInterface[user.Model] {
+			func(chain gorm.ChainInterface[*user.Model]) gorm.ChainInterface[*user.Model] {
 				if !isUserRootAdmin(adminUserModel.GetId()) {
 					return chain.Where("creator_id = ?", adminUserModel.GetId())
 				}
@@ -71,6 +71,7 @@ func AdminUsersList(context *gin.Context) {
 				}, true
 			},
 		},
+		nil,
 	)
 }
 

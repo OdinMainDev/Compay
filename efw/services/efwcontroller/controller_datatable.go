@@ -12,8 +12,9 @@ import (
 func Datable[TModel, TRequest any](
 	context *gin.Context,
 	columnsOrder []string,
-	additionalFilters []efwdt.ChainFilter[TModel],
+	additionalFilters []efwdt.ChainFilter[*TModel],
 	specialFilters efwdt.SpecialFilterMap,
+	dtoFunc func(model *TModel) any,
 ) {
 	var input efwdt.Request[TRequest]
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
@@ -32,7 +33,7 @@ func Datable[TModel, TRequest any](
 		return
 	}
 
-	efwginhelpers.ResponseSuccess(context, efwdt.Response(data, recordsTotal, recordsFiltered, recordsCount))
+	efwginhelpers.ResponseSuccess(context, efwdt.Response(data, recordsTotal, recordsFiltered, recordsCount, dtoFunc))
 }
 
 func DatatableFilters(context *gin.Context, filters []efwdt.Filter) {

@@ -63,6 +63,7 @@ func AdminCurrenciesList(context *gin.Context) {
 				}, true
 			},
 		},
+		nil,
 	)
 }
 

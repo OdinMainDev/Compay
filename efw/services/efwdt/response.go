@@ -9,13 +9,28 @@ type response[T any] struct {
 	RecordsCount    int64 `json:"recordsCount"`
 }
 
-func Response[T any](data T, recordsTotal, recordsFiltered, recordsCount int64) gin.H {
+func Response[T any](models []*T, recordsTotal, recordsFiltered, recordsCount int64, dtoFunc func(model *T) any) gin.H {
+	if dtoFunc == nil {
+		return gin.H{
+			"data": gin.H{
+				"data":            models,
+				"recordsTotal":    recordsTotal,
+				"recordsFiltered": recordsFiltered,
+				"recordsCount":    recordsCount,
+			},
+		}
+	}
+
+	var resp []any
+	for _, model := range models {
+		resp = append(resp, dtoFunc(model))
+	}
 	return gin.H{
-		"data": response[T]{
-			Data:            data,
-			RecordsTotal:    recordsTotal,
-			RecordsFiltered: recordsFiltered,
-			RecordsCount:    recordsCount,
+		"data": gin.H{
+			"data":            resp,
+			"recordsTotal":    recordsTotal,
+			"recordsFiltered": recordsFiltered,
+			"recordsCount":    recordsCount,
 		},
 	}
 }
