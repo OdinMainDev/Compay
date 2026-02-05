@@ -6,7 +6,6 @@ import (
 	"compay/src/models/logpayment"
 	"efw/core/efwlog"
 	"fmt"
-	"maps"
 	"time"
 )
 
@@ -42,17 +41,15 @@ func (that *monitoring) handleLoopLogChecker() {
 	fmt.Println("[Monitoring] Start log loop checker")
 
 	that.logPaymentsMutex.RLock()
-	activeLogs := make(map[activeTxId]*logpayment.Model, len(that.activeLogPayments))
-	maps.Copy(activeLogs, that.activeLogPayments)
-	that.logPaymentsMutex.RUnlock()
-
-	if len(activeLogs) == 0 {
+	if len(that.activeLogPayments) == 0 {
+		that.logPaymentsMutex.RUnlock()
 		return
 	}
 
-	for _, logPaymentModel := range activeLogs {
+	for _, logPaymentModel := range that.activeLogPayments {
 		that.logPaymentsJobChan <- logPaymentModel
 	}
+	that.logPaymentsMutex.RUnlock()
 }
 
 func (that *monitoring) processLogChecker(logPaymentModel *logpayment.Model) {
