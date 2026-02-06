@@ -25,7 +25,7 @@ func AdminMerchantWalletsList(context *gin.Context) {
 			},
 		},
 		nil,
-		merchantwallet.DTO,
+		merchantwallet.DTOAdmin,
 	)
 }
 
