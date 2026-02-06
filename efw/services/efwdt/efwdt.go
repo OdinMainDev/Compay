@@ -20,3 +20,7 @@ type SpecialFilters struct {
 
 type SpecialFilterHandler func(fieldName string, value any) (SpecialFilters, bool)
 type SpecialFilterMap map[string]SpecialFilterHandler
+
+type HasTableName interface {
+	TableName() string
+}

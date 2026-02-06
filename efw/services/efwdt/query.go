@@ -32,6 +32,8 @@ func GetQueryResponse[TModel, TRequest any](
 	baseTx := applyAdditionalFilters(dbTx, additionalFilters)
 	filteredTx := applyRequestFilters(baseTx, input, specialFilters)
 
+	var model TModel
+	var tableName = any(&model).(HasTableName).TableName()
 	var wg sync.WaitGroup
 	var result []*TModel
 	var recordsFiltered int64
@@ -47,12 +49,12 @@ func GetQueryResponse[TModel, TRequest any](
 
 	go func() {
 		defer wg.Done()
-		recordsFiltered, recordsFilteredErr = filteredTx.Count(context.Background(), "id")
+		recordsFiltered, recordsFilteredErr = filteredTx.Count(context.Background(), tableName+".id")
 	}()
 
 	go func() {
 		defer wg.Done()
-		recordsTotal, recordsTotalErr = baseTx.Count(context.Background(), "id")
+		recordsTotal, recordsTotalErr = baseTx.Count(context.Background(), tableName+".id")
 	}()
 
 	wg.Wait()
