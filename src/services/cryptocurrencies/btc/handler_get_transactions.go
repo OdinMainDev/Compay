@@ -2,6 +2,7 @@ package btc
 
 import (
 	"compay/common/types"
+	"efw/components/entity"
 
 	"github.com/btcsuite/btcd/txscript"
 )
@@ -52,7 +53,7 @@ func GetTransactions(lastHeight int64) ([]types.TxData, int64, error) {
 					BlockHash:     hash.String(),
 					BlockHeight:   lastHeight,
 					Time:          timeBlock,
-					Amount:        types.Amount(txOut.Value),
+					Amount:        entity.Amount(txOut.Value),
 					Confirmations: types.Confirmation(confirmations),
 					VoutPosition:  voutIndex,
 					AssetId:       "BTC", // заполняем просто так
