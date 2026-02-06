@@ -30,7 +30,7 @@ func StartBtc() {
 	btcServer = &http.Server{Addr: ":8081", Handler: router.Handler()}
 	go func() {
 		if err := btcServer.ListenAndServe(); err != nil {
-			efwlog.LogError("Btc server started with error:", err.Error())
+			efwlog.LogError("Btc server started with error: ", err.Error())
 		}
 	}()
 }

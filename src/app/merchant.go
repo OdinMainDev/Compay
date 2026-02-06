@@ -78,7 +78,7 @@ func StartMerchant() {
 	merchantServer = &http.Server{Addr: ":" + config.AppPort, Handler: router.Handler()}
 	go func() {
 		if err := merchantServer.ListenAndServe(); err != nil {
-			efwlog.LogError("Merchant server started with error:", err.Error())
+			efwlog.LogError("Merchant server started with error: ", err.Error())
 		}
 	}()
 }

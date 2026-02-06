@@ -23,7 +23,7 @@ func StartRates() {
 	ratesServer = &http.Server{Addr: ":" + config.AppPort, Handler: router.Handler()}
 	go func() {
 		if err := ratesServer.ListenAndServe(); err != nil {
-			efwlog.LogError("Rates server started with error:", err.Error())
+			efwlog.LogError("Rates server started with error: ", err.Error())
 		}
 	}()
 }
