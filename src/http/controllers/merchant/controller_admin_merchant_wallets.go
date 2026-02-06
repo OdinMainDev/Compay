@@ -115,13 +115,24 @@ func AdminMerchantWalletsListFilters(context *gin.Context) {
 }
 
 func AdminMerchantWalletsGet(context *gin.Context) {
-	// adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
 	efwcontroller.GetModel(
 		context,
 		merchantwallet.GetModel,
 		merchantwallet.DTO,
 		func(id int64) merchantwallet.QueryHelper {
-			qH := merchantwallet.QueryHelper{Id: types.MerchantWalletId(id)}
+			qH := merchantwallet.QueryHelper{Id: types.MerchantWalletId(id), DontCheckMerchantId: true}
+			if !isUserRootAdmin(adminUserModel.GetId()) {
+				merchantModels := merchant.GetModels(merchant.QueryHelper{CreatorId: adminUserModel.GetId()})
+				merchantIds := []types.MerchantId{}
+				for _, merchantModel := range merchantModels {
+					merchantIds = append(merchantIds, merchantModel.GetId())
+				}
+				if len(merchantIds) != 0 {
+					merchantIds = append(merchantIds, 0)
+				}
+				qH.MerchantIds = merchantIds
+			}
 			return qH
 		},
 	)

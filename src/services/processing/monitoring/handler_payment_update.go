@@ -149,7 +149,7 @@ func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model) {
 		}
 	}
 
-	merchantWalletModel := merchantwallet.GetModel(merchantwallet.QueryHelper{PaymentId: paymentModel.GetId()})
+	merchantWalletModel := merchantwallet.GetModel(merchantwallet.QueryHelper{PaymentId: paymentModel.GetId(), MerchantId: paymentModel.MerchantId})
 	merchantWalletModel.Amount += paymentModel.ReceivedAmount
 	merchantWalletModel.ReceivedAmount += paymentModel.ReceivedAmount
 	merchantwallet.Save(merchantWalletModel, merchantwallet.QueryHelper{})
@@ -251,7 +251,7 @@ func (that *monitoring) afterSetPaymentInsufficientFunds(paymentModel *payment.M
 		}
 	}
 
-	merchantWalletModel := merchantwallet.GetModel(merchantwallet.QueryHelper{PaymentId: paymentModel.GetId()})
+	merchantWalletModel := merchantwallet.GetModel(merchantwallet.QueryHelper{PaymentId: paymentModel.GetId(), MerchantId: paymentModel.MerchantId})
 	merchantWalletModel.Amount += paymentModel.ReceivedAmount
 	merchantWalletModel.ReceivedAmount += paymentModel.ReceivedAmount
 	merchantwallet.Save(merchantWalletModel, merchantwallet.QueryHelper{})

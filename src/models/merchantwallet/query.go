@@ -10,10 +10,12 @@ import (
 
 type QueryHelper struct {
 	model.QueryHelper
-	Id         types.MerchantWalletId
-	MerchantId types.MerchantId
-	PaymentId  types.PaymentId
-	Currency   entity.CurrencyCodeAlpha
+	Id                  types.MerchantWalletId
+	MerchantId          types.MerchantId
+	DontCheckMerchantId bool
+	MerchantIds         []types.MerchantId
+	PaymentId           types.PaymentId
+	Currency            entity.CurrencyCodeAlpha
 }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
@@ -21,8 +23,11 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	if helper.Id != 0 {
 		chain = chain.Where("id = ?", helper.Id)
 	}
-	if helper.MerchantId != 0 {
+	if !helper.DontCheckMerchantId {
 		chain = chain.Where("merchant_id = ?", helper.MerchantId)
+	}
+	if len(helper.MerchantIds) != 0 {
+		chain = chain.Where("merchant_id IN (?)", helper.MerchantIds)
 	}
 	if helper.PaymentId != 0 {
 		chain = chain.Where("payment_id = ?", helper.PaymentId)

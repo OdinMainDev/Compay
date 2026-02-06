@@ -186,8 +186,6 @@ func merchantAdminCurrenciesRoutes(group *gin.RouterGroup) {
 func merchantAdminPaymentsRoutes(group *gin.RouterGroup) {
 	subGroup := group.Group("/dev/payments")
 
-	subGroup.POST("/list", controller.AdminPaymentsList)
-	subGroup.POST("/list/filters", controller.AdminPaymentsListFilters)
 	subGroup.POST("/get/:id", controller.AdminPaymentsGet)
 }
 
