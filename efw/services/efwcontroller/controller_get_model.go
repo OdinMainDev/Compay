@@ -11,7 +11,7 @@ import (
 func GetModel[TModel any, TQueryHelper any](
 	context *gin.Context,
 	getModel func(queryHelper TQueryHelper) *TModel,
-	modelToDto func(model *TModel) any,
+	modelToDto func(model *TModel) gin.H,
 	constructQueryHelper func(int64) TQueryHelper,
 ) (*TModel, int64, bool) {
 	var input RequestWithId

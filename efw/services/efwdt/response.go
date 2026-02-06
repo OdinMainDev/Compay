@@ -9,7 +9,7 @@ type response[T any] struct {
 	RecordsCount    int64 `json:"recordsCount"`
 }
 
-func Response[T any](models []*T, recordsTotal, recordsFiltered, recordsCount int64, dtoFunc func(model *T) any) gin.H {
+func Response[T any](models []*T, recordsTotal, recordsFiltered, recordsCount int64, dtoFunc func(model *T) gin.H) gin.H {
 	if dtoFunc == nil {
 		return gin.H{
 			"data": gin.H{

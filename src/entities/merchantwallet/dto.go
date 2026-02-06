@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DTO(model *Model) any {
+func DTO(model *Entity) gin.H {
 	return gin.H{
 		"id":              model.Id,
 		"merchant_id":     model.MerchantId,

@@ -14,7 +14,7 @@ func Datable[TModel, TRequest any](
 	columnsOrder []string,
 	additionalFilters []efwdt.ChainFilter[*TModel],
 	specialFilters efwdt.SpecialFilterMap,
-	dtoFunc func(model *TModel) any,
+	dtoFunc func(model *TModel) gin.H,
 ) {
 	var input efwdt.Request[TRequest]
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
