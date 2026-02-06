@@ -6,6 +6,7 @@ import (
 	"compay/src/helpers"
 	"compay/src/models/logpayment"
 	"compay/src/models/payment"
+	"efw/components/entity"
 	"efw/components/model"
 	"efw/core/efwlog"
 	"fmt"
@@ -108,7 +109,7 @@ func (that *monitoring) addPayment(paymentModel *payment.Model) {
 }
 
 // removePaymentAsync удаляет платеж из пула
-func (that *monitoring) removePaymentAsync(address types.PaymentAddress, codeAlpha types.CurrencyCodeAlpha) {
+func (that *monitoring) removePaymentAsync(address types.PaymentAddress, codeAlpha entity.CurrencyCodeAlpha) {
 	switch codeAlpha {
 	case constants.BtcCodeAlpha:
 		that.btc.mutex.Lock()
@@ -123,7 +124,7 @@ func (that *monitoring) removePaymentAsync(address types.PaymentAddress, codeAlp
 	fmt.Printf("[Monitoring] Payment with wallet %s removed from monitoring pool\n", address)
 }
 
-func (that *monitoring) removePayment(address types.PaymentAddress, codeAlpha types.CurrencyCodeAlpha) {
+func (that *monitoring) removePayment(address types.PaymentAddress, codeAlpha entity.CurrencyCodeAlpha) {
 	switch codeAlpha {
 	case constants.BtcCodeAlpha:
 		delete(that.btc.activePayments, address)

@@ -1,5 +1,7 @@
 package types
 
+import "efw/components/entity"
+
 type TxData struct {
 	TxId          PaymentTxId    `json:"tx_id"`         // tx id ( у бтц совпадает с хеш )
 	TxHash        PaymentTxHash  `json:"tx_hash"`       // tx hash
@@ -7,7 +9,7 @@ type TxData struct {
 	BlockHash     string         `json:"block_hash"`    // block hash
 	BlockHeight   int64          `json:"block_height"`  // block height
 	Time          int64          `json:"time"`          // время ( обычно время создания блока )
-	Amount        Amount         `json:"amount"`        // сумма транзакции ( получение/отрпавка)
+	Amount        entity.Amount  `json:"amount"`        // сумма транзакции ( получение/отрпавка)
 	Confirmations Confirmation   `json:"confirmations"` // кол-во конфирмов
 	VoutPosition  int            `json:"vout_position"` // vout позиция ( # адреса в транзакции)
 	Nonce         string         `json:"nonce"`         // порядковый номер операции аккаунта

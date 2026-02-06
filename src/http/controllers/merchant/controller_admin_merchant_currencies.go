@@ -3,9 +3,9 @@ package merchant
 import (
 	"compay/common/constants"
 	"compay/common/types"
-	"compay/src/models/currency"
 	"compay/src/models/merchantcurrency"
 	"compay/src/models/user"
+	"efw/core/efwamount"
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"efw/services/efwcontroller"
@@ -87,15 +87,15 @@ func AdminMerchantCurrenciesProcess(context *gin.Context) {
 		return
 	}
 
-	merchantCurrencyModel.MinAmount = currency.FloatToAmountByCodeAlpha(input.MinAmount, merchantCurrencyModel.Currency)
-	merchantCurrencyModel.MaxAmount = currency.FloatToAmountByCodeAlpha(input.MaxAmount, merchantCurrencyModel.Currency)
-	merchantCurrencyModel.MinAmountWithdraw = currency.FloatToAmountByCodeAlpha(input.MinAmountWithdraw, merchantCurrencyModel.Currency)
-	merchantCurrencyModel.MaxAmountWithdraw = currency.FloatToAmountByCodeAlpha(input.MaxAmountWithdraw, merchantCurrencyModel.Currency)
+	merchantCurrencyModel.MinAmount = efwamount.FloatToAmountByCodeAlpha(input.MinAmount, merchantCurrencyModel.Currency)
+	merchantCurrencyModel.MaxAmount = efwamount.FloatToAmountByCodeAlpha(input.MaxAmount, merchantCurrencyModel.Currency)
+	merchantCurrencyModel.MinAmountWithdraw = efwamount.FloatToAmountByCodeAlpha(input.MinAmountWithdraw, merchantCurrencyModel.Currency)
+	merchantCurrencyModel.MaxAmountWithdraw = efwamount.FloatToAmountByCodeAlpha(input.MaxAmountWithdraw, merchantCurrencyModel.Currency)
 	merchantCurrencyModel.Confirms = input.Confirms
 	merchantCurrencyModel.InvoiceTime = input.InvoiceTime
 	merchantCurrencyModel.FeeType = input.FeeType
-	merchantCurrencyModel.FeeFixed = types.FeeAmount(currency.FloatToAmountByCodeAlpha(input.FeeFixed, merchantCurrencyModel.Currency))
-	merchantCurrencyModel.FeePercent = types.FeePercentAmount(currency.FloatToAmount(input.FeePercent, 2))
+	merchantCurrencyModel.FeeFixed = types.FeeAmount(efwamount.FloatToAmountByCodeAlpha(input.FeeFixed, merchantCurrencyModel.Currency))
+	merchantCurrencyModel.FeePercent = types.FeePercentAmount(efwamount.FloatToAmount(input.FeePercent, 2))
 	merchantcurrency.Save(merchantCurrencyModel, merchantcurrency.QueryHelper{})
 
 	createLogUser(context, adminUserModel, constants.LogUserAdminMerchantCurrencyProcess)

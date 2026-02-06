@@ -2,6 +2,7 @@ package currency
 
 import (
 	"compay/common/types"
+	"efw/components/entity"
 	"efw/components/model"
 	"efw/utils"
 
@@ -11,7 +12,7 @@ import (
 type QueryHelper struct {
 	model.QueryHelper
 	Id         types.CurrencyId
-	CodeAlpha  types.CurrencyCodeAlpha
+	CodeAlpha  entity.CurrencyCodeAlpha
 	IsEnabled  bool
 	IsDisabled bool
 	Search     string

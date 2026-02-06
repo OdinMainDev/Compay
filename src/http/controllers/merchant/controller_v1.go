@@ -1,13 +1,13 @@
 package merchant
 
 import (
-	"compay/common/types"
+	"efw/components/entity"
 	"efw/utils"
 )
 
 type signData struct {
 	token    string
-	currency types.CurrencyCodeAlpha
+	currency entity.CurrencyCodeAlpha
 	sign     string
 }
 

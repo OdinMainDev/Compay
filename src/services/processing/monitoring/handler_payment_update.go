@@ -9,6 +9,7 @@ import (
 	"compay/src/models/merchantwallet"
 	"compay/src/models/payment"
 	"compay/src/services/cconverter"
+	"efw/components/entity"
 )
 
 // Ставим статус заявки "Обнаружен платеж"
@@ -51,7 +52,7 @@ func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txI
 }
 
 // Обновляем сумму платежа
-func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, currency types.CurrencyCodeAlpha, txId types.PaymentTxId, amount types.Amount) {
+func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, currency entity.CurrencyCodeAlpha, txId types.PaymentTxId, amount entity.Amount) {
 	amountUsd := cconverter.Convert(amount, currency)
 	payment.IncreaseReceivedAmount(paymentId, amount, amountUsd)
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
@@ -68,7 +69,7 @@ func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, currency
 	go that.afterSetPaymentReceived(paymentModel, amount, amountUsd, txId)
 }
 
-func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amount, amountUsd types.Amount, txId types.PaymentTxId) {
+func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amount, amountUsd entity.Amount, txId types.PaymentTxId) {
 	helpers.NotificationFundsReceived(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,

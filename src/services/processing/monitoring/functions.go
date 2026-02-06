@@ -3,9 +3,10 @@ package monitoring
 import (
 	"compay/common/types"
 	"compay/src/models/merchantcurrency"
+	"efw/components/entity"
 )
 
-func (that *monitoring) getMerchantCurrencyModel(merchantCurrencyModel *merchantcurrency.Model, merchantId types.MerchantId, codeAlpha types.CurrencyCodeAlpha) *merchantcurrency.Model {
+func (that *monitoring) getMerchantCurrencyModel(merchantCurrencyModel *merchantcurrency.Model, merchantId types.MerchantId, codeAlpha entity.CurrencyCodeAlpha) *merchantcurrency.Model {
 	if merchantCurrencyModel != nil {
 		return merchantCurrencyModel
 	}

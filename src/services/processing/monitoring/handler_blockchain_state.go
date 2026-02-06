@@ -2,10 +2,10 @@ package monitoring
 
 import (
 	"compay/common/constants"
-	"compay/common/types"
 	"compay/src/helpers"
 	"compay/src/models/blockchainstate"
 	"compay/src/models/currency"
+	"efw/components/entity"
 	"efw/core/efwlog"
 	"fmt"
 )
@@ -33,7 +33,7 @@ func (that *monitoring) loadBlockchainStates() {
 	}
 }
 
-func (that *monitoring) createDefaultMerchantState(codeAlpha types.CurrencyCodeAlpha, attempt int, err error) *blockchainstate.Model {
+func (that *monitoring) createDefaultMerchantState(codeAlpha entity.CurrencyCodeAlpha, attempt int, err error) *blockchainstate.Model {
 	resp := &blockchainstate.Model{}
 	resp.Currency = codeAlpha
 

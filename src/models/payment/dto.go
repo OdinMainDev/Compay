@@ -1,7 +1,7 @@
 package payment
 
 import (
-	"compay/src/models/currency"
+	"efw/core/efwamount"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,8 +12,8 @@ func DTO(model *Model) any {
 		"currency":   model.Currency,
 		"status":     model.Status,
 		"address":    model.Address,
-		"amount":     currency.AmountToFloatByCodeAlpha(model.Amount, model.Currency),
-		"amount_usd": currency.AmountToFloat(model.AmountUsd, 2),
+		"amount":     efwamount.AmountToFloatByCodeAlpha(model.Amount, model.Currency),
+		"amount_usd": efwamount.AmountToFloat(model.AmountUsd, 2),
 		"expires_at": model.ExpiresAt,
 	}
 }
@@ -24,10 +24,10 @@ func DTOMerchant(model *Model) any {
 		"currency":               model.Currency,
 		"status":                 model.Status,
 		"address":                model.Address,
-		"amount":                 currency.AmountToFloatByCodeAlpha(model.Amount, model.Currency),
-		"amount_usd":             currency.AmountToFloat(model.AmountUsd, 2),
-		"received_amount":        currency.AmountToFloatByCodeAlpha(model.ReceivedAmount, model.Currency),
-		"received_amount_usd":    currency.AmountToFloat(model.ReceivedAmountUsd, 2),
+		"amount":                 efwamount.AmountToFloatByCodeAlpha(model.Amount, model.Currency),
+		"amount_usd":             efwamount.AmountToFloat(model.AmountUsd, 2),
+		"received_amount":        efwamount.AmountToFloatByCodeAlpha(model.ReceivedAmount, model.Currency),
+		"received_amount_usd":    efwamount.AmountToFloat(model.ReceivedAmountUsd, 2),
 		"required_confirmations": model.RequiredConfirmations,
 		"expires_at":             model.ExpiresAt,
 	}
@@ -41,10 +41,10 @@ func DTOAdmin(model *Model) any {
 		"currency":               model.Currency,
 		"status":                 model.Status,
 		"address":                model.Address,
-		"amount":                 currency.AmountToFloatByCodeAlpha(model.Amount, model.Currency),
-		"amount_usd":             currency.AmountToFloat(model.AmountUsd, 2),
-		"received_amount":        currency.AmountToFloatByCodeAlpha(model.ReceivedAmount, model.Currency),
-		"received_amount_usd":    currency.AmountToFloat(model.ReceivedAmountUsd, 2),
+		"amount":                 efwamount.AmountToFloatByCodeAlpha(model.Amount, model.Currency),
+		"amount_usd":             efwamount.AmountToFloat(model.AmountUsd, 2),
+		"received_amount":        efwamount.AmountToFloatByCodeAlpha(model.ReceivedAmount, model.Currency),
+		"received_amount_usd":    efwamount.AmountToFloat(model.ReceivedAmountUsd, 2),
 		"required_confirmations": model.RequiredConfirmations,
 		"expires_at":             model.ExpiresAt,
 		"created_at":             model.CreatedAt,

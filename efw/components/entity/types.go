@@ -18,3 +18,8 @@ type UserAgent string
 
 // User Types
 type UserId int64
+
+// Amount Types
+type Amount int64
+type CurrencyCodeAlpha string
+type CurrencyMinorUnits int

@@ -2,18 +2,18 @@ package processing
 
 import (
 	"compay/common/cperrors"
-	"compay/common/types"
-	"compay/src/models/currency"
+	"efw/components/entity"
+	"efw/core/efwamount"
 )
 
-func (that *Processing) calculateDepositAmount(amountFloat float64) (types.Amount, error) {
+func (that *Processing) calculateDepositAmount(amountFloat float64) (entity.Amount, error) {
 	if that.getMerchantCurrency().MinAmount == 0 && amountFloat == 0 {
 		return 0, nil
 	} else if amountFloat == 0 {
 		return 0, cperrors.ErrorProcessingDepositAmountIsRequired
 	}
 
-	amount := currency.FloatToAmount(amountFloat, that.getCurrency().MinorUnits)
+	amount := efwamount.FloatToAmount(amountFloat, that.getCurrency().MinorUnits)
 	if that.getMerchantCurrency().MinAmount != 0 {
 		if amount < that.getMerchantCurrency().MinAmount {
 			return 0, cperrors.ErrorProcessingDepositAmountLessThanMin

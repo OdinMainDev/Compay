@@ -5,6 +5,7 @@ import (
 	paymentEntity "compay/src/entities/payment"
 	"context"
 	"efw"
+	"efw/components/entity"
 	"efw/components/model"
 	"efw/core/efwlog"
 
@@ -19,7 +20,7 @@ type QueryHelper struct {
 	MerchantId          types.MerchantId
 	MerchantIds         []types.MerchantId
 	Statuses            []types.PaymentStatus
-	Currency            types.CurrencyCodeAlpha
+	Currency            entity.CurrencyCodeAlpha
 }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
@@ -45,7 +46,7 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	return chain.Order("id DESC")
 }
 
-func IncreaseReceivedAmount(paymentId types.PaymentId, amount, amountUsd types.Amount) {
+func IncreaseReceivedAmount(paymentId types.PaymentId, amount, amountUsd entity.Amount) {
 	_, err := efw.DBTransaction[any]().Table("payments").
 		Where("id = ?", paymentId).
 		Updates(context.Background(), map[string]any{

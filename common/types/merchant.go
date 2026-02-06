@@ -12,10 +12,8 @@ type NotificationText string
 
 // Currency Types
 type CurrencyId int64
-type CurrencyCodeAlpha string
 type CurrencyNetwork string
 type CurrencyIsCoin bool
-type CurrencyMinorUnits int
 
 // Blockchain
 type BlockchainStateId int64

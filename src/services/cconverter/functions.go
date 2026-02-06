@@ -2,12 +2,12 @@ package cconverter
 
 import (
 	"compay/common/cperrors"
-	"compay/common/types"
 	"compay/src/helpers"
-	"compay/src/models/currency"
+	"efw/components/entity"
+	"efw/core/efwamount"
 )
 
-func Convert(amount types.Amount, currencyFrom types.CurrencyCodeAlpha) types.Amount {
+func Convert(amount entity.Amount, currencyFrom entity.CurrencyCodeAlpha) entity.Amount {
 	resp, err := convert(amount, currencyFrom)
 	if err != nil {
 		helpers.NotificationError("[CConverter] Ошибка при конвертации: " + err.Error())
@@ -15,7 +15,7 @@ func Convert(amount types.Amount, currencyFrom types.CurrencyCodeAlpha) types.Am
 	return resp
 }
 
-func convert(amount types.Amount, currencyFrom types.CurrencyCodeAlpha) (types.Amount, error) {
+func convert(amount entity.Amount, currencyFrom entity.CurrencyCodeAlpha) (entity.Amount, error) {
 	service.mutex.RLock()
 	defer service.mutex.RUnlock()
 
@@ -29,8 +29,8 @@ func convert(amount types.Amount, currencyFrom types.CurrencyCodeAlpha) (types.A
 		return 0, cperrors.ErrorCConverterUsdForCurrencyNotExist(string(currencyFrom))
 	}
 
-	return currency.FloatToAmount(
-		currency.AmountToFloatByCodeAlpha(amount, currencyFrom)*rate,
+	return efwamount.FloatToAmount(
+		efwamount.AmountToFloatByCodeAlpha(amount, currencyFrom)*rate,
 		2,
 	), nil
 }

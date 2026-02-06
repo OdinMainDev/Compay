@@ -7,7 +7,7 @@ import (
 	"efw/core/efwlog"
 )
 
-func DefaultCurrency(codeAlpha types.CurrencyCodeAlpha, merchantId types.MerchantId, cretorId entity.UserId) *Model {
+func DefaultCurrency(codeAlpha entity.CurrencyCodeAlpha, merchantId types.MerchantId, cretorId entity.UserId) *Model {
 	switch codeAlpha {
 	case constants.BtcCodeAlpha:
 		return defaultBtc(merchantId, cretorId)

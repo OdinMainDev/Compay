@@ -1,7 +1,7 @@
 package merchantwallet
 
 import (
-	"compay/src/models/currency"
+	"efw/core/efwamount"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,9 +13,9 @@ func DTO(model *Model) any {
 		"payment_id":      model.PaymentId,
 		"currency":        model.Currency,
 		"address":         model.Address,
-		"amount":          currency.AmountToFloatByCodeAlpha(model.Amount, model.Currency),
-		"received_amount": currency.AmountToFloatByCodeAlpha(model.ReceivedAmount, model.Currency),
-		"sent_amount":     currency.AmountToFloatByCodeAlpha(model.SentAmount, model.Currency),
+		"amount":          efwamount.AmountToFloatByCodeAlpha(model.Amount, model.Currency),
+		"received_amount": efwamount.AmountToFloatByCodeAlpha(model.ReceivedAmount, model.Currency),
+		"sent_amount":     efwamount.AmountToFloatByCodeAlpha(model.SentAmount, model.Currency),
 		"created_at":      model.CreatedAt,
 		"updated_at":      model.UpdatedAt,
 	}

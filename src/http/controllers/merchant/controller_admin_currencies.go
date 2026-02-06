@@ -7,6 +7,7 @@ import (
 	"compay/src/models/currency"
 	"compay/src/models/user"
 	"compay/src/services/importdata"
+	"efw/components/entity"
 	"efw/components/model"
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
@@ -18,12 +19,12 @@ import (
 )
 
 type requestAdminCurrenciesList struct {
-	Id         types.CurrencyId         `json:"id" efwdt:"id" binding:"omitempty,gt=0"`
-	CodeAlpha  types.CurrencyCodeAlpha  `json:"code_alpha" efwdt:"code_alpha" binding:"omitempty,gt=0"`
-	Title      string                   `json:"title" efwdt:"title" binding:"omitempty,gt=0"`
-	Network    types.CurrencyNetwork    `json:"network" efwdt:"network" binding:"omitempty,currencyNetworkExist"`
-	IsCoin     *types.CurrencyIsCoin    `json:"is_coin" efwdt:"is_coin" binding:"omitempty"`
-	MinorUnits types.CurrencyMinorUnits `json:"minor_units" efwdt:"minor_units" binding:"omitempty"`
+	Id         types.CurrencyId          `json:"id" efwdt:"id" binding:"omitempty,gt=0"`
+	CodeAlpha  entity.CurrencyCodeAlpha  `json:"code_alpha" efwdt:"code_alpha" binding:"omitempty,gt=0"`
+	Title      string                    `json:"title" efwdt:"title" binding:"omitempty,gt=0"`
+	Network    types.CurrencyNetwork     `json:"network" efwdt:"network" binding:"omitempty,currencyNetworkExist"`
+	IsCoin     *types.CurrencyIsCoin     `json:"is_coin" efwdt:"is_coin" binding:"omitempty"`
+	MinorUnits entity.CurrencyMinorUnits `json:"minor_units" efwdt:"minor_units" binding:"omitempty"`
 	efwdt.WithCreatedAt
 }
 
@@ -43,7 +44,7 @@ func AdminCurrenciesList(context *gin.Context) {
 		nil,
 		efwdt.SpecialFilterMap{
 			"code_alpha": func(fieldName string, value any) (efwdt.SpecialFilters, bool) {
-				v, ok := value.(types.CurrencyCodeAlpha)
+				v, ok := value.(entity.CurrencyCodeAlpha)
 				if !ok {
 					return efwdt.SpecialFilters{}, false
 				}

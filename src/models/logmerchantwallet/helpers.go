@@ -2,6 +2,7 @@ package logmerchantwallet
 
 import (
 	"compay/common/types"
+	"efw/components/entity"
 )
 
 func FastCreate(
@@ -10,9 +11,9 @@ func FastCreate(
 	withdrawId types.PaymentId,
 	paymentTrxId string,
 	withdrawTrxId string,
-	currency types.CurrencyCodeAlpha,
-	amount types.Amount,
-	amountUsd types.Amount,
+	currency entity.CurrencyCodeAlpha,
+	amount entity.Amount,
+	amountUsd entity.Amount,
 ) {
 	model := &Model{}
 	model.MerchantId = merchantId

@@ -2,6 +2,7 @@ package merchantwallet
 
 import (
 	"compay/common/types"
+	"efw/components/entity"
 	"efw/components/model"
 
 	"gorm.io/gorm"
@@ -12,7 +13,7 @@ type QueryHelper struct {
 	Id         types.MerchantWalletId
 	MerchantId types.MerchantId
 	PaymentId  types.PaymentId
-	Currency   types.CurrencyCodeAlpha
+	Currency   entity.CurrencyCodeAlpha
 }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {

@@ -2,6 +2,7 @@ package blockchainstate
 
 import (
 	"compay/common/types"
+	"efw/components/entity"
 	"efw/components/model"
 
 	"gorm.io/gorm"
@@ -10,7 +11,7 @@ import (
 type QueryHelper struct {
 	model.QueryHelper
 	Id       types.BlockchainStateId
-	Currency types.CurrencyCodeAlpha
+	Currency entity.CurrencyCodeAlpha
 }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {

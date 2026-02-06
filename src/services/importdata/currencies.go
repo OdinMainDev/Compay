@@ -3,6 +3,7 @@ package importdata
 import (
 	"compay/common/constants"
 	"compay/src/models/currency"
+	"efw/core/efwamount"
 	"sync"
 	"time"
 )
@@ -36,6 +37,7 @@ func ImportCurrencies() bool {
 			currencyModel.MinorUnits = item.MinorUnits
 
 			currency.Save(currencyModel, currency.QueryHelper{})
+			efwamount.SetMinorUnits(currencyModel.CodeAlpha, currencyModel.MinorUnits)
 		}
 		time.Sleep(30 * time.Second)
 		mutex.Lock()

@@ -12,7 +12,7 @@ type QueryHelper struct {
 	model.QueryHelper
 	Id         types.MerchantCurrencyId
 	CreatorId  entity.UserId
-	Currency   types.CurrencyCodeAlpha
+	Currency   entity.CurrencyCodeAlpha
 	MerchantId types.MerchantId
 }
 

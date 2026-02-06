@@ -3,8 +3,8 @@ package monitoring
 import (
 	"compay/common/constants"
 	"compay/common/cperrors"
-	"compay/common/types"
 	"compay/src/helpers"
+	"efw/components/entity"
 	"efw/core/efwlog"
 	"efw/core/efwrequest"
 	"encoding/json"
@@ -19,7 +19,7 @@ const (
 	requestGetTransactions requestUrl = "/get-transactions"
 )
 
-func (that *monitoring) doRequest(path requestUrl, codeAlpha types.CurrencyCodeAlpha, body []byte, obj any) error {
+func (that *monitoring) doRequest(path requestUrl, codeAlpha entity.CurrencyCodeAlpha, body []byte, obj any) error {
 	url := that.getRequestUrl(path, codeAlpha)
 	body, resp, err := efwrequest.Request(efwrequest.RequestHelper{
 		Url:           url,
@@ -45,7 +45,7 @@ func (that *monitoring) doRequest(path requestUrl, codeAlpha types.CurrencyCodeA
 	return nil
 }
 
-func (that *monitoring) getRequestUrl(path requestUrl, codeAlpha types.CurrencyCodeAlpha) string {
+func (that *monitoring) getRequestUrl(path requestUrl, codeAlpha entity.CurrencyCodeAlpha) string {
 	switch codeAlpha {
 	case constants.BtcCodeAlpha:
 		return constants.BtcApiUrl + string(path)

@@ -2,11 +2,11 @@ package merchant
 
 import (
 	"compay/common/cperrors"
-	"compay/common/types"
 	"compay/src/models/currency"
 	"compay/src/models/merchant"
 	"compay/src/models/payment"
 	"compay/src/services/processing"
+	"efw/components/entity"
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 
@@ -14,10 +14,10 @@ import (
 )
 
 type requestV1PaymentCreate struct {
-	Amount   float64                 `json:"amount" binding:"omitempty,min=0"`
-	Token    string                  `json:"token" binding:"required,len=36"`
-	Currency types.CurrencyCodeAlpha `json:"currency" binding:"required,max=20"`
-	Sign     string                  `json:"sign" binding:"required,len=128"`
+	Amount   float64                  `json:"amount" binding:"omitempty,min=0"`
+	Token    string                   `json:"token" binding:"required,len=36"`
+	Currency entity.CurrencyCodeAlpha `json:"currency" binding:"required,max=20"`
+	Sign     string                   `json:"sign" binding:"required,len=128"`
 }
 
 func V1PaymentCreate(context *gin.Context) {
