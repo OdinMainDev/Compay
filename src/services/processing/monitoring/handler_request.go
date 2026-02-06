@@ -25,7 +25,7 @@ func (that *monitoring) doRequest(path requestUrl, codeAlpha entity.CurrencyCode
 		Url:           url,
 		Method:        "POST",
 		Body:          body,
-		IsLogDisabled: false,
+		IsLogDisabled: true,
 
 		RequestTimeout: 180,
 	})

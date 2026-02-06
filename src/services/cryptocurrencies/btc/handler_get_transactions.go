@@ -56,8 +56,7 @@ func GetTransactions(lastHeight int64) ([]types.TxData, int64, error) {
 					Amount:        entity.Amount(txOut.Value),
 					Confirmations: types.Confirmation(confirmations),
 					VoutPosition:  voutIndex,
-					AssetId:       "BTC", // заполняем просто так
-					SentTo:        []string{address},
+					AssetId:       "BTC",
 				})
 			}
 		}

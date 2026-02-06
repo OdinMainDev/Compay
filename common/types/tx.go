@@ -16,7 +16,5 @@ type TxData struct {
 	Memo          string         `json:"memo"`          // комментарий/полезная нагрузка
 	AssetId       string         `json:"asset_id"`      // идентификатор актива
 	SentTo        []string       `json:"sent_to"`       // кому пришли
-
-	// ReceivedFrom []string `json:"received_from"` // от кого пришли (tx/address) DEPRECATED
-	// Fee          float64  `json:"fee"`           // комса транзы DEPRECATED
+	ReceivedFrom  []string       `json:"received_from"` // от кого пришли (адреса отправителей)
 }
