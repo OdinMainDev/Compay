@@ -26,8 +26,8 @@ type requestAdminPaymentsList struct {
 	AmountUsd         float64                 `json:"amount_usd" efwdt:"amount_usd" binding:"omitempty,amount"`
 	ReceivedAmount    float64                 `json:"received_amount" efwdt:"received_amount" binding:"omitempty,amount"`
 	ReceivedAmountUsd float64                 `json:"received_amount_usd" efwdt:"received_amount_usd" binding:"omitempty,amount"`
-	efwdt.WithCreatedAt
 	efwdt.WithExpiresAt
+	efwdt.WithCreatedAt
 }
 
 func AdminPaymentsList(context *gin.Context) {
