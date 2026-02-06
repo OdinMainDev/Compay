@@ -217,15 +217,13 @@ func merchantAdminLogUserRoutes(group *gin.RouterGroup) {
 func merchantAdminLogPaymentRoutes(group *gin.RouterGroup) {
 	subGroup := group.Group("/payment")
 
-	subGroup.POST("/list", controller.AdminLogPaymentList)
-	subGroup.POST("/list/filters", controller.AdminLogPaymentListFilters)
+	subGroup.POST("/list/:id", controller.AdminLogPaymentList)
 }
 
 func merchantAdminLogMerchantWalletRoutes(group *gin.RouterGroup) {
 	subGroup := group.Group("/merchant-wallet")
 
-	subGroup.POST("/list", controller.AdminLogMerchantWalletList)
-	subGroup.POST("/list/filters", controller.AdminLogMerchantWalletListFilters)
+	subGroup.POST("/list/:id", controller.AdminLogMerchantWalletList)
 }
 
 // MERCHANT ROUTES
