@@ -42,6 +42,11 @@ const (
 	LogUserAdminCurrencyDisable types.LogUserAction = "AdminCurrencyDisable"
 	LogUserAdminCurrencyEnable  types.LogUserAction = "AdminCurrencyEnable"
 
+	// ADMIN MERCHANT WALLET
+	LogUserAdminMerchantWalletGetPrivateKey    types.LogUserAction = "AdminMerchantWalletGetPrivateKey"
+	LogUserAdminMerchantWalletGetPublicKey     types.LogUserAction = "AdminMerchantWalletGetPublicKey"
+	LogUserAdminMerchantWalletGetPublicKeyFull types.LogUserAction = "AdminMerchantWalletGetPublicKeyFull"
+
 	// MERCHANT
 	// MERCHANT SETTINGS
 	LogUserMerchantSettingsProcess        types.LogUserAction = "MerchantSettingsProcess"
@@ -50,9 +55,26 @@ const (
 
 var LogUserActions = []types.LogUserAction{
 	LogUserProfileUpdate,
+	LogUserNotifyRead,
+	LogUserNotifyReadAll,
 	LogUserAdminUserCreate,
 	LogUserAdminUserProcess,
 	LogUserAdminUserDelete,
 	LogUserAdminUserDisableTotp,
-	LogUserNotifyRead,
+	LogUserAdminUserBan,
+	LogUserAdminUserUnban,
+	LogUserAdminMerchantCreate,
+	LogUserAdminMerchantProcess,
+	LogUserAdminMerchantDisable,
+	LogUserAdminMerchantEnable,
+	LogUserAdminMerchantCurrencyProcess,
+	LogUserAdminCurrencyProcess,
+	LogUserAdminCurrencyImport,
+	LogUserAdminCurrencyDisable,
+	LogUserAdminCurrencyEnable,
+	LogUserAdminMerchantWalletGetPrivateKey,
+	LogUserAdminMerchantWalletGetPublicKey,
+	LogUserAdminMerchantWalletGetPublicKeyFull,
+	LogUserMerchantSettingsProcess,
+	LogUserMerchantSettingsGenerateSecret,
 }

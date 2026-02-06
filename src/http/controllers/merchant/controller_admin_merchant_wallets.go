@@ -9,8 +9,10 @@ import (
 	"efw/components/entity"
 	"efw/core/efwamount"
 	"efw/core/efwgin"
+	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"efw/services/efwcontroller"
 	"efw/services/efwdt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -27,6 +29,10 @@ type requestAdminMerchantWalletsList struct {
 	ReceivedAmount float64                  `json:"received_amount" efwdt:"received_amount" binding:"omitempty,amount"`
 	SentAmount     float64                  `json:"sent_amount" efwdt:"sent_amount" binding:"omitempty,amount"`
 	efwdt.WithCreatedAt
+}
+
+type requestAdminMerchantWalletsAction struct {
+	Id types.MerchantId `json:"id" binding:"required,gt=0"`
 }
 
 func AdminMerchantWalletsList(context *gin.Context) {
@@ -136,4 +142,51 @@ func AdminMerchantWalletsGet(context *gin.Context) {
 			return qH
 		},
 	)
+}
+
+func AdminMerchantActionGetPrivateKey(context *gin.Context) {
+	adminMerchantActionGetData(context, constants.LogUserAdminMerchantWalletGetPrivateKey)
+}
+
+func AdminMerchantActionGetPublicKey(context *gin.Context) {
+	adminMerchantActionGetData(context, constants.LogUserAdminMerchantWalletGetPublicKey)
+}
+
+func AdminMerchantActionGetPublicKeyFull(context *gin.Context) {
+	adminMerchantActionGetData(context, constants.LogUserAdminMerchantWalletGetPublicKeyFull)
+}
+
+func adminMerchantActionGetData(context *gin.Context, action types.LogUserAction) {
+	var input requestAdminMerchantWalletsAction
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if !isUserRootAdmin(adminUserModel.GetId()) {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	merchantWalletModel := merchantwallet.GetModel(merchantwallet.QueryHelper{
+		Id:                  types.MerchantWalletId(input.Id),
+		DontCheckMerchantId: true,
+	})
+	if merchantWalletModel == nil {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	resp := ""
+	switch action {
+	case constants.LogUserAdminMerchantWalletGetPrivateKey:
+		resp = string(merchantWalletModel.PrivateKeyWif)
+	case constants.LogUserAdminMerchantWalletGetPublicKey:
+		resp = string(merchantWalletModel.PublicKey)
+	case constants.LogUserAdminMerchantWalletGetPublicKeyFull:
+		resp = string(merchantWalletModel.PublicKeyFull)
+	}
+
+	createLogUser(context, adminUserModel, action)
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": resp})
 }

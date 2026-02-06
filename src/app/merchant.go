@@ -195,6 +195,9 @@ func merchantAdminMerchantWalletsRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/list", controller.AdminMerchantWalletsList)
 	subGroup.POST("/list/filters", controller.AdminMerchantWalletsListFilters)
 	subGroup.POST("/get/:id", controller.AdminMerchantWalletsGet)
+	subGroup.POST("/action/get-private", controller.AdminMerchantActionGetPrivateKey)
+	subGroup.POST("/action/get-public", controller.AdminMerchantActionGetPublicKey)
+	subGroup.POST("/action/get-public-full", controller.AdminMerchantActionGetPublicKeyFull)
 }
 
 func merchantAdminLogAuthRoutes(group *gin.RouterGroup) {
