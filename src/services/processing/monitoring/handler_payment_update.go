@@ -152,6 +152,19 @@ func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model) {
 	merchantWalletModel.Amount += paymentModel.ReceivedAmount
 	merchantWalletModel.ReceivedAmount += paymentModel.ReceivedAmount
 	merchantwallet.Save(merchantWalletModel, merchantwallet.QueryHelper{})
+
+	if paymentModel.Amount != 0 {
+		logmerchantwallet.FastCreate(
+			paymentModel.MerchantId,
+			paymentModel.GetId(),
+			0,
+			paymentModel.TrxId,
+			"",
+			paymentModel.Currency,
+			paymentModel.ReceivedAmount,
+			paymentModel.ReceivedAmountUsd,
+		)
+	}
 }
 
 // Удаляем заявку (истекло время)
