@@ -9,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type GetTransactionsRequest struct {
+type requestGetTransactions struct {
 	LastHeight int64 `json:"last_height" binding:"required"`
 }
 
 func GetTransactions(context *gin.Context) {
-	var input GetTransactionsRequest
+	var input requestGetTransactions
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
 		return
 	}

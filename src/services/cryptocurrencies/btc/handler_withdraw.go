@@ -2,83 +2,103 @@ package btc
 
 import (
 	"bytes"
+	"compay/common/cperrors"
+	"efw/components/entity"
+	"efw/core/efwamount"
 	"encoding/hex"
-	"fmt"
 
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/btcutil"
-	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcd/rpcclient"
 	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcd/wire"
 )
 
 // WithdrawResponse содержит результат вывода средств
 type WithdrawResponse struct {
-	TxHash       string         `json:"tx_hash"`
-	TotalInput   btcutil.Amount `json:"total_input"`
-	TotalOutput  btcutil.Amount `json:"total_output"`
-	Fee          btcutil.Amount `json:"fee"`
-	ChangeAmount btcutil.Amount `json:"change_amount"`
+	TxHash       string        `json:"tx_hash"`
+	TotalInput   entity.Amount `json:"total_input"`
+	TotalOutput  entity.Amount `json:"total_output"`
+	Fee          entity.Amount `json:"fee"`
+	ChangeAmount entity.Amount `json:"change_amount"`
 }
 
 // Withdraw выводит средства с адреса
-func Withdraw(
-	client *rpcclient.Client,
-	wifStr string,
-	toAddress string,
-	amount btcutil.Amount,
-	network *chaincfg.Params,
-) (*WithdrawResponse, error) {
+// Если amount == 0, выводится весь доступный баланс (за вычетом комиссии)
+func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amount btcutil.Amount) (*WithdrawResponse, error) {
 	// Декодируем WIF приватный ключ
 	wif, err := btcutil.DecodeWIF(wifStr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode WIF: %w", err)
+		return nil, cperrors.ErrorBtcWithdrawFailedDecodePrivateWif(err.Error())
 	}
 
 	// Получаем публичный ключ и адрес отправителя
-	pubKey := wif.PrivKey.PubKey()
-	pubKeyHash := btcutil.Hash160(pubKey.SerializeCompressed())
-	fromAddr, err := btcutil.NewAddressWitnessPubKeyHash(pubKeyHash, network)
+	publicKey := wif.PrivKey.PubKey()
+	pubKeyHash := btcutil.Hash160(publicKey.SerializeCompressed())
+	fromAddr, err := btcutil.NewAddressWitnessPubKeyHash(pubKeyHash, networkConfig)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create address: %w", err)
+		return nil, cperrors.ErrorBtcWithdrawFailedCreateNewAddress(err.Error())
 	}
 
 	// Получаем UTXO для адреса
 	utxos, err := client.ListUnspentMinMaxAddresses(1, 9999999, []btcutil.Address{fromAddr})
 	if err != nil {
-		return nil, fmt.Errorf("failed to list unspent: %w", err)
+		return nil, cperrors.ErrorBtcWithdrawFailedCreateNewAddress(err.Error())
 	}
 
 	if len(utxos) == 0 {
-		return nil, fmt.Errorf("no UTXOs found for address %s", fromAddr.EncodeAddress())
+		return nil, cperrors.ErrorBtcWithdrawFailedGetListUnspent
+	}
+
+	// Получаем оптимальную ставку комиссии из Bitcoin Core
+	feeResult, err := client.EstimateSmartFee(estimatedFeeBlockCount, &btcjson.EstimateModeConservative)
+	if err != nil {
+		return nil, cperrors.ErrorBtcWithdrawFailedGetEstimatedFee(err.Error())
+	}
+
+	// Если нет данных для оценки, используем fallback значение
+	var feeRatePerKB btcutil.Amount
+	if feeResult.FeeRate != nil && *feeResult.FeeRate > 0 {
+		// FeeRate в BTC/KB, конвертируем в satoshi/KB
+		feeRatePerKB = btcutil.Amount(efwamount.ToAmount(*feeResult.FeeRate, 8))
+	} else {
+		// Fallback: 10 satoshi/byte = 10000 satoshi/KB (средняя оптимальная комиссия)
+		feeRatePerKB = 10000
 	}
 
 	// Собираем входы для транзакции
 	var selectedUTXOs []btcjson.ListUnspentResult
 	var totalInput btcutil.Amount
+	var estimatedFee btcutil.Amount
 
 	for _, utxo := range utxos {
 		selectedUTXOs = append(selectedUTXOs, utxo)
-		totalInput += btcutil.Amount(utxo.Amount * 1e8)
-		if totalInput >= amount {
+		// utxo.Amount уже в BTC, конвертируем в satoshi
+		totalInput += btcutil.Amount(efwamount.ToAmount(utxo.Amount, 8))
+
+		// Предварительная оценка размера транзакции
+		// SegWit вход: ~68 vbytes, выход: ~31 vbytes, overhead: ~10 vbytes
+		estimatedSize := len(selectedUTXOs)*68 + 2*31 + 10 // 2 выхода (получатель + сдача)
+		tempFee := btcutil.Amount(estimatedSize) * feeRatePerKB / 1000
+
+		// Проверяем, достаточно ли средств с учетом комиссии
+		if totalInput >= amount+tempFee {
 			break
 		}
 	}
 
+	// Финальный расчет комиссии с учетом выбранных входов
+	txSize := len(selectedUTXOs)*68 + 2*31 + 10
+	estimatedFee = btcutil.Amount(txSize) * feeRatePerKB / 1000
+
 	// Проверяем достаточность средств
 	if totalInput < amount {
-		return nil, fmt.Errorf("insufficient funds: have %d satoshi, need %d satoshi", totalInput, amount)
+		return nil, cperrors.ErrorBtcWithdrawInsufficientFunds(int64(totalInput), int64(amount))
 	}
-
-	// Оцениваем комиссию (примерно 1000 satoshi за вход + 1000 за выход)
-	estimatedFee := btcutil.Amount(len(selectedUTXOs)*1000 + 2000)
 
 	// Проверяем что после комиссии хватит средств
 	if totalInput < amount+estimatedFee {
-		return nil, fmt.Errorf("insufficient funds for fee: have %d satoshi, need %d satoshi (amount) + %d satoshi (fee)",
-			totalInput, amount, estimatedFee)
+		return nil, cperrors.ErrorBtcWithdrawInsufficientFundsForFee(int64(totalInput), int64(amount), int64(estimatedFee))
 	}
 
 	// Создаем новую транзакцию
@@ -88,24 +108,25 @@ func Withdraw(
 	for _, utxo := range selectedUTXOs {
 		txHash, err := chainhash.NewHashFromStr(utxo.TxID)
 		if err != nil {
-			return nil, fmt.Errorf("failed to parse txid: %w", err)
+			return nil, cperrors.ErrorBtcWithdrawFailedToParseTxId(err.Error())
 		}
 
 		outPoint := wire.NewOutPoint(txHash, utxo.Vout)
+		// избегаем возможности отменить выплату
 		txIn := wire.NewTxIn(outPoint, nil, nil)
 		tx.AddTxIn(txIn)
 	}
 
 	// Декодируем адрес получателя
-	destAddr, err := btcutil.DecodeAddress(toAddress, network)
+	destAddr, err := btcutil.DecodeAddress(toAddress, networkConfig)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode destination address: %w", err)
+		return nil, cperrors.ErrorBtcWithdrawFailedToDecodeDesitnationAddress(err.Error())
 	}
 
 	// Создаем скрипт для получателя
 	destPkScript, err := txscript.PayToAddrScript(destAddr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create destination script: %w", err)
+		return nil, cperrors.ErrorBtcWithdrawFailedToCreateDestinationScript(err.Error())
 	}
 
 	// Добавляем выход для получателя
@@ -114,13 +135,25 @@ func Withdraw(
 	// Рассчитываем сдачу
 	change := totalInput - amount - estimatedFee
 
+	// Финальная комиссия (может измениться если нет сдачи)
+	finalFee := estimatedFee
+
 	// Если есть сдача, добавляем выход для сдачи
-	if change > 0 {
+	// Минимальная сдача должна быть больше dust limit (~546 satoshi)
+	if change > 546 {
 		changePkScript, err := txscript.PayToAddrScript(fromAddr)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create change script: %w", err)
+			return nil, cperrors.ErrorBtcWithdrawFailedToCreateChangeScript(err.Error())
 		}
 		tx.AddTxOut(wire.NewTxOut(int64(change), changePkScript))
+	} else if change > 0 {
+		// Если сдача меньше dust limit, добавляем её к комиссии
+		// Пересчитываем размер транзакции (теперь только 1 выход вместо 2)
+		txSizeWithoutChange := len(selectedUTXOs)*68 + 1*31 + 10
+		finalFee = btcutil.Amount(txSizeWithoutChange) * feeRatePerKB / 1000
+		// Остаток идет в комиссию
+		finalFee += change
+		change = 0
 	}
 
 	// Подписываем каждый вход
@@ -128,7 +161,7 @@ func Withdraw(
 		// Получаем скрипт предыдущего выхода
 		prevPkScript, err := hex.DecodeString(utxo.ScriptPubKey)
 		if err != nil {
-			return nil, fmt.Errorf("failed to decode scriptPubKey: %w", err)
+			return nil, cperrors.ErrorBtcWithdrawFailedToDecodeScriptPublicKey(err.Error())
 		}
 
 		// Создаем witness для SegWit транзакции
@@ -143,7 +176,7 @@ func Withdraw(
 			true,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create witness signature: %w", err)
+			return nil, cperrors.ErrorBtcWithdrawFailedToCreateWitnessSignature(err.Error())
 		}
 
 		tx.TxIn[i].Witness = witnessScript
@@ -152,20 +185,20 @@ func Withdraw(
 	// Сериализуем транзакцию
 	var buf bytes.Buffer
 	if err := tx.Serialize(&buf); err != nil {
-		return nil, fmt.Errorf("failed to serialize transaction: %w", err)
+		return nil, cperrors.ErrorBtcWithdrawFailedToSerializeTransaction(err.Error())
 	}
 
 	// Отправляем транзакцию
 	txHash, err := client.SendRawTransaction(tx, false)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send transaction: %w", err)
+		return nil, cperrors.ErrorBtcWithdrawFailedToSendTransaction(err.Error())
 	}
 
 	return &WithdrawResponse{
 		TxHash:       txHash.String(),
-		TotalInput:   totalInput,
-		TotalOutput:  amount + change,
-		Fee:          estimatedFee,
-		ChangeAmount: change,
+		TotalInput:   entity.Amount(totalInput),
+		TotalOutput:  entity.Amount(amount + change),
+		Fee:          entity.Amount(finalFee),
+		ChangeAmount: entity.Amount(change),
 	}, nil
 }

@@ -9,6 +9,7 @@ type requestUrl string
 
 const (
 	requestCreateWallet requestUrl = "/generate-wallet"
+	requestWithdraw     requestUrl = "/withdraw"
 )
 
 func (that *Processing) getRequestUrl(url requestUrl) string {

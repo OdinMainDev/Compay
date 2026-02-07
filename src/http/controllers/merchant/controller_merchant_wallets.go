@@ -3,13 +3,19 @@ package merchant
 import (
 	"compay/common/constants"
 	"compay/common/types"
+	"compay/src/models/currency"
+	"compay/src/models/merchant"
 	"compay/src/models/merchantwallet"
 	"compay/src/models/user"
+	"compay/src/services/processing"
 	"efw/components/entity"
 	"efw/core/efwamount"
 	"efw/core/efwgin"
+	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"efw/services/efwcontroller"
 	"efw/services/efwdt"
+	"net/http"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -27,6 +33,14 @@ type requestMerchantWalletsList struct {
 	efwdt.WithCreatedAt
 }
 
+type requestMerchantWalletsActionWithdraw struct {
+	Id      types.MerchantWalletId `json:"id" binding:"required,gt=0"`
+	Address types.PaymentAddress   `json:"address" binding:"required,max=128"`
+	Amount  float64                `json:"amount" binding:"required,gt=0"`
+}
+
+var merchantWalletWithdrawMutex sync.Mutex
+
 func MerchantWalletsList(context *gin.Context) {
 	var input efwdt.Request[requestMerchantWalletsList]
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
@@ -38,7 +52,7 @@ func MerchantWalletsList(context *gin.Context) {
 		if !ok {
 			return efwdt.SpecialFilters{}, false
 		}
-		amount := efwamount.FloatToAmountByCodeAlpha(v, input.Filters.Currency)
+		amount := efwamount.ToAmountByCodeAlpha(v, input.Filters.Currency)
 		return efwdt.SpecialFilters{
 			Query: fieldName + " >= ?",
 			Args:  []any{amount},
@@ -97,7 +111,7 @@ func MerchantWalletsListFilters(context *gin.Context) {
 }
 
 func MerchantWalletsGet(context *gin.Context) {
-	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	userModel := context.MustGet(constants.GinUser).(*user.Model)
 	efwcontroller.GetModel(
 		context,
 		merchantwallet.GetModel,
@@ -105,9 +119,44 @@ func MerchantWalletsGet(context *gin.Context) {
 		func(id int64) merchantwallet.QueryHelper {
 			return merchantwallet.QueryHelper{
 				Id:          types.MerchantWalletId(id),
-				MerchantId:  adminUserModel.MerchantId,
+				MerchantId:  userModel.MerchantId,
 				WithPayment: true,
 			}
 		},
 	)
+}
+
+func MerchantWalletsActionWithdraw(context *gin.Context) {
+	var input requestMerchantWalletsActionWithdraw
+	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
+		return
+	}
+
+	userModel := context.MustGet(constants.GinUser).(*user.Model)
+
+	merchantWalletModel := merchantwallet.GetModel(merchantwallet.QueryHelper{
+		Id:         types.MerchantWalletId(input.Id),
+		MerchantId: userModel.MerchantId,
+	})
+	if merchantWalletModel == nil {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+	merchantModel := context.MustGet(constants.GinMerchant).(*merchant.Model)
+	currencyModel := currency.GetModel(currency.QueryHelper{
+		CodeAlpha: merchantWalletModel.Currency,
+	})
+
+	handler := processing.NewService(merchantModel, currencyModel)
+	_, err := handler.StartWithdraw(processing.WithdrawData{
+		Address:        input.Address,
+		Amount:         input.Amount,
+		MerchantWallet: merchantWalletModel,
+	})
+	if err != nil {
+		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(err))
+		return
+	}
+	// createLogUser(context, userModel, action)
+	efwginhelpers.ResponseSuccess(context, nil)
 }

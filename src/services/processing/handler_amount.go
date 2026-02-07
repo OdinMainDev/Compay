@@ -13,7 +13,7 @@ func (that *Processing) calculateDepositAmount(amountFloat float64) (entity.Amou
 		return 0, cperrors.ErrorProcessingDepositAmountIsRequired
 	}
 
-	amount := efwamount.FloatToAmount(amountFloat, that.getCurrency().MinorUnits)
+	amount := efwamount.ToAmount(amountFloat, that.getCurrency().MinorUnits)
 	if that.getMerchantCurrency().MinAmount != 0 {
 		if amount < that.getMerchantCurrency().MinAmount {
 			return 0, cperrors.ErrorProcessingDepositAmountLessThanMin
