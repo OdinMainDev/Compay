@@ -243,6 +243,7 @@ func merchantMerchantWalletRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/list", controller.MerchantWalletsList)
 	subGroup.POST("/list/filters", controller.MerchantWalletsListFilters)
 	subGroup.POST("/get/:id", controller.MerchantWalletsGet)
+	subGroup.POST("/action/withdraw", controller.MerchantWalletsActionWithdraw)
 }
 
 // PUBLIC API

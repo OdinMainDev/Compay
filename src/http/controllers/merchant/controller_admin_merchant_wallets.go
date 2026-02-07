@@ -46,7 +46,7 @@ func AdminMerchantWalletsList(context *gin.Context) {
 		if !ok {
 			return efwdt.SpecialFilters{}, false
 		}
-		amount := efwamount.FloatToAmountByCodeAlpha(v, input.Filters.Currency)
+		amount := efwamount.ToAmountByCodeAlpha(v, input.Filters.Currency)
 		return efwdt.SpecialFilters{
 			Query: fieldName + " >= ?",
 			Args:  []any{amount},

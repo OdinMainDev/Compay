@@ -29,8 +29,8 @@ func convert(amount entity.Amount, currencyFrom entity.CurrencyCodeAlpha) (entit
 		return 0, cperrors.ErrorCConverterUsdForCurrencyNotExist(string(currencyFrom))
 	}
 
-	return efwamount.FloatToAmount(
-		efwamount.AmountToFloatByCodeAlpha(amount, currencyFrom)*rate,
+	return efwamount.ToAmount(
+		efwamount.ToFloatByCodeAlpha(amount, currencyFrom)*rate,
 		2,
 	), nil
 }

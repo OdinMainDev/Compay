@@ -87,15 +87,15 @@ func AdminMerchantCurrenciesProcess(context *gin.Context) {
 		return
 	}
 
-	merchantCurrencyModel.MinAmount = efwamount.FloatToAmountByCodeAlpha(input.MinAmount, merchantCurrencyModel.Currency)
-	merchantCurrencyModel.MaxAmount = efwamount.FloatToAmountByCodeAlpha(input.MaxAmount, merchantCurrencyModel.Currency)
-	merchantCurrencyModel.MinAmountWithdraw = efwamount.FloatToAmountByCodeAlpha(input.MinAmountWithdraw, merchantCurrencyModel.Currency)
-	merchantCurrencyModel.MaxAmountWithdraw = efwamount.FloatToAmountByCodeAlpha(input.MaxAmountWithdraw, merchantCurrencyModel.Currency)
+	merchantCurrencyModel.MinAmount = efwamount.ToAmountByCodeAlpha(input.MinAmount, merchantCurrencyModel.Currency)
+	merchantCurrencyModel.MaxAmount = efwamount.ToAmountByCodeAlpha(input.MaxAmount, merchantCurrencyModel.Currency)
+	merchantCurrencyModel.MinAmountWithdraw = efwamount.ToAmountByCodeAlpha(input.MinAmountWithdraw, merchantCurrencyModel.Currency)
+	merchantCurrencyModel.MaxAmountWithdraw = efwamount.ToAmountByCodeAlpha(input.MaxAmountWithdraw, merchantCurrencyModel.Currency)
 	merchantCurrencyModel.Confirms = input.Confirms
 	merchantCurrencyModel.InvoiceTime = input.InvoiceTime
 	merchantCurrencyModel.FeeType = input.FeeType
-	merchantCurrencyModel.FeeFixed = types.FeeAmount(efwamount.FloatToAmountByCodeAlpha(input.FeeFixed, merchantCurrencyModel.Currency))
-	merchantCurrencyModel.FeePercent = types.FeePercentAmount(efwamount.FloatToAmount(input.FeePercent, 2))
+	merchantCurrencyModel.FeeFixed = types.FeeAmount(efwamount.ToAmountByCodeAlpha(input.FeeFixed, merchantCurrencyModel.Currency))
+	merchantCurrencyModel.FeePercent = types.FeePercentAmount(efwamount.ToAmount(input.FeePercent, 2))
 	merchantcurrency.Save(merchantCurrencyModel, merchantcurrency.QueryHelper{})
 
 	createLogUser(context, adminUserModel, constants.LogUserAdminMerchantCurrencyProcess)

@@ -24,6 +24,7 @@ func StartBtc() {
 	router.POST("/generate-wallet", controller.GenerateWallet)
 	router.POST("/get-transactions", controller.GetTransactions)
 	router.POST("/get-block-count", controller.GetBlockCount)
+	router.POST("/withdraw", controller.Withdraw)
 
 	// TODO: потом вернуть на конфиг
 	// btcServer = &http.Server{Addr: ":" + config.AppPort, Handler: router.Handler()}

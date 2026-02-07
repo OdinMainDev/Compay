@@ -22,15 +22,15 @@ func GetMinorUnitsMap() map[entity.CurrencyCodeAlpha]entity.CurrencyMinorUnits {
 	return result
 }
 
-func AmountToFloat(amount entity.Amount, units entity.CurrencyMinorUnits) float64 {
-	return amountToFloat(amount, units)
+func ToFloat(amount entity.Amount, units entity.CurrencyMinorUnits) float64 {
+	return toFloat(amount, units)
 }
 
-func AmountToFloatByCodeAlpha(amount entity.Amount, codeAlpha entity.CurrencyCodeAlpha) float64 {
-	return amountToFloat(amount, GetMinorUnits(codeAlpha))
+func ToFloatByCodeAlpha(amount entity.Amount, codeAlpha entity.CurrencyCodeAlpha) float64 {
+	return toFloat(amount, GetMinorUnits(codeAlpha))
 }
 
-func amountToFloat(amount entity.Amount, units entity.CurrencyMinorUnits) float64 {
+func toFloat(amount entity.Amount, units entity.CurrencyMinorUnits) float64 {
 	if amount == 0 {
 		return 0
 	}
@@ -39,15 +39,15 @@ func amountToFloat(amount entity.Amount, units entity.CurrencyMinorUnits) float6
 	return dec
 }
 
-func FloatToAmount(amount float64, units entity.CurrencyMinorUnits) entity.Amount {
-	return floatToAmount(amount, units)
+func ToAmount(amount float64, units entity.CurrencyMinorUnits) entity.Amount {
+	return toAmount(amount, units)
 }
 
-func FloatToAmountByCodeAlpha(amount float64, codeAlpha entity.CurrencyCodeAlpha) entity.Amount {
-	return floatToAmount(amount, GetMinorUnits(codeAlpha))
+func ToAmountByCodeAlpha(amount float64, codeAlpha entity.CurrencyCodeAlpha) entity.Amount {
+	return toAmount(amount, GetMinorUnits(codeAlpha))
 }
 
-func floatToAmount(amount float64, units entity.CurrencyMinorUnits) entity.Amount {
+func toAmount(amount float64, units entity.CurrencyMinorUnits) entity.Amount {
 	if amount == 0 {
 		return 0
 	}
