@@ -29,6 +29,7 @@ func defaultBtc(merchantId types.MerchantId, cretorId entity.UserId) *Model {
 	model.MaxAmountWithdraw = constants.BtcMaxAmountWithdraw
 	model.Confirms = constants.BtcConfirmation
 	model.InvoiceTime = constants.BtcInvoiceTime
+	model.EstimatedFeeBlockCount = constants.BtcEstimatedFeeBlockCount
 	model.FeeType = constants.BtcFeeType
 	model.FeeFixed = constants.BtcFeeFixed
 	model.FeePercent = constants.BtcFeePercent

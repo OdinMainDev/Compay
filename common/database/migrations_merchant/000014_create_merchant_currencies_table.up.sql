@@ -9,6 +9,7 @@ CREATE TABLE "merchant_currencies" (
     "max_amount_withdraw" int,
     "confirms" int,
     "invoice_time" int,
+    "estimated_fee_block_count" int,
     "fee_type" varchar(20),
     "fee_fixed" int,
     "fee_percent" int,
