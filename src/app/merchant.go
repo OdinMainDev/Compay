@@ -67,6 +67,7 @@ func StartMerchant() {
 	merchantRoutes.Use(middleware.CheckMerchant())
 
 	merchantMerchantRoutes(merchantRoutes)
+	merchantMerchantWalletRoutes(merchantRoutes)
 
 	/* --------------- MERCHANT ROUTES --------------- */
 
@@ -235,6 +236,13 @@ func merchantMerchantRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/process", controller.MerchantSettingsProcess)
 	subGroup.POST("/action/get-token", controller.MerchantSettingsActionGetToken)
 	subGroup.POST("/action/generate-secret", controller.MerchantSettingsActionGenerateSecret)
+}
+func merchantMerchantWalletRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/wallets")
+
+	subGroup.POST("/list", controller.MerchantWalletsList)
+	subGroup.POST("/list/filters", controller.MerchantWalletsListFilters)
+	subGroup.POST("/get/:id", controller.MerchantWalletsGet)
 }
 
 // PUBLIC API

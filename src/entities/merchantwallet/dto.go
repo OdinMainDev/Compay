@@ -6,11 +6,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DTO(model *Entity, paymentDTO gin.H) gin.H {
+func DTOAdmin(model *Entity, paymentDTO gin.H) gin.H {
 	return gin.H{
 		"id":              model.Id,
 		"merchant_id":     model.MerchantId,
 		"payment_id":      model.PaymentId,
+		"currency":        model.Currency,
+		"address":         model.Address,
+		"amount":          efwamount.AmountToFloatByCodeAlpha(model.Amount, model.Currency),
+		"received_amount": efwamount.AmountToFloatByCodeAlpha(model.ReceivedAmount, model.Currency),
+		"sent_amount":     efwamount.AmountToFloatByCodeAlpha(model.SentAmount, model.Currency),
+		"payment":         paymentDTO,
+		"created_at":      model.CreatedAt,
+		"updated_at":      model.UpdatedAt,
+	}
+}
+
+func DTOMerchant(model *Entity, paymentDTO gin.H) gin.H {
+	return gin.H{
+		"id":              model.Id,
 		"currency":        model.Currency,
 		"address":         model.Address,
 		"amount":          efwamount.AmountToFloatByCodeAlpha(model.Amount, model.Currency),

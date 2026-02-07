@@ -16,6 +16,7 @@ type QueryHelper struct {
 	MerchantIds         []types.MerchantId
 	PaymentId           types.PaymentId
 	Currency            entity.CurrencyCodeAlpha
+	WithPayment         bool
 }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
@@ -34,6 +35,9 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	}
 	if helper.Currency != "" {
 		chain = chain.Where("currency = ?", helper.Currency)
+	}
+	if helper.WithPayment {
+		chain = chain.Preload("Payment", func(db gorm.PreloadBuilder) error { return nil })
 	}
 	return chain.Order("id DESC")
 }

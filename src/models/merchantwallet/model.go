@@ -12,14 +12,13 @@ type Model struct {
 	Payment       *payment.Entity `json:"payment,omitempty" gorm:"-,foreignKey:PaymentId;references:Id"`
 }
 
-func DTO(model *Model) gin.H         { return dto(model, payment.DTO) }
-func DTOMerchant(model *Model) gin.H { return dto(model, payment.DTOMerchant) }
-func DTOAdmin(model *Model) gin.H    { return dto(model, payment.DTOAdmin) }
+func DTOMerchant(model *Model) gin.H { return dto(model, payment.DTOMerchant, entity.DTOMerchant) }
+func DTOAdmin(model *Model) gin.H    { return dto(model, payment.DTOAdmin, entity.DTOAdmin) }
 
-func dto(model *Model, fn func(*payment.Entity) gin.H) gin.H {
+func dto(model *Model, paymentDtofn func(*payment.Entity) gin.H, dtoFn func(*entity.Entity, gin.H) gin.H) gin.H {
 	paymentDTO := gin.H{}
 	if model.Payment != nil {
-		paymentDTO = fn(model.Payment)
+		paymentDTO = paymentDtofn(model.Payment)
 	}
-	return entity.DTO(&model.Entity, paymentDTO)
+	return dtoFn(&model.Entity, paymentDTO)
 }

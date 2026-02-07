@@ -123,7 +123,7 @@ func AdminMerchantWalletsGet(context *gin.Context) {
 	efwcontroller.GetModel(
 		context,
 		merchantwallet.GetModel,
-		merchantwallet.DTO,
+		merchantwallet.DTOAdmin,
 		func(id int64) merchantwallet.QueryHelper {
 			qH := merchantwallet.QueryHelper{Id: types.MerchantWalletId(id), DontCheckMerchantId: true}
 			if !isUserRootAdmin(adminUserModel.GetId()) {
