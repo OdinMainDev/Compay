@@ -23,9 +23,12 @@ var ErrorBtcWithdrawFailedDecodePrivateWif = func(err string) error {
 	return fmt.Errorf("%s %s", "BtcWithdrawFailedDecodePrivateWif:", err)
 }
 var ErrorBtcWithdrawFailedCreateNewAddress = func(err string) error {
-	return fmt.Errorf("%s %s", "BtcWithdrawFailedDecodePrivateWif:", err)
+	return fmt.Errorf("%s %s", "BtcWithdrawFailedCreateNewAddress:", err)
 }
-var ErrorBtcWithdrawFailedGetListUnspent = fmt.Errorf("%s", "BtcWithdrawFailedGetListUnspent:")
+var ErrorBtcWithdrawFailedGetListUnspent = func(err string) error {
+	return fmt.Errorf("%s %s", "BtcWithdrawFailedGetListUnspent:", err)
+}
+var ErrorBtcWithdrawFailedBadResponseListUnspent = fmt.Errorf("%s", "BtcWithdrawFailedBadResponseListUnspent:")
 var ErrorBtcWithdrawFailedGetEstimatedFee = func(err string) error {
 	return fmt.Errorf("%s %s", "BtcWithdrawFailedGetEstimatedFee:", err)
 }

@@ -43,11 +43,11 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 	// Получаем UTXO для адреса
 	utxos, err := client.ListUnspentMinMaxAddresses(1, 9999999, []btcutil.Address{fromAddr})
 	if err != nil {
-		return nil, cperrors.ErrorBtcWithdrawFailedCreateNewAddress(err.Error())
+		return nil, cperrors.ErrorBtcWithdrawFailedGetListUnspent(err.Error())
 	}
 
 	if len(utxos) == 0 {
-		return nil, cperrors.ErrorBtcWithdrawFailedGetListUnspent
+		return nil, cperrors.ErrorBtcWithdrawFailedBadResponseListUnspent
 	}
 
 	// Получаем оптимальную ставку комиссии из Bitcoin Core
