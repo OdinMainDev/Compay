@@ -157,6 +157,7 @@ func MerchantWalletsActionWithdraw(context *gin.Context) {
 		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(err))
 		return
 	}
-	// createLogUser(context, userModel, action)
+
+	createLogUser(context, userModel, constants.LogUserMerchantWithdraw)
 	efwginhelpers.ResponseSuccess(context, nil)
 }

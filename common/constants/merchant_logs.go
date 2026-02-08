@@ -51,6 +51,9 @@ const (
 	// MERCHANT SETTINGS
 	LogUserMerchantSettingsProcess        types.LogUserAction = "MerchantSettingsProcess"
 	LogUserMerchantSettingsGenerateSecret types.LogUserAction = "MerchantSettingsGenerateSecret"
+
+	// MERCHANT WALLETS
+	LogUserMerchantWithdraw types.LogUserAction = "MerchantWithdraw"
 )
 
 var LogUserActions = []types.LogUserAction{
@@ -77,4 +80,5 @@ var LogUserActions = []types.LogUserAction{
 	LogUserAdminMerchantWalletGetPublicKeyFull,
 	LogUserMerchantSettingsProcess,
 	LogUserMerchantSettingsGenerateSecret,
+	LogUserMerchantWithdraw,
 }

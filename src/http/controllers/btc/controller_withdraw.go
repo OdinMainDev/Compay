@@ -11,10 +11,11 @@ import (
 )
 
 type requestWithdraw struct {
-	Wif                    string        `json:"wif" binding:"required"`
-	Address                string        `json:"address" binding:"required"`
-	EstimatedFeeBlockCount int64         `json:"estimated_fee_block_count" binding:"required"`
-	Amount                 entity.Amount `json:"amount" binding:"required,gt=0"`
+	Wif                    string           `json:"wif" binding:"required"`
+	Address                string           `json:"address" binding:"required"`
+	EstimatedFeeBlockCount int64            `json:"estimated_fee_block_count" binding:"required"`
+	Amount                 entity.Amount    `json:"amount" binding:"required,gt=0"`
+	StoredUTXOs            []btc.StoredUTXO `json:"stored_utxo" binding:"required"`
 }
 
 func Withdraw(context *gin.Context) {
@@ -23,7 +24,7 @@ func Withdraw(context *gin.Context) {
 		return
 	}
 
-	response, err := btc.Withdraw(input.Wif, input.Address, input.EstimatedFeeBlockCount, btcutil.Amount(input.Amount))
+	response, err := btc.Withdraw(input.Wif, input.Address, input.EstimatedFeeBlockCount, btcutil.Amount(input.Amount), input.StoredUTXOs)
 	if err != nil {
 		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(err))
 		return

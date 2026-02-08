@@ -23,9 +23,16 @@ type WithdrawResponse struct {
 	ChangeAmount entity.Amount `json:"change_amount"`
 }
 
+// StoredUTXO представляет UTXO из базы данных
+type StoredUTXO struct {
+	TxID   string `json:"tx_id"`
+	Vout   uint32 `json:"vout_position"`
+	Amount int64  `json:"amount"` // в сатоши
+}
+
 // Withdraw выводит средства с адреса
-// Если amount == 0, выводится весь доступный баланс (за вычетом комиссии)
-func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amount btcutil.Amount) (*WithdrawResponse, error) {
+// storedUTXOs - список UTXO из базы данных (неизрасходованные входящие транзакции)
+func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amount btcutil.Amount, storedUTXOs []StoredUTXO) (*WithdrawResponse, error) {
 	// Декодируем WIF приватный ключ
 	wif, err := btcutil.DecodeWIF(wifStr)
 	if err != nil {
@@ -40,14 +47,27 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		return nil, cperrors.ErrorBtcWithdrawFailedCreateNewAddress(err.Error())
 	}
 
-	// Получаем UTXO для адреса
-	utxos, err := client.ListUnspentMinMaxAddresses(1, 9999999, []btcutil.Address{fromAddr})
-	if err != nil {
-		return nil, cperrors.ErrorBtcWithdrawFailedGetListUnspent(err.Error())
+	// Проверяем наличие UTXO
+	if len(storedUTXOs) == 0 {
+		return nil, cperrors.ErrorBtcWithdrawFailedBadResponseListUnspent(fromAddr.EncodeAddress())
 	}
 
-	if len(utxos) == 0 {
-		return nil, cperrors.ErrorBtcWithdrawFailedBadResponseListUnspent
+	// Генерируем scriptPubKey из адреса отправителя
+	pkScript, err := txscript.PayToAddrScript(fromAddr)
+	if err != nil {
+		return nil, cperrors.ErrorBtcWithdrawFailedToCreateDestinationScript(err.Error())
+	}
+	pkScriptHex := hex.EncodeToString(pkScript)
+
+	// Конвертируем StoredUTXO в формат btcjson.ListUnspentResult
+	utxos := make([]btcjson.ListUnspentResult, 0, len(storedUTXOs))
+	for _, u := range storedUTXOs {
+		utxos = append(utxos, btcjson.ListUnspentResult{
+			TxID:         u.TxID,
+			Vout:         u.Vout,
+			Amount:       float64(u.Amount) / 1e8, // сатоши -> BTC
+			ScriptPubKey: pkScriptHex,
+		})
 	}
 
 	// Получаем оптимальную ставку комиссии из Bitcoin Core

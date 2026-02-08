@@ -3,6 +3,7 @@ package processing
 import (
 	"compay/common/cperrors"
 	"compay/common/types"
+	"compay/src/models/logpayment"
 	"compay/src/models/merchantwallet"
 	"compay/src/models/payment"
 	"efw/core/efwamount"
@@ -24,10 +25,14 @@ func (that *Processing) StartWithdraw(data WithdrawData) (*payment.Model, error)
 	if amount > that.getMerchantCurrency().MaxAmountWithdraw {
 		return nil, cperrors.ErrorApiV1WithdrawAmountGreaterThanMaximum
 	}
-	requestBody, err := that.constructWithdrawRequestBody(string(data.MerchantWallet.PrivateKeyWif), string(data.Address), amount)
+
+	logPaymentModels := logpayment.GetModels(logpayment.QueryHelper{PaymentId: data.MerchantWallet.PaymentId})
+
+	requestBody, err := that.constructWithdrawRequestBody(string(data.MerchantWallet.PrivateKeyWif), string(data.Address), amount, logPaymentModels)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(string(requestBody))
 
 	body, _, err := efwrequest.Request(efwrequest.RequestHelper{
 		Url:           that.getRequestUrl(requestWithdraw),

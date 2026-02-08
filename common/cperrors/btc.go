@@ -28,7 +28,9 @@ var ErrorBtcWithdrawFailedCreateNewAddress = func(err string) error {
 var ErrorBtcWithdrawFailedGetListUnspent = func(err string) error {
 	return fmt.Errorf("%s %s", "BtcWithdrawFailedGetListUnspent:", err)
 }
-var ErrorBtcWithdrawFailedBadResponseListUnspent = fmt.Errorf("%s", "BtcWithdrawFailedBadResponseListUnspent:")
+var ErrorBtcWithdrawFailedBadResponseListUnspent = func(address string) error {
+	return fmt.Errorf("BtcWithdrawFailedBadResponseListUnspent: no UTXOs found for address %s", address)
+}
 var ErrorBtcWithdrawFailedGetEstimatedFee = func(err string) error {
 	return fmt.Errorf("%s %s", "BtcWithdrawFailedGetEstimatedFee:", err)
 }
