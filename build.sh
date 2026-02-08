@@ -20,15 +20,15 @@ APP_INPUT="${1:-merchant}"
 build_app() {
     local app_name="$1"
     local app_path="$2"
+    # Получить актуальное имя тега для назначения имени версии
+    version=$(git rev-list --count HEAD)
 
     echo ""
     echo "=========================================="
     echo "Сборка: $app_name"
     echo "Путь: $app_path"
+    echo "Version: $version"
     echo "=========================================="
-
-    # Получить актуальное имя тега для назначения имени версии
-    version=$(git tag --points-at HEAD)
 
     # Если имени тега нет, имя версии будет сформировано из предыдущего тега и суффикса -dev
     if [[ -z $version ]]; then
