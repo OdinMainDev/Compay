@@ -34,5 +34,9 @@ func main() {
 
 	startup.FillConfig()
 
-	efwapp.CreateApp("helloworld", []func(){app.StartHelloWorld, app.StartMetrics}, []func(){app.StopHelloWorld, app.StopMetrics})
+	efwapp.CreateApp(
+		"helloworld",
+		[]func(){app.StartHelloWorld, app.StartMetrics},
+		[]func(){app.StopHelloWorld, app.StopMetrics},
+	)
 }

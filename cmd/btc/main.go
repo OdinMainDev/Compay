@@ -33,5 +33,9 @@ func main() {
 
 	startup.FillConfig()
 
-	efwapp.CreateApp("btc", []func(){app.StartBtc}, []func(){app.StopBtc})
+	efwapp.CreateApp(
+		"btc",
+		[]func(){app.StartBtc, app.StartMetrics},
+		[]func(){app.StopBtc, app.StopMetrics},
+	)
 }
