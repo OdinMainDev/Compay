@@ -56,9 +56,10 @@ func (that *monitoring) doSetPaymentReceived(paymentId types.PaymentId, currency
 	amountUsd := cconverter.Convert(amount, currency)
 	payment.IncreaseReceivedAmount(paymentId, amount, amountUsd)
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
+	merchantwallet.IncreaseReceiveAmount(paymentModel.MerchantWalletId, amount)
 
 	if paymentModel.Amount != 0 && paymentModel.ReceivedAmount >= paymentModel.Amount {
-		that.doSetPaymentComplete(paymentModel, amount)
+		that.doSetPaymentComplete(paymentModel)
 		return
 	}
 
@@ -99,8 +100,6 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amo
 		}
 	}
 
-	merchantwallet.IncreaseReceiveAmount(paymentModel.MerchantWalletId, amount)
-
 	logmerchantwallet.FastCreate(
 		paymentModel.MerchantId,
 		paymentModel.MerchantWalletId,
@@ -115,14 +114,14 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amo
 }
 
 // Обновляем сумму платежа
-func (that *monitoring) doSetPaymentComplete(paymentModel *payment.Model, amount entity.Amount) {
+func (that *monitoring) doSetPaymentComplete(paymentModel *payment.Model) {
 	payment.UpdateStatus(paymentModel.GetId(), constants.PaymentStatusCompleted)
 	that.removePaymentAsync(paymentModel.Address, paymentModel.Currency)
 
-	go that.afterSetPaymentComplete(paymentModel, amount)
+	go that.afterSetPaymentComplete(paymentModel)
 }
 
-func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model, amount entity.Amount) {
+func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model) {
 	helpers.NotificationCompletedInvoice(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
@@ -152,10 +151,6 @@ func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model, amo
 		}
 	}
 
-	if amount != 0 {
-		merchantwallet.IncreaseReceiveAmount(paymentModel.MerchantWalletId, amount)
-	}
-
 	if paymentModel.Amount != 0 {
 		logmerchantwallet.FastCreate(
 			paymentModel.MerchantId,
@@ -176,7 +171,7 @@ func (that *monitoring) doSetPaymentExpired(paymentId types.PaymentId) {
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
 	if paymentModel.ReceivedAmount != 0 {
 		if paymentModel.ReceivedAmount >= paymentModel.Amount {
-			that.doSetPaymentComplete(paymentModel, 0)
+			that.doSetPaymentComplete(paymentModel)
 			return
 		}
 	}
