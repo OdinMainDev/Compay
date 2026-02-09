@@ -17,16 +17,10 @@ RUN CGO_ENABLED=1 GOOS=linux go build -race \
 
 FROM debian:stable-slim
 
-ARG APP_NAME=compay
-ARG VERSION
-ENV APP_NAME=${APP_NAME}
-ENV VERSION=${VERSION}
-
-LABEL version="${VERSION}"
-
 RUN apt-get update && apt-get install -y ca-certificates && apt-get clean && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /${APP_NAME} /app
-RUN chmod +x /app
+COPY --from=builder /compay /compay
+COPY files files/
+RUN chmod +x /compay
 RUN touch .env
-RUN mkdir -p /resources/logs
-ENTRYPOINT ["/app"]
+RUN mkdir -p /storage/logs
+ENTRYPOINT ["/bin/sh", "-c", "logfile=\"/storage/logs/docker_$(date +%d_%m_%Y__%H_%M).log\" && /compay > \"$logfile\" 2>&1"]
