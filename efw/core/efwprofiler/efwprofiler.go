@@ -14,6 +14,10 @@ import (
 )
 
 func Init(ctx context.Context) {
+	if config.AppDebug {
+		return
+	}
+
 	optionsTrace := []otlptracehttp.Option{
 		otlptracehttp.WithEndpoint(config.ProfilerTelemetryCollectorHost),
 		otlptracehttp.WithInsecure(),
