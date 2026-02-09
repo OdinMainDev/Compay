@@ -3,12 +3,11 @@ package monitoring
 import (
 	"compay/common/types"
 	"compay/src/models/payment"
-	"fmt"
 	"time"
 )
 
 func (that *monitoring) parseTransactions(transactions []types.TxData, activePayments map[types.PaymentAddress]*payment.Model) {
-	that.log(fmt.Sprint("[Monitoring] Start parse transactions"))
+	that.log("[Monitoring] Start parse transactions")
 	now := time.Now().Unix()
 
 	for _, paymentModel := range activePayments {

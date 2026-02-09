@@ -7,7 +7,6 @@ import (
 	"compay/src/helpers"
 	"compay/src/models/payment"
 	"encoding/json"
-	"fmt"
 	"maps"
 	"time"
 )
@@ -20,7 +19,7 @@ func (that *monitoring) startWorkerBtcNode() {
 	for {
 		select {
 		case <-that.stopChan:
-			that.log(fmt.Sprint("[Monitoring] STOP worker btc node"))
+			that.log("[Monitoring] STOP worker btc node")
 			return
 		case <-ticker.C:
 			that.handleBtcNode()
@@ -29,7 +28,7 @@ func (that *monitoring) startWorkerBtcNode() {
 }
 
 func (that *monitoring) handleBtcNode() {
-	that.log(fmt.Sprint("[Monitoring] Start handle btc node"))
+	that.log("[Monitoring] Start handle btc node")
 
 	that.btc.mutex.RLock()
 	lenActivePayments := len(that.btc.activePayments)
@@ -70,7 +69,7 @@ func (that *monitoring) handleBtcNode() {
 }
 
 func (that *monitoring) updateBtcBlockCount() {
-	that.log(fmt.Sprint("[Monitoring] Start update btc blocks node"))
+	that.log("[Monitoring] Start update btc blocks node")
 
 	var response getBlockCountBtcResponse
 	err := that.doRequest(requestGetBlockCount, constants.BtcCodeAlpha, nil, &response)

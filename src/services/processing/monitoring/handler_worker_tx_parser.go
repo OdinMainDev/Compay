@@ -12,7 +12,7 @@ func (that *monitoring) startWorkerTxParser(id int) {
 	for {
 		select {
 		case <-that.stopChan:
-			fmt.Println("[Monitoring] STOP worker ", id, " tx parser")
+			that.log(fmt.Sprint("[Monitoring] STOP worker ", id, " tx parser"))
 			return
 		case data := <-that.txParserJobChan:
 			that.processTxParse(data)

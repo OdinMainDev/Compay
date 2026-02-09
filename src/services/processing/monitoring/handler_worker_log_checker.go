@@ -17,7 +17,7 @@ func (that *monitoring) startLoopLogChecker() {
 	for {
 		select {
 		case <-that.stopChan:
-			that.log(fmt.Sprint("[Monitoring] STOP loop log checker"))
+			that.log("[Monitoring] STOP loop log checker")
 			return
 		case <-ticker.C:
 			that.handleLoopLogChecker()
@@ -38,7 +38,7 @@ func (that *monitoring) startWorkerLogChecker(id int) {
 }
 
 func (that *monitoring) handleLoopLogChecker() {
-	that.log(fmt.Sprint("[Monitoring] Start log loop checker"))
+	that.log("[Monitoring] Start log loop checker")
 
 	that.logTransactionsMutex.RLock()
 	if len(that.activeLogTransactions) == 0 {
