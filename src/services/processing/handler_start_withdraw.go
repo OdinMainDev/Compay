@@ -84,12 +84,10 @@ func (that *Processing) asyncStartWithdraw(data WithdrawData, withdrawModel *wit
 	}()
 	logTransactionModels := logtransaction.GetModels(logtransaction.QueryHelper{MerchantWalletId: data.MerchantWallet.GetId(), IsComplete: true, IsUnSpent: true})
 
-	fmt.Println(logTransactionModels)
 	requestBody, err := that.constructWithdrawRequestBody(string(data.MerchantWallet.PrivateKeyWif), string(data.Address), amount, logTransactionModels)
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(requestBody))
 
 	body, _, err := efwrequest.Request(efwrequest.RequestHelper{
 		Url:            that.getRequestUrl(requestWithdraw),
@@ -101,8 +99,6 @@ func (that *Processing) asyncStartWithdraw(data WithdrawData, withdrawModel *wit
 	if err != nil {
 		return cperrors.ErrorProcessingStartPaymentRequestError(err.Error())
 	}
-
-	fmt.Println(string(body))
 
 	var response responseWithdraw
 	if err := json.Unmarshal(body, &response); err != nil {
