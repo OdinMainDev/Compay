@@ -13,10 +13,11 @@ type QueryHelper struct {
 	MerchantWalletId types.MerchantWalletId
 	IsComplete       bool
 	IsInComplete     bool
+
 	// TrxId               string
-	// DontCheckMerchantId bool
-	// MerchantId          types.MerchantId
-	// MerchantIds         []types.MerchantId
+	DontCheckMerchantId bool
+	MerchantId          types.MerchantId
+	MerchantIds         []types.MerchantId
 	// Statuses            []types.PaymentStatus
 	// Currency            entity.CurrencyCodeAlpha
 }
@@ -28,6 +29,12 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	}
 	if helper.MerchantWalletId != 0 {
 		chain = chain.Where("merchant_wallet_id = ?", helper.MerchantWalletId)
+	}
+	if !helper.DontCheckMerchantId {
+		chain = chain.Where("merchant_id = ?", helper.MerchantId)
+	}
+	if len(helper.MerchantIds) != 0 {
+		chain = chain.Where("merchant_id IN (?)", helper.MerchantIds)
 	}
 	if helper.IsComplete {
 		chain = chain.Where("is_complete = ?", true)

@@ -48,6 +48,7 @@ func StartMerchant() {
 	merchantAdminMerchantCurrenciesRoutes(adminRoutes)
 	merchantAdminCurrenciesRoutes(adminRoutes)
 	merchantAdminPaymentsRoutes(adminRoutes)
+	merchantAdminMerchantWithdrawsRoutes(adminRoutes)
 	merchantAdminMerchantWalletsRoutes(adminRoutes)
 
 	merchantAdminApiRoutes(adminRoutes)
@@ -188,6 +189,12 @@ func merchantAdminPaymentsRoutes(group *gin.RouterGroup) {
 	subGroup := group.Group("/dev/payments")
 
 	subGroup.POST("/get/:id", controller.AdminPaymentsGet)
+}
+
+func merchantAdminMerchantWithdrawsRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/dev/withdraws")
+
+	subGroup.POST("/get-all/:id", controller.AdminMerchantWithdrawsGetAll)
 }
 
 func merchantAdminMerchantWalletsRoutes(group *gin.RouterGroup) {

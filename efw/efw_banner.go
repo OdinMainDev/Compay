@@ -10,5 +10,5 @@ func (that *eframework) printBanner() {
  / /___ / __// /   / /_/ // / / / / //  __/
 /_____//_/  /_/    \__,_//_/ /_/ /_/ \___/ 
 
-eframe v1.0.20 start`)
+eframe v1.0.30 start`)
 }

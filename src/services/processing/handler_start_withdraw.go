@@ -51,6 +51,7 @@ func (that *Processing) StartWithdraw(data WithdrawData) error {
 	withdrawModel := withdraw.GetModel(withdraw.QueryHelper{
 		MerchantWalletId: data.MerchantWallet.GetId(),
 		IsInComplete:     true,
+		MerchantId:       that.getMerchant().GetId(),
 	})
 	if withdrawModel != nil {
 		mutexWithdraws.Unlock()
