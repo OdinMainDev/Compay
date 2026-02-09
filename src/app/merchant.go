@@ -69,6 +69,7 @@ func StartMerchant() {
 
 	merchantMerchantRoutes(merchantRoutes)
 	merchantMerchantWalletRoutes(merchantRoutes)
+	merchantMerchantWithdrawsRoutes(merchantRoutes)
 
 	/* --------------- MERCHANT ROUTES --------------- */
 
@@ -244,6 +245,7 @@ func merchantMerchantRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/action/get-token", controller.MerchantSettingsActionGetToken)
 	subGroup.POST("/action/generate-secret", controller.MerchantSettingsActionGenerateSecret)
 }
+
 func merchantMerchantWalletRoutes(group *gin.RouterGroup) {
 	subGroup := group.Group("/wallets")
 
@@ -251,6 +253,13 @@ func merchantMerchantWalletRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/list/filters", controller.MerchantWalletsListFilters)
 	subGroup.POST("/get/:id", controller.MerchantWalletsGet)
 	subGroup.POST("/action/withdraw", controller.MerchantWalletsActionWithdraw)
+}
+
+func merchantMerchantWithdrawsRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/withdraws")
+
+	subGroup.POST("/list", controller.MerchantWithdrawsList)
+	subGroup.POST("/list/filters", controller.MerchantWithdrawsListFilters)
 }
 
 // PUBLIC API

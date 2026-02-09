@@ -9,13 +9,11 @@ import (
 	"compay/src/models/user"
 	"compay/src/services/processing"
 	"efw/components/entity"
-	"efw/core/efwamount"
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
 	"efw/services/efwcontroller"
 	"efw/services/efwdt"
 	"net/http"
-	"sync"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -23,13 +21,10 @@ import (
 )
 
 type requestMerchantWalletsList struct {
-	Id             types.PaymentId          `json:"id" efwdt:"id" binding:"omitempty,gt=0"`
-	PaymentId      string                   `json:"payment_id" efwdt:"-" binding:"omitempty,gt=0"`
-	Currency       entity.CurrencyCodeAlpha `json:"currency" efwdt:"currency" binding:"omitempty,currencyExist"`
-	Address        types.PaymentAddress     `json:"address" efwdt:"address" binding:"omitempty,gt=0"`
-	Amount         float64                  `json:"amount" efwdt:"amount" binding:"omitempty,amount"`
-	ReceivedAmount float64                  `json:"received_amount" efwdt:"received_amount" binding:"omitempty,amount"`
-	SentAmount     float64                  `json:"sent_amount" efwdt:"sent_amount" binding:"omitempty,amount"`
+	Id        types.PaymentId          `json:"id" efwdt:"id" binding:"omitempty,gt=0"`
+	PaymentId string                   `json:"payment_id" efwdt:"-" binding:"omitempty,gt=0"`
+	Currency  entity.CurrencyCodeAlpha `json:"currency" efwdt:"currency" binding:"omitempty,currencyExist"`
+	Address   types.PaymentAddress     `json:"address" efwdt:"address" binding:"omitempty,gt=0"`
 	efwdt.WithCreatedAt
 }
 
@@ -39,31 +34,17 @@ type requestMerchantWalletsActionWithdraw struct {
 	Amount  float64                `json:"amount" binding:"required,gt=0"`
 }
 
-var merchantWalletWithdrawMutex sync.Mutex
-
 func MerchantWalletsList(context *gin.Context) {
 	var input efwdt.Request[requestMerchantWalletsList]
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
 		return
 	}
 
-	var amountFilter = func(fieldName string, value any) (efwdt.SpecialFilters, bool) {
-		v, ok := value.(float64)
-		if !ok {
-			return efwdt.SpecialFilters{}, false
-		}
-		amount := efwamount.ToAmountByCodeAlpha(v, input.Filters.Currency)
-		return efwdt.SpecialFilters{
-			Query: fieldName + " >= ?",
-			Args:  []any{amount},
-		}, true
-	}
-
 	userModel := context.MustGet(constants.GinUser).(*user.Model)
 
-	efwcontroller.Datable[merchantwallet.Model, requestAdminMerchantWalletsList](
+	efwcontroller.Datable[merchantwallet.Model, requestMerchantWalletsList](
 		context,
-		[]string{"id", "currency", "address", "amount", "received_amount", "sent_amount", "created_at"},
+		[]string{"id", "currency", "amount", "received_amount", "sent_amount", "created_at"},
 		[]efwdt.ChainFilter[*merchantwallet.Model]{
 			func(chain gorm.ChainInterface[*merchantwallet.Model]) gorm.ChainInterface[*merchantwallet.Model] {
 				return chain.Where("merchant_id = ?", userModel.MerchantId)
@@ -90,11 +71,7 @@ func MerchantWalletsList(context *gin.Context) {
 				).Preload("Payment", func(db gorm.PreloadBuilder) error { return nil })
 			},
 		},
-		efwdt.SpecialFilterMap{
-			"amount":          amountFilter,
-			"received_amount": amountFilter,
-			"sent_amount":     amountFilter,
-		},
+		nil,
 		merchantwallet.DTOMerchant,
 	)
 }
@@ -105,7 +82,6 @@ func MerchantWalletsListFilters(context *gin.Context) {
 		{Name: "payment_id", Type: types.EFWDT_FilterTypeText},
 		{Name: "currency", Type: types.EFWDT_FilterTypeCurrency},
 		{Name: "address", Type: types.EFWDT_FilterTypeText},
-		{Name: "amount", Type: types.EFWDT_FilterTypeNumber},
 		{Name: "created_at", Type: types.EFWDT_FilterTypeDate},
 	})
 }

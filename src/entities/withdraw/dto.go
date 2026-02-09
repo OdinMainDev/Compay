@@ -26,6 +26,7 @@ func DTOMerchant(model *Entity) gin.H {
 		"address":     model.Address,
 		"amount":      efwamount.ToFloatByCodeAlpha(model.Amount, model.Currency),
 		"amount_usd":  efwamount.ToFloat(model.AmountUsd, 2),
+		"created_at":  model.CreatedAt,
 	}
 }
 
