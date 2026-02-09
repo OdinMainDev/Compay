@@ -3,7 +3,7 @@ package monitoring
 import (
 	"compay/common/constants"
 	"compay/src/helpers"
-	"compay/src/models/logpayment"
+	"compay/src/models/logtransaction"
 	"efw/core/efwlog"
 	"fmt"
 	"time"
@@ -41,18 +41,18 @@ func (that *monitoring) handleLoopLogChecker() {
 	fmt.Println("[Monitoring] Start log loop checker")
 
 	that.logPaymentsMutex.RLock()
-	if len(that.activeLogPayments) == 0 {
+	if len(that.activeLogTransactions) == 0 {
 		that.logPaymentsMutex.RUnlock()
 		return
 	}
 
-	for _, logPaymentModel := range that.activeLogPayments {
+	for _, logPaymentModel := range that.activeLogTransactions {
 		that.logPaymentsJobChan <- logPaymentModel
 	}
 	that.logPaymentsMutex.RUnlock()
 }
 
-func (that *monitoring) processLogChecker(logPaymentModel *logpayment.Model) {
+func (that *monitoring) processLogChecker(logPaymentModel *logtransaction.Model) {
 	var confirmations int64 = 0
 	currentBlock := that.btc.currentBlock.Load()
 	switch logPaymentModel.Currency {
@@ -68,9 +68,9 @@ func (that *monitoring) processLogChecker(logPaymentModel *logpayment.Model) {
 		that.doSetPaymentReceived(logPaymentModel.PaymentId, logPaymentModel.Currency, logPaymentModel.TxId, logPaymentModel.Data.TxData.Amount)
 
 		// Маркируем лог как завершённый
-		logpayment.UpdateStatus(logPaymentModel.GetId())
+		logtransaction.UpdateStatus(logPaymentModel.GetId())
 
 		// Удаляем из активных
-		that.removeLogPaymentAsync(logPaymentModel.TxId, logPaymentModel.Address)
+		that.removeLogTransactionAsync(logPaymentModel.TxId, logPaymentModel.Address)
 	}
 }

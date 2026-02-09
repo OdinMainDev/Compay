@@ -4,7 +4,7 @@ import (
 	"compay/common/constants"
 	"compay/common/types"
 	"compay/src/helpers"
-	"compay/src/models/logpayment"
+	"compay/src/models/logtransaction"
 	"compay/src/models/payment"
 	"efw/components/entity"
 	"efw/components/model"
@@ -49,7 +49,7 @@ func (that *monitoring) loadPayments() {
 			that.addPayment(paymentModel)
 			count++
 
-			logPaymentModels := logpayment.GetModels(logpayment.QueryHelper{
+			logPaymentModels := logtransaction.GetModels(logtransaction.QueryHelper{
 				PaymentId: paymentModel.GetId(),
 				QueryHelper: model.QueryHelper{
 					HasPagination: model.HasPagination{
@@ -60,7 +60,7 @@ func (that *monitoring) loadPayments() {
 			})
 			for _, logPaymentModel := range logPaymentModels {
 				if !logPaymentModel.IsComplete {
-					that.addLogPaymentAsync(logPaymentModel)
+					that.addLogTransactionAsync(logPaymentModel)
 					countLogs++
 				}
 			}

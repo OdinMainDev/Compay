@@ -1,7 +1,7 @@
-package logpayment
+package logtransaction
 
 import (
-	entity "compay/src/entities/logpayment"
+	entity "compay/src/entities/logtransaction"
 )
 
 type Model struct {

@@ -25,6 +25,12 @@ type PaymentAddress string
 type PaymentTxId string
 type PaymentTxHash string
 
+// Withdraw Types
+type WithdrawId int64
+type WithdrawAddress string
+type WithdrawTxId string
+type WithdrawTxHash string
+
 // Log Types
 type LogUserId int64
 type LogUserAction string

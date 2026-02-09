@@ -1,4 +1,4 @@
-package logpayment
+package logtransaction
 
 import (
 	"compay/common/types"

@@ -2,8 +2,8 @@ package monitoring
 
 import (
 	"compay/common/constants"
-	entitylogpayment "compay/src/entities/logpayment"
-	"compay/src/models/logpayment"
+	entityLogtransaction "compay/src/entities/logtransaction"
+	"compay/src/models/logtransaction"
 	"fmt"
 	"time"
 )
@@ -22,7 +22,7 @@ func (that *monitoring) startWorkerTxParser(id int) {
 
 func (that *monitoring) processTxParse(data txParserJob) {
 	// проверяем наличие транзакции в проверках
-	logPaymentModel := logpayment.GetModel(logpayment.QueryHelper{
+	logPaymentModel := logtransaction.GetModel(logtransaction.QueryHelper{
 		PaymentId: data.PaymentModel.GetId(),
 		TxId:      data.TxData.TxId,
 	})
@@ -42,7 +42,7 @@ func (that *monitoring) processTxParse(data txParserJob) {
 		that.doSetPaymentDetected(data.PaymentModel.GetId(), data.TxData.TxId)
 	}
 
-	logPaymentModel = &logpayment.Model{}
+	logPaymentModel = &logtransaction.Model{}
 	logPaymentModel.PaymentId = data.PaymentModel.GetId()
 	logPaymentModel.PaymentTrxId = data.PaymentModel.TrxId
 	logPaymentModel.MerchantId = data.PaymentModel.MerchantId
@@ -52,13 +52,13 @@ func (that *monitoring) processTxParse(data txParserJob) {
 	logPaymentModel.TxId = data.TxData.TxId
 	logPaymentModel.TxHash = data.TxData.TxHash
 	logPaymentModel.Address = data.TxData.Address
-	logPaymentModel.Data = entitylogpayment.Data{
+	logPaymentModel.Data = entityLogtransaction.Data{
 		TxData: *data.TxData,
-		Conditions: entitylogpayment.Conditions{
+		Conditions: entityLogtransaction.Conditions{
 			RequiredConfirmations: data.PaymentModel.RequiredConfirmations,
 		},
 	}
-	logpayment.Save(logPaymentModel, logpayment.QueryHelper{})
+	logtransaction.Save(logPaymentModel, logtransaction.QueryHelper{})
 
-	that.addLogPaymentAsync(logPaymentModel)
+	that.addLogTransactionAsync(logPaymentModel)
 }

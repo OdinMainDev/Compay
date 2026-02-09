@@ -18,3 +18,11 @@ type TxData struct {
 	SentTo        []string       `json:"sent_to"`       // кому пришли
 	ReceivedFrom  []string       `json:"received_from"` // от кого пришли (адреса отправителей)
 }
+
+type TxWithdrawData struct {
+	TxData
+	TotalInput   entity.Amount `json:"total_input"`
+	TotalOutput  entity.Amount `json:"total_output"`
+	Fee          entity.Amount `json:"fee"`
+	ChangeAmount entity.Amount `json:"change_amount"`
+}

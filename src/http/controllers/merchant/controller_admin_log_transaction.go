@@ -3,7 +3,7 @@ package merchant
 import (
 	"compay/common/constants"
 	"compay/common/types"
-	"compay/src/models/logpayment"
+	"compay/src/models/logtransaction"
 	"compay/src/models/merchant"
 	"compay/src/models/user"
 	"efw/core/efwgin"
@@ -14,9 +14,9 @@ import (
 	"gorm.io/gorm"
 )
 
-type requestAdminLogPaymentList struct{}
+type requestAdminLogTransactionList struct{}
 
-func AdminLogPaymentList(context *gin.Context) {
+func AdminLogTransactionList(context *gin.Context) {
 	var input efwcontroller.RequestWithId
 	if !efwgin.ShouldBindUri(context, &input) {
 		return
@@ -34,17 +34,17 @@ func AdminLogPaymentList(context *gin.Context) {
 		}
 	}
 
-	efwcontroller.Datable[logpayment.Model, requestAdminLogPaymentList](
+	efwcontroller.Datable[logtransaction.Model, requestAdminLogTransactionList](
 		context,
 		[]string{"id"},
-		[]efwdt.ChainFilter[*logpayment.Model]{
-			func(chain gorm.ChainInterface[*logpayment.Model]) gorm.ChainInterface[*logpayment.Model] {
+		[]efwdt.ChainFilter[*logtransaction.Model]{
+			func(chain gorm.ChainInterface[*logtransaction.Model]) gorm.ChainInterface[*logtransaction.Model] {
 				if len(merchantIds) != 0 {
 					return chain.Where("merchant_id IN (?)", merchantIds)
 				}
 				return chain
 			},
-			func(chain gorm.ChainInterface[*logpayment.Model]) gorm.ChainInterface[*logpayment.Model] {
+			func(chain gorm.ChainInterface[*logtransaction.Model]) gorm.ChainInterface[*logtransaction.Model] {
 				return chain.Where("payment_id = ?", input.Id)
 			},
 		},

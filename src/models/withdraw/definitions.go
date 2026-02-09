@@ -1,4 +1,4 @@
-package logpayment
+package withdraw
 
 import (
 	"efw/components/entity"

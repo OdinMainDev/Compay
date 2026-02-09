@@ -3,7 +3,7 @@ package processing
 import (
 	"compay/common/constants"
 	"compay/common/cperrors"
-	"compay/src/models/logpayment"
+	"compay/src/models/logtransaction"
 	"efw/components/entity"
 	"efw/core/efwlog"
 	"encoding/json"
@@ -23,18 +23,27 @@ type storedUTXO struct {
 	Amount int64  `json:"amount"`
 }
 
-func (that *Processing) constructWithdrawRequestBody(wif, address string, amount entity.Amount, logPaymentModels []*logpayment.Model) ([]byte, error) {
+func (that *Processing) constructWithdrawRequestBody(wif, address string, amount entity.Amount, logTransactionModels []*logtransaction.Model) ([]byte, error) {
 	resp := []byte{}
-	switch that.getCurrency().CodeAlpha {
-	case constants.BtcCodeAlpha:
-		storedUTXOs := []storedUTXO{}
-		for _, logPaymentModel := range logPaymentModels {
+	storedUTXOs := []storedUTXO{}
+	for _, logTransactionModel := range logTransactionModels {
+		if logTransactionModel.Data.TxData.TxId != "" {
 			storedUTXOs = append(storedUTXOs, storedUTXO{
-				TxID:   string(logPaymentModel.Data.TxData.TxId),
-				Vout:   uint32(logPaymentModel.Data.TxData.VoutPosition),
-				Amount: int64(logPaymentModel.Data.TxData.Amount),
+				TxID:   string(logTransactionModel.Data.TxData.TxId),
+				Vout:   uint32(logTransactionModel.Data.TxData.VoutPosition),
+				Amount: int64(logTransactionModel.Data.TxData.Amount),
+			})
+		} else {
+			storedUTXOs = append(storedUTXOs, storedUTXO{
+				TxID:   string(logTransactionModel.Data.TxWithdrawData.TxId),
+				Vout:   uint32(logTransactionModel.Data.TxWithdrawData.VoutPosition),
+				Amount: int64(logTransactionModel.Data.TxWithdrawData.Amount),
 			})
 		}
+	}
+
+	switch that.getCurrency().CodeAlpha {
+	case constants.BtcCodeAlpha:
 		body, err := json.Marshal(baseWithdrawRequest{
 			Wif:                    wif,
 			Address:                address,
@@ -43,7 +52,7 @@ func (that *Processing) constructWithdrawRequestBody(wif, address string, amount
 			StoredUTXOs:            storedUTXOs,
 		})
 		if err != nil {
-			return nil, cperrors.ErrorApiV1ErrorOnConstructWithdrawRequest(err.Error())
+			return nil, cperrors.ErrorProcessingErrorOnConstructWithdrawRequest(err.Error())
 		}
 		resp = body
 

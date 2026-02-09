@@ -1,8 +1,8 @@
-package logpayment
+package logtransaction
 
 import (
 	"compay/common/types"
-	"compay/src/entities/logpayment"
+	"compay/src/entities/logtransaction"
 )
 
 func FastCreate(
@@ -10,6 +10,7 @@ func FastCreate(
 	paymentTrxId string,
 	merchantId types.MerchantId,
 	txData types.TxData,
+	txWithdrawData types.TxWithdrawData,
 ) {
 	model := &Model{}
 	model.PaymentId = paymentId
@@ -18,8 +19,9 @@ func FastCreate(
 	model.TxId = txData.TxId
 	model.TxHash = txData.TxHash
 	model.Address = txData.Address
-	model.Data = logpayment.Data{
-		TxData: txData,
+	model.Data = logtransaction.Data{
+		TxData:         txData,
+		TxWithdrawData: txWithdrawData,
 	}
 	Save(model, QueryHelper{})
 }

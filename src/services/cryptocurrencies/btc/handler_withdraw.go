@@ -3,9 +3,11 @@ package btc
 import (
 	"bytes"
 	"compay/common/cperrors"
+	"compay/common/types"
 	"efw/components/entity"
 	"efw/core/efwamount"
 	"encoding/hex"
+	"time"
 
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/btcutil"
@@ -13,15 +15,6 @@ import (
 	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcd/wire"
 )
-
-// WithdrawResponse содержит результат вывода средств
-type WithdrawResponse struct {
-	TxHash       string        `json:"tx_hash"`
-	TotalInput   entity.Amount `json:"total_input"`
-	TotalOutput  entity.Amount `json:"total_output"`
-	Fee          entity.Amount `json:"fee"`
-	ChangeAmount entity.Amount `json:"change_amount"`
-}
 
 // StoredUTXO представляет UTXO из базы данных
 type StoredUTXO struct {
@@ -32,7 +25,7 @@ type StoredUTXO struct {
 
 // Withdraw выводит средства с адреса
 // storedUTXOs - список UTXO из базы данных (неизрасходованные входящие транзакции)
-func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amount btcutil.Amount, storedUTXOs []StoredUTXO) (*WithdrawResponse, error) {
+func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amount btcutil.Amount, storedUTXOs []StoredUTXO) (*types.TxWithdrawData, error) {
 	// Декодируем WIF приватный ключ
 	wif, err := btcutil.DecodeWIF(wifStr)
 	if err != nil {
@@ -214,8 +207,18 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		return nil, cperrors.ErrorBtcWithdrawFailedToSendTransaction(err.Error())
 	}
 
-	return &WithdrawResponse{
-		TxHash:       txHash.String(),
+	return &types.TxWithdrawData{
+		TxData: types.TxData{
+			TxId:          types.PaymentTxId(txHash.String()),
+			TxHash:        types.PaymentTxHash(txHash.String()),
+			Address:       types.PaymentAddress(fromAddr.EncodeAddress()),
+			Time:          time.Now().Unix(),
+			Amount:        entity.Amount(amount),
+			Confirmations: 0,
+			VoutPosition:  0,
+			AssetId:       "BTC",
+			SentTo:        []string{toAddress},
+		},
 		TotalInput:   entity.Amount(totalInput),
 		TotalOutput:  entity.Amount(amount + change),
 		Fee:          entity.Amount(finalFee),
