@@ -56,3 +56,15 @@ func IncreaseSentAmount(merchantWalletId types.MerchantWalletId, amount entity.A
 		efwlog.LogByLoggerName("gorm_error", 0, efwlog.FmtGormError(0, 0, err.Error(), "IncreaseSentAmount"))
 	}
 }
+
+func IncreaseReceiveAmount(merchantWalletId types.MerchantWalletId, amount entity.Amount) {
+	_, err := efw.DBTransaction[any]().Table("merchant_wallets").
+		Where("id = ?", merchantWalletId).
+		Updates(context.Background(), map[string]any{
+			"received_amount": gorm.Expr("received_amount + ?", amount),
+			"amount":          gorm.Expr("amount + ?", amount),
+		})
+	if err != nil {
+		efwlog.LogByLoggerName("gorm_error", 0, efwlog.FmtGormError(0, 0, err.Error(), "IncreaseReceiveAmount"))
+	}
+}

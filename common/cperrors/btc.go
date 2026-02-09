@@ -64,3 +64,6 @@ var ErrorBtcWithdrawFailedToSerializeTransaction = func(err string) error {
 var ErrorBtcWithdrawFailedToSendTransaction = func(err string) error {
 	return fmt.Errorf("%s %s", "BtcWithdrawFailedToSendTransaction:", err)
 }
+var ErrorBtcWithdrawAmountTooSmall = func(amount, fee int64) error {
+	return fmt.Errorf("BtcWithdrawAmountTooSmall: amount %d is less than or equal to fee %d", amount, fee)
+}

@@ -99,6 +99,8 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amo
 		}
 	}
 
+	merchantwallet.IncreaseReceiveAmount(paymentModel.MerchantWalletId, amount)
+
 	logmerchantwallet.FastCreate(
 		paymentModel.MerchantId,
 		paymentModel.GetId(),

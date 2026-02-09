@@ -95,13 +95,8 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		// utxo.Amount уже в BTC, конвертируем в satoshi
 		totalInput += btcutil.Amount(efwamount.ToAmount(utxo.Amount, 8))
 
-		// Предварительная оценка размера транзакции
-		// SegWit P2WPKH вход: ~68 vbytes, выход: ~31 vbytes, overhead: ~11 vbytes
-		estimatedSize := len(selectedUTXOs)*68 + 2*31 + 11 // 2 выхода (получатель + сдача)
-		tempFee := btcutil.Amount(estimatedSize) * feeRatePerKB / 1000
-
-		// Проверяем, достаточно ли средств с учетом комиссии
-		if totalInput >= amount+tempFee {
+		// Проверяем, достаточно ли средств
+		if totalInput >= amount {
 			break
 		}
 	}
@@ -126,10 +121,13 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		return nil, cperrors.ErrorBtcWithdrawInsufficientFunds(int64(totalInput), int64(amount))
 	}
 
-	// Проверяем что после комиссии хватит средств
-	if totalInput < amount+estimatedFee {
-		return nil, cperrors.ErrorBtcWithdrawInsufficientFundsForFee(int64(totalInput), int64(amount), int64(estimatedFee))
+	// Проверяем что сумма больше комиссии (иначе получателю нечего отправлять)
+	if amount <= estimatedFee {
+		return nil, cperrors.ErrorBtcWithdrawAmountTooSmall(int64(amount), int64(estimatedFee))
 	}
+
+	// Сумма, которую получит получатель (amount минус комиссия)
+	sendAmount := amount - estimatedFee
 
 	// Создаем новую транзакцию
 	tx := wire.NewMsgTx(wire.TxVersion)
@@ -159,25 +157,15 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		return nil, cperrors.ErrorBtcWithdrawFailedToCreateDestinationScript(err.Error())
 	}
 
-	// Добавляем выход для получателя
-	tx.AddTxOut(wire.NewTxOut(int64(amount), destPkScript))
-
-	// Рассчитываем сдачу
-	change := totalInput - amount - estimatedFee
+	// Рассчитываем сдачу (totalInput - amount, т.к. amount уже включает комиссию)
+	change := totalInput - amount
 
 	// Финальная комиссия (может измениться если нет сдачи)
 	finalFee := estimatedFee
+	finalSendAmount := sendAmount
 
-	// Если есть сдача, добавляем выход для сдачи
-	// Минимальная сдача должна быть больше dust limit (~546 satoshi)
-	if change > 546 {
-		changePkScript, err := txscript.PayToAddrScript(fromAddr)
-		if err != nil {
-			return nil, cperrors.ErrorBtcWithdrawFailedToCreateChangeScript(err.Error())
-		}
-		tx.AddTxOut(wire.NewTxOut(int64(change), changePkScript))
-	} else if change > 0 {
-		// Если сдача меньше dust limit, добавляем её к комиссии
+	// Если сдача меньше dust limit, добавляем её к комиссии
+	if change > 0 && change <= 546 {
 		// Пересчитываем размер транзакции (теперь только 1 выход вместо 2)
 		txSizeWithoutChange := len(selectedUTXOs)*68 + 1*31 + 11
 		finalFee = btcutil.Amount(txSizeWithoutChange) * feeRatePerKB / 1000
@@ -186,9 +174,22 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		if finalFee < minFeeWithoutChange {
 			finalFee = minFeeWithoutChange
 		}
-		// Остаток идет в комиссию
-		finalFee += change
+		// Сдача идет в комиссию, но получатель получает больше (экономия на размере транзакции)
+		// finalSendAmount = totalInput - finalFee (без сдачи)
+		finalSendAmount = totalInput - finalFee
 		change = 0
+	}
+
+	// Добавляем выход для получателя
+	tx.AddTxOut(wire.NewTxOut(int64(finalSendAmount), destPkScript))
+
+	// Если есть сдача больше dust limit, добавляем выход для сдачи
+	if change > 546 {
+		changePkScript, err := txscript.PayToAddrScript(fromAddr)
+		if err != nil {
+			return nil, cperrors.ErrorBtcWithdrawFailedToCreateChangeScript(err.Error())
+		}
+		tx.AddTxOut(wire.NewTxOut(int64(change), changePkScript))
 	}
 
 	// Подписываем каждый вход
@@ -244,14 +245,14 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 			TxHash:        types.PaymentTxHash(txHash.String()),
 			Address:       types.PaymentAddress(fromAddr.EncodeAddress()),
 			Time:          time.Now().Unix(),
-			Amount:        entity.Amount(amount),
+			Amount:        entity.Amount(finalSendAmount), // сумма, которую получит получатель
 			Confirmations: 0,
 			VoutPosition:  0,
 			AssetId:       "BTC",
 			SentTo:        []string{toAddress},
 		},
 		TotalInput:   entity.Amount(totalInput),
-		TotalOutput:  entity.Amount(amount + change),
+		TotalOutput:  entity.Amount(finalSendAmount + change), // получатель + сдача
 		Fee:          entity.Amount(finalFee),
 		ChangeAmount: entity.Amount(change),
 		UsedUTXOs:    usedUTXOs,

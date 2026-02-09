@@ -152,6 +152,7 @@ func (that *Processing) asyncStartWithdraw(data WithdrawData, withdrawModel *wit
 	withdrawModel.IsComplete = true
 	withdraw.Save(withdrawModel, withdraw.QueryHelper{})
 
-	merchantwallet.IncreaseSentAmount(data.MerchantWallet.GetId(), entity.Amount(response.Data.Amount)+response.Data.Fee)
+	// Amount + Fee = общая сумма, списанная с баланса (amount минус комиссия + комиссия = amount)
+	merchantwallet.IncreaseSentAmount(data.MerchantWallet.GetId(), response.Data.Amount+response.Data.Fee)
 	return nil
 }
