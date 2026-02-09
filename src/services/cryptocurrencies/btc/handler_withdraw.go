@@ -84,14 +84,20 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 	var totalInput btcutil.Amount
 	var estimatedFee btcutil.Amount
 
+	// Минимальный relay fee в Bitcoin Core: 1 sat/vbyte = 1000 sat/KB
+	minRelayFeePerKB := btcutil.Amount(1000)
+	if feeRatePerKB < minRelayFeePerKB {
+		feeRatePerKB = minRelayFeePerKB
+	}
+
 	for _, utxo := range utxos {
 		selectedUTXOs = append(selectedUTXOs, utxo)
 		// utxo.Amount уже в BTC, конвертируем в satoshi
 		totalInput += btcutil.Amount(efwamount.ToAmount(utxo.Amount, 8))
 
 		// Предварительная оценка размера транзакции
-		// SegWit вход: ~68 vbytes, выход: ~31 vbytes, overhead: ~10 vbytes
-		estimatedSize := len(selectedUTXOs)*68 + 2*31 + 10 // 2 выхода (получатель + сдача)
+		// SegWit P2WPKH вход: ~68 vbytes, выход: ~31 vbytes, overhead: ~11 vbytes
+		estimatedSize := len(selectedUTXOs)*68 + 2*31 + 11 // 2 выхода (получатель + сдача)
 		tempFee := btcutil.Amount(estimatedSize) * feeRatePerKB / 1000
 
 		// Проверяем, достаточно ли средств с учетом комиссии
@@ -101,8 +107,19 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 	}
 
 	// Финальный расчет комиссии с учетом выбранных входов
-	txSize := len(selectedUTXOs)*68 + 2*31 + 10
+	// Более точная оценка размера SegWit P2WPKH транзакции:
+	// - Overhead: 10.5 vbytes (version 4 + locktime 4 + marker 0.25 + flag 0.25 + input count 1 + output count 1)
+	// - Каждый вход: 68 vbytes (outpoint 36 + scriptSig 1 + sequence 4 + witness ~27)
+	// - Каждый выход: 31 vbytes (value 8 + scriptPubKey 23)
+	txSize := len(selectedUTXOs)*68 + 2*31 + 11
 	estimatedFee = btcutil.Amount(txSize) * feeRatePerKB / 1000
+
+	// Минимальная комиссия = размер транзакции * 1 sat/vbyte (min relay fee)
+	// Добавляем небольшой запас для округления
+	minFee := btcutil.Amount(txSize + 5)
+	if estimatedFee < minFee {
+		estimatedFee = minFee
+	}
 
 	// Проверяем достаточность средств
 	if totalInput < amount {
@@ -162,8 +179,13 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 	} else if change > 0 {
 		// Если сдача меньше dust limit, добавляем её к комиссии
 		// Пересчитываем размер транзакции (теперь только 1 выход вместо 2)
-		txSizeWithoutChange := len(selectedUTXOs)*68 + 1*31 + 10
+		txSizeWithoutChange := len(selectedUTXOs)*68 + 1*31 + 11
 		finalFee = btcutil.Amount(txSizeWithoutChange) * feeRatePerKB / 1000
+		// Минимальная комиссия для транзакции без сдачи
+		minFeeWithoutChange := btcutil.Amount(txSizeWithoutChange + 5)
+		if finalFee < minFeeWithoutChange {
+			finalFee = minFeeWithoutChange
+		}
 		// Остаток идет в комиссию
 		finalFee += change
 		change = 0

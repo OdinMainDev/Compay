@@ -114,8 +114,18 @@ func (that *Processing) asyncStartWithdraw(data WithdrawData, withdrawModel *wit
 	// Помечаем только использованные UTXO как потраченные
 	for _, usedUTXO := range response.Data.UsedUTXOs {
 		for _, logTransactionModel := range logTransactionModels {
-			if string(logTransactionModel.TxId) == usedUTXO.TxID &&
-				logTransactionModel.Data.TxData.VoutPosition == int(usedUTXO.Vout) {
+			txIdMatch := string(logTransactionModel.TxId) == usedUTXO.TxID
+
+			// Для обычных платежей VoutPosition в TxData
+			// Для сдачи от вывода VoutPosition = 1 (всегда второй выход)
+			var voutMatch bool
+			if logTransactionModel.Data.TxData.TxId != "" {
+				voutMatch = logTransactionModel.Data.TxData.VoutPosition == int(usedUTXO.Vout)
+			} else if logTransactionModel.Data.TxWithdrawData.ChangeAmount > 0 {
+				voutMatch = usedUTXO.Vout == 1 // сдача всегда второй выход
+			}
+
+			if txIdMatch && voutMatch {
 				logTransactionModel.IsSpent = true
 				logtransaction.Save(logTransactionModel, logtransaction.QueryHelper{})
 				break
@@ -142,6 +152,6 @@ func (that *Processing) asyncStartWithdraw(data WithdrawData, withdrawModel *wit
 	withdrawModel.IsComplete = true
 	withdraw.Save(withdrawModel, withdraw.QueryHelper{})
 
-	merchantwallet.IncreaseSentAmount(data.MerchantWallet.GetId(), amount)
+	merchantwallet.IncreaseSentAmount(data.MerchantWallet.GetId(), entity.Amount(response.Data.Amount)+response.Data.Fee)
 	return nil
 }
