@@ -67,5 +67,7 @@ func CreateRouter(routerOptions RouterOptions) *gin.Engine {
 	}
 
 	router.Use(cors.New(corsConfig))
+
+	router.Any("/health", func(context *gin.Context) { context.JSON(200, gin.H{"success": true, "status": 200}) })
 	return router
 }
