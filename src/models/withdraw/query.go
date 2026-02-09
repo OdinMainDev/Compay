@@ -12,6 +12,7 @@ type QueryHelper struct {
 	Id               types.WithdrawId
 	MerchantWalletId types.MerchantWalletId
 	IsComplete       bool
+	IsInComplete     bool
 	// TrxId               string
 	// DontCheckMerchantId bool
 	// MerchantId          types.MerchantId
@@ -30,6 +31,9 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	}
 	if helper.IsComplete {
 		chain = chain.Where("is_complete = ?", true)
+	}
+	if helper.IsInComplete {
+		chain = chain.Where("is_complete = ?", false)
 	}
 	return chain.Order("id DESC")
 }

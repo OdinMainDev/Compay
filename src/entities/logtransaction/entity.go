@@ -16,6 +16,7 @@ type Entity struct {
 	MerchantId                                types.MerchantId         `json:"merchant_id" gorm:"column:merchant_id"`
 	Currency                                  entity.CurrencyCodeAlpha `json:"currency" gorm:"column:currency"`
 	IsComplete                                bool                     `json:"is_complete" gorm:"column:is_complete"`
+	IsSpent                                   bool                     `json:"is_spent" gorm:"column:is_spent"`
 	StartBlock                                int64                    `json:"start_block" gorm:"column:start_block"`
 	TxId                                      types.PaymentTxId        `json:"tx_id" gorm:"column:tx_id"`
 	TxHash                                    types.PaymentTxHash      `json:"tx_hash" gorm:"column:tx_hash"`

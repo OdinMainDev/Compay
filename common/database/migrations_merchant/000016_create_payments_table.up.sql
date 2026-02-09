@@ -2,6 +2,7 @@ CREATE TABLE "payments" (
     "id" bigserial,
     "trx_id" varchar(36),
     "merchant_id" int,
+    "merchant_wallet_id" bigint,
     "currency" varchar(20),
     "status" varchar(20),
     "address" varchar(128),

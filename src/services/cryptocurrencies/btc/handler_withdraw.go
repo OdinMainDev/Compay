@@ -207,6 +207,15 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		return nil, cperrors.ErrorBtcWithdrawFailedToSendTransaction(err.Error())
 	}
 
+	// Собираем список использованных UTXO
+	usedUTXOs := make([]types.UsedUTXO, 0, len(selectedUTXOs))
+	for _, utxo := range selectedUTXOs {
+		usedUTXOs = append(usedUTXOs, types.UsedUTXO{
+			TxID: utxo.TxID,
+			Vout: utxo.Vout,
+		})
+	}
+
 	return &types.TxWithdrawData{
 		TxData: types.TxData{
 			TxId:          types.PaymentTxId(txHash.String()),
@@ -223,5 +232,6 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		TotalOutput:  entity.Amount(amount + change),
 		Fee:          entity.Amount(finalFee),
 		ChangeAmount: entity.Amount(change),
+		UsedUTXOs:    usedUTXOs,
 	}, nil
 }

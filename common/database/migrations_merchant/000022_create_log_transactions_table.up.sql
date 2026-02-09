@@ -8,6 +8,7 @@ CREATE TABLE "log_transactions" (
     "merchant_id" int,
     "currency" varchar(20),
     "is_complete" boolean,
+    "is_spent" boolean,
     "start_block" int,
     "tx_id" varchar(255),
     "tx_hash" varchar(255),

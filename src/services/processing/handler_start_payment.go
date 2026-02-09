@@ -83,6 +83,9 @@ func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error
 	merchantWalletModel.PublicKeyFull = entity.EncryptedString(response.Data.PublicKeyFull)
 	merchantwallet.Save(merchantWalletModel, merchantwallet.QueryHelper{})
 
+	paymentModel.MerchantWalletId = merchantWalletModel.GetId()
+	payment.Save(paymentModel, payment.QueryHelper{})
+
 	// Добавляем платеж в пул мониторинга сразу после создания
 	go asyncStartPayment(paymentModel, that.getMerchant())
 

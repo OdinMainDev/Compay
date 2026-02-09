@@ -14,7 +14,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -43,14 +42,18 @@ func (that *Processing) StartWithdraw(data WithdrawData) error {
 	if amount > that.getMerchantCurrency().MaxAmountWithdraw {
 		return cperrors.ErrorProcessingWithdrawAmountGreaterThanMaximum
 	}
+	if amount > data.MerchantWallet.Amount {
+		return cperrors.ErrorProcessingWithdrawInsufficientFunds
+	}
 
 	mutexWithdraws.Lock()
 
 	withdrawModel := withdraw.GetModel(withdraw.QueryHelper{
 		MerchantWalletId: data.MerchantWallet.GetId(),
-		IsComplete:       false,
+		IsInComplete:     true,
 	})
 	if withdrawModel != nil {
+		mutexWithdraws.Unlock()
 		return cperrors.ErrorProcessingWithdrawHasUncompletedWithdraw
 	}
 	withdrawModel = &withdraw.Model{}
@@ -78,8 +81,9 @@ func (that *Processing) asyncStartWithdraw(data WithdrawData, withdrawModel *wit
 			withdraw.Save(withdrawModel, withdraw.QueryHelper{})
 		}
 	}()
-	logTransactionModels := logtransaction.GetModels(logtransaction.QueryHelper{PaymentId: data.MerchantWallet.PaymentId})
+	logTransactionModels := logtransaction.GetModels(logtransaction.QueryHelper{MerchantWalletId: data.MerchantWallet.GetId(), IsComplete: true, IsUnSpent: true})
 
+	fmt.Println(logTransactionModels)
 	requestBody, err := that.constructWithdrawRequestBody(string(data.MerchantWallet.PrivateKeyWif), string(data.Address), amount, logTransactionModels)
 	if err != nil {
 		return err
@@ -91,7 +95,7 @@ func (that *Processing) asyncStartWithdraw(data WithdrawData, withdrawModel *wit
 		Method:         "POST",
 		IsLogDisabled:  true,
 		Body:           requestBody,
-		RequestTimeout: 10 * time.Second,
+		RequestTimeout: 10,
 	})
 	if err != nil {
 		return cperrors.ErrorProcessingStartPaymentRequestError(err.Error())
@@ -107,6 +111,18 @@ func (that *Processing) asyncStartWithdraw(data WithdrawData, withdrawModel *wit
 		return cperrors.ErrorProcessingWithdrawResponseError(fmt.Sprint(response.Error, " ", response.Errors))
 	}
 
+	// Помечаем только использованные UTXO как потраченные
+	for _, usedUTXO := range response.Data.UsedUTXOs {
+		for _, logTransactionModel := range logTransactionModels {
+			if string(logTransactionModel.TxId) == usedUTXO.TxID &&
+				logTransactionModel.Data.TxData.VoutPosition == int(usedUTXO.Vout) {
+				logTransactionModel.IsSpent = true
+				logtransaction.Save(logTransactionModel, logtransaction.QueryHelper{})
+				break
+			}
+		}
+	}
+
 	logTransactionModel := &logtransaction.Model{}
 	logTransactionModel.WithdrawId = withdrawModel.GetId()
 	logTransactionModel.WithdrawTrxId = withdrawModel.TrxId
@@ -114,12 +130,18 @@ func (that *Processing) asyncStartWithdraw(data WithdrawData, withdrawModel *wit
 	logTransactionModel.MerchantId = that.getMerchant().GetId()
 	logTransactionModel.Currency = that.getCurrency().CodeAlpha
 	logTransactionModel.IsComplete = true
+	logTransactionModel.IsSpent = response.Data.ChangeAmount == 0
 	logTransactionModel.TxId = response.Data.TxId
 	logTransactionModel.TxHash = response.Data.TxHash
 	logTransactionModel.Address = response.Data.Address
 	logTransactionModel.Data = entityLogtransaction.Data{
 		TxWithdrawData: response.Data,
 	}
+	logtransaction.Save(logTransactionModel, logtransaction.QueryHelper{})
 
+	withdrawModel.IsComplete = true
+	withdraw.Save(withdrawModel, withdraw.QueryHelper{})
+
+	merchantwallet.IncreaseSentAmount(data.MerchantWallet.GetId(), amount)
 	return nil
 }

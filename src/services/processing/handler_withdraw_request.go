@@ -28,16 +28,18 @@ func (that *Processing) constructWithdrawRequestBody(wif, address string, amount
 	storedUTXOs := []storedUTXO{}
 	for _, logTransactionModel := range logTransactionModels {
 		if logTransactionModel.Data.TxData.TxId != "" {
+			// Обычный входящий платёж
 			storedUTXOs = append(storedUTXOs, storedUTXO{
 				TxID:   string(logTransactionModel.Data.TxData.TxId),
 				Vout:   uint32(logTransactionModel.Data.TxData.VoutPosition),
 				Amount: int64(logTransactionModel.Data.TxData.Amount),
 			})
-		} else {
+		} else if logTransactionModel.Data.TxWithdrawData.ChangeAmount > 0 {
+			// Сдача от предыдущего вывода (VoutPosition = 1, Amount = ChangeAmount)
 			storedUTXOs = append(storedUTXOs, storedUTXO{
 				TxID:   string(logTransactionModel.Data.TxWithdrawData.TxId),
-				Vout:   uint32(logTransactionModel.Data.TxWithdrawData.VoutPosition),
-				Amount: int64(logTransactionModel.Data.TxWithdrawData.Amount),
+				Vout:   1, // сдача всегда второй выход
+				Amount: int64(logTransactionModel.Data.TxWithdrawData.ChangeAmount),
 			})
 		}
 	}

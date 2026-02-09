@@ -9,6 +9,7 @@ type Entity struct {
 	entity.BaseEntity[types.PaymentId] `gorm:"embedded"`
 	TrxId                              string                   `json:"trx_id" gorm:"column:trx_id"`
 	MerchantId                         types.MerchantId         `json:"merchant_id" gorm:"column:merchant_id"`
+	MerchantWalletId                   types.MerchantWalletId   `json:"merchant_wallet_id" gorm:"column:merchant_wallet_id"`
 	Currency                           entity.CurrencyCodeAlpha `json:"currency" gorm:"column:currency"`
 	Status                             types.PaymentStatus      `json:"status" gorm:"column:status"`
 	Address                            types.PaymentAddress     `json:"address" gorm:"column:address"`

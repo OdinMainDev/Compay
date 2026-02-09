@@ -43,6 +43,7 @@ var ErrorMonitoringErrorOnGetBtcTransactions = func(err string) error {
 /* WITHDRAW */
 var ErrorProcessingWithdrawAmountLessThanMinimal = fmt.Errorf("%s", "ProcessingWithdrawAmountLessThanMinimal")
 var ErrorProcessingWithdrawAmountGreaterThanMaximum = fmt.Errorf("%s", "ProcessingWithdrawAmountGreaterThanMaximum")
+var ErrorProcessingWithdrawInsufficientFunds = fmt.Errorf("%s", "ProcessingWithdrawInsufficientFunds")
 var ErrorProcessingWithdrawHasUncompletedWithdraw = fmt.Errorf("%s", "ProcessingWithdrawHasUncompletedWithdraw")
 var ErrorProcessingErrorOnConstructWithdrawRequest = func(err string) error {
 	return fmt.Errorf("%s %s", "ProcessingErrorOnConstructWithdrawRequest:", err)

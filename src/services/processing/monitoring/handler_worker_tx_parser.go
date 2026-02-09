@@ -46,6 +46,7 @@ func (that *monitoring) processTxParse(data txParserJob) {
 	logTransactionModel.PaymentId = data.PaymentModel.GetId()
 	logTransactionModel.PaymentTrxId = data.PaymentModel.TrxId
 	logTransactionModel.MerchantId = data.PaymentModel.MerchantId
+	logTransactionModel.MerchantWalletId = data.PaymentModel.MerchantWalletId
 	logTransactionModel.Currency = data.PaymentModel.Currency
 	logTransactionModel.IsComplete = false
 	logTransactionModel.StartBlock = data.TxData.BlockHeight
