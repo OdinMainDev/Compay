@@ -40,6 +40,7 @@ func (that *eframework) loadEnvironmentVariables() error {
 	that.envRedisChecks(&envCheckKeys)
 	that.envRabbitMQChecks(&envCheckKeys)
 	that.envNotifyChecks(&envCheckKeys)
+	that.envProfilerChecks(&envCheckKeys)
 
 	for _, value := range envCheckKeys {
 		if os.Getenv(value) == "" {
@@ -111,6 +112,16 @@ func (that *eframework) envNotifyChecks(envCheckKeys *[]string) {
 	}
 }
 
+func (that *eframework) envProfilerChecks(envCheckKeys *[]string) {
+	if that.options.ProfilerDisabled {
+		return
+	}
+
+	*envCheckKeys = append(*envCheckKeys,
+		"PROFILER_TELEMETRY_COLLECTOR_HOST",
+	)
+}
+
 // Fill Functions
 
 func (that *eframework) fillConfigs() {
@@ -119,6 +130,7 @@ func (that *eframework) fillConfigs() {
 	that.fillConfigCache()
 	that.fillConfigCrypt()
 	that.fillConfigNotify()
+	that.fillConfigProfiler()
 }
 
 func (that *eframework) fillConfigApp() {
@@ -181,4 +193,8 @@ func (that *eframework) fillConfigNotify() {
 		fmt.Println("NOTIFY_TELEGRAM_CHAT_ID not set in environment file")
 		efwlog.Log("NOTIFY_TELEGRAM_CHAT_ID not set in environment file")
 	}
+}
+
+func (that *eframework) fillConfigProfiler() {
+	config.ProfilerTelemetryCollectorHost = os.Getenv("PROFILER_TELEMETRY_COLLECTOR_HOST")
 }

@@ -29,4 +29,7 @@ type EfwOptions struct {
 	// Notify configuration
 	NotifyDisabled         bool
 	NotifyTelegramDisabled bool
+
+	// Profiler configuration
+	ProfilerDisabled bool
 }

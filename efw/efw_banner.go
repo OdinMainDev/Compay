@@ -1,6 +1,9 @@
 package efw
 
-import "fmt"
+import (
+	"efw/config"
+	"fmt"
+)
 
 func (that *eframework) printBanner() {
 	fmt.Println(`
@@ -10,5 +13,5 @@ func (that *eframework) printBanner() {
  / /___ / __// /   / /_/ // / / / / //  __/
 /_____//_/  /_/    \__,_//_/ /_/ /_/ \___/ 
 
-eframe v1.0.30 start`)
+eframe v1.0.30 start | APP_VERSION: ` + config.AppVersion)
 }
