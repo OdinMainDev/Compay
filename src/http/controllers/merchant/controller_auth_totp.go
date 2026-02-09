@@ -22,8 +22,8 @@ func AuthTotp(context *gin.Context) {
 		efwginhelpers.ResponseError(context, cperrors.ErrorProfileTotpNotConfigured)
 		return
 	}
-	if userModel.IsTwofaEnabled {
-		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorProfileTotpAlreadyEnabled))
+	if !userModel.IsTwofaEnabled {
+		efwginhelpers.ResponseError(context, cperrors.ErrorProfileTotpNotConfigured)
 		return
 	}
 

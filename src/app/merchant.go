@@ -94,7 +94,7 @@ func StopMerchant() {
 
 func merchantAuthRoutes(group *gin.RouterGroup) {
 	group.POST("/login", efwmiddleware.RateLimit(5), controller.AuthLogin)
-	group.POST("/totp", efwmiddleware.RateLimit(5), efwmiddleware.CheckAuth(), controller.AuthTotp)
+	group.POST("/totp", efwmiddleware.RateLimit(5), efwmiddleware.CheckAuth(), middleware.CheckUser(), controller.AuthTotp)
 }
 
 // PANEL ROUTES
