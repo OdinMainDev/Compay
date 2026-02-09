@@ -42,7 +42,7 @@ type requestAdminMerchantsProcess struct {
 	NotificationTelegramChatId             int64            `json:"notification_telegram_chat_id" binding:"omitempty"`
 	NotificationDisableCreateInvoice       bool             `json:"notification_disable_create_invoice"`
 	NotificationDisableDetectedTransaction bool             `json:"notification_disable_detected_transaction"`
-	NotificationDisableFundsReceived       bool             `json:"notification_disable_funds_recieved"`
+	NotificationDisableFundsReceived       bool             `json:"notification_disable_funds_received"`
 	NotificationDisableCompletedInvoice    bool             `json:"notification_disable_completed_invoice"`
 	NotificationDisableExpireInvoice       bool             `json:"notification_disable_expire_invoice"`
 	NotificationDisableInsufficientFunds   bool             `json:"notification_disable_insufficient_funds"`
