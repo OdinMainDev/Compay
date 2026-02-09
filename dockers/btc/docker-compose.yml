@@ -2,19 +2,20 @@ version: "3.8"
 
 services:
   bitcoind:
-    image: ruimarinho/bitcoin-core:26.0
+    image: ruimarinho/bitcoin-core:latest
     container_name: bitcoin-core
     restart: unless-stopped
 
     environment:
-      BITCOIN_NETWORK: ${BITCOIN_NETWORK:-mainnet}
+      BITCOIN_NETWORK: testnet
 
     command:
+      -testnet
       -printtoconsole
       -server=1
       -txindex=1
 
-      -rpcuser=btcuser
+      -rpcuser=vvoorrlleessaawwqqee
       -rpcpassword=strong_super_secret_password
       -rpcallowip=0.0.0.0/0
       -rpcbind=0.0.0.0
@@ -28,9 +29,6 @@ services:
 
       -listen=1
       -discover=1
-
-      # выбор сети
-      -${BITCOIN_NETWORK}
 
     volumes:
       - ./data:/bitcoin/.bitcoin
