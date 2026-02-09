@@ -8,6 +8,7 @@ import (
 type Entity struct {
 	entity.BaseEntity[types.LogMerchantWalletId] `gorm:"embedded"`
 	MerchantId                                   types.MerchantId         `json:"merchant_id" gorm:"column:merchant_id"`
+	MerchantWalletId                             types.MerchantWalletId   `json:"merchant_wallet_id" gorm:"column:merchant_wallet_id"`
 	PaymentId                                    types.PaymentId          `json:"payment_id" gorm:"column:payment_id"`
 	WithdrawId                                   types.PaymentId          `json:"withdraw_id" gorm:"column:withdraw_id"`
 	PaymentTrxId                                 string                   `json:"payment_trx_id" gorm:"column:payment_trx_id"`

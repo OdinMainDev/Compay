@@ -1,6 +1,7 @@
 CREATE TABLE "log_merchant_wallets" (
     "id" bigserial,
     "merchant_id" int,
+    "merchant_wallet_id" bigint,
     "payment_id" bigint,
     "withdraw_id" bigint,
     "payment_trx_id" varchar(36),

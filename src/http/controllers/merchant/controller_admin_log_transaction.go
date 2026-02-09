@@ -45,7 +45,7 @@ func AdminLogTransactionList(context *gin.Context) {
 				return chain
 			},
 			func(chain gorm.ChainInterface[*logtransaction.Model]) gorm.ChainInterface[*logtransaction.Model] {
-				return chain.Where("payment_id = ?", input.Id)
+				return chain.Where("merchant_wallet_id = ?", input.Id)
 			},
 		},
 		nil,

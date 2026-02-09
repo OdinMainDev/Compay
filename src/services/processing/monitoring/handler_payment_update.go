@@ -103,6 +103,7 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amo
 
 	logmerchantwallet.FastCreate(
 		paymentModel.MerchantId,
+		paymentModel.MerchantWalletId,
 		paymentModel.GetId(),
 		0,
 		paymentModel.TrxId,
@@ -158,6 +159,7 @@ func (that *monitoring) afterSetPaymentComplete(paymentModel *payment.Model, amo
 	if paymentModel.Amount != 0 {
 		logmerchantwallet.FastCreate(
 			paymentModel.MerchantId,
+			paymentModel.MerchantWalletId,
 			paymentModel.GetId(),
 			0,
 			paymentModel.TrxId,
@@ -259,6 +261,7 @@ func (that *monitoring) afterSetPaymentInsufficientFunds(paymentModel *payment.M
 
 	logmerchantwallet.FastCreate(
 		paymentModel.MerchantId,
+		paymentModel.MerchantWalletId,
 		paymentModel.GetId(),
 		0,
 		paymentModel.TrxId,
