@@ -94,7 +94,7 @@ func (that *monitoring) addPaymentAsync(paymentModel *payment.Model) {
 	}
 	that.addPayment(paymentModel)
 
-	fmt.Printf("[Monitoring] Payment with wallet %s added to monitoring pool\n", paymentModel.Address)
+	that.log(fmt.Sprintf("[Monitoring] Payment with wallet %s added to monitoring pool", paymentModel.Address))
 }
 
 func (that *monitoring) addPayment(paymentModel *payment.Model) {
@@ -121,7 +121,7 @@ func (that *monitoring) removePaymentAsync(address types.PaymentAddress, codeAlp
 	}
 	that.removePayment(address, codeAlpha)
 
-	fmt.Printf("[Monitoring] Payment with wallet %s removed from monitoring pool\n", address)
+	that.log(fmt.Sprintf("[Monitoring] Payment with wallet %s removed from monitoring pool", address))
 }
 
 func (that *monitoring) removePayment(address types.PaymentAddress, codeAlpha entity.CurrencyCodeAlpha) {

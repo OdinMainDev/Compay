@@ -12,7 +12,7 @@ func (that *monitoring) addLogTransactionAsync(logTransactionModel *logtransacti
 	that.addLogTransaction(logTransactionModel)
 	that.logTransactionsMutex.Unlock()
 
-	fmt.Printf("[Monitoring] LogTransaction with tx_id %s added to monitoring pool\n", logTransactionModel.TxId)
+	that.log(fmt.Sprintf("[Monitoring] LogTransaction with tx_id %s added to monitoring pool", logTransactionModel.TxId))
 }
 
 func (that *monitoring) addLogTransaction(logTransactionModel *logtransaction.Model) {
@@ -25,7 +25,7 @@ func (that *monitoring) removeLogTransactionAsync(txId types.PaymentTxId, addres
 	that.removeLogTransaction(txId, address)
 	that.logTransactionsMutex.Unlock()
 
-	fmt.Printf("[Monitoring] LogTransaction with tx_id %s removed from monitoring pool\n", txId)
+	that.log(fmt.Sprintf("[Monitoring] LogTransaction with tx_id %s removed from monitoring pool", txId))
 }
 
 func (that *monitoring) removeLogTransaction(txId types.PaymentTxId, address types.PaymentAddress) {

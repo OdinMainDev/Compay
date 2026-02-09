@@ -8,7 +8,7 @@ import (
 )
 
 func (that *monitoring) parseTransactions(transactions []types.TxData, activePayments map[types.PaymentAddress]*payment.Model) {
-	fmt.Println("[Monitoring] Start parse transactions")
+	that.log(fmt.Sprint("[Monitoring] Start parse transactions"))
 	now := time.Now().Unix()
 
 	for _, paymentModel := range activePayments {

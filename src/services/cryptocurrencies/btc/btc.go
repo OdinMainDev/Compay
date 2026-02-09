@@ -13,6 +13,10 @@ var clientMutex sync.RWMutex
 var networkConfig *chaincfg.Params = &chaincfg.TestNet3Params
 
 func Start() error {
+	if config.BtcNetworkMainnet {
+		networkConfig = &chaincfg.MainNetParams
+	}
+
 	c, err := rpcclient.New(&rpcclient.ConnConfig{
 		Host:         config.BtcNodeHost,
 		User:         config.BtcNodeUsername,

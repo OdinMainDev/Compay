@@ -1,10 +1,12 @@
 package monitoring
 
 import (
+	"compay/common/config"
 	"compay/common/types"
 	"compay/src/models/blockchainstate"
 	"compay/src/models/logtransaction"
 	"compay/src/models/payment"
+	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -86,4 +88,10 @@ func AddPayment(paymentModel *payment.Model) {
 // RemovePayment убирает платеж из пула ( для админки к примеру )
 func RemovePayment(paymentModel *payment.Model) {
 	globalMonitor.removePaymentAsync(paymentModel.Address, paymentModel.Currency)
+}
+
+func (that *monitoring) log(str string) {
+	if config.MonitoringLogs {
+		fmt.Println(str)
+	}
 }

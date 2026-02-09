@@ -20,7 +20,7 @@ func (that *monitoring) startWorkerBtcNode() {
 	for {
 		select {
 		case <-that.stopChan:
-			fmt.Println("[Monitoring] STOP worker btc node")
+			that.log(fmt.Sprint("[Monitoring] STOP worker btc node"))
 			return
 		case <-ticker.C:
 			that.handleBtcNode()
@@ -29,7 +29,7 @@ func (that *monitoring) startWorkerBtcNode() {
 }
 
 func (that *monitoring) handleBtcNode() {
-	fmt.Println("[Monitoring] Start handle btc node")
+	that.log(fmt.Sprint("[Monitoring] Start handle btc node"))
 
 	that.btc.mutex.RLock()
 	lenActivePayments := len(that.btc.activePayments)
@@ -70,7 +70,7 @@ func (that *monitoring) handleBtcNode() {
 }
 
 func (that *monitoring) updateBtcBlockCount() {
-	fmt.Println("[Monitoring] Start update btc blocks node")
+	that.log(fmt.Sprint("[Monitoring] Start update btc blocks node"))
 
 	var response getBlockCountBtcResponse
 	err := that.doRequest(requestGetBlockCount, constants.BtcCodeAlpha, nil, &response)

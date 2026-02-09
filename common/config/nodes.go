@@ -1,7 +1,8 @@
 package config
 
 var (
-	BtcNodeHost     = ""
-	BtcNodeUsername = ""
-	BtcNodePassword = ""
+	BtcNodeHost       = ""
+	BtcNodeUsername   = ""
+	BtcNodePassword   = ""
+	BtcNetworkMainnet = true
 )
