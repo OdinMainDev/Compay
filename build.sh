@@ -46,8 +46,6 @@ build_app() {
     docker build --platform linux/amd64 \
         --build-arg VERSION="$version" \
         --build-arg APP_PATH="$app_path" \
-        --build-arg APP_NAME="$app_name" \
-        -t "${image_name}:${version}" \
         -t "${image_name}:latest" \
         .
 
