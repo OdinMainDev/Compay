@@ -249,11 +249,6 @@ func (that *monitoring) afterSetPaymentInsufficientFunds(paymentModel *payment.M
 		}
 	}
 
-	merchantWalletModel := merchantwallet.GetModel(merchantwallet.QueryHelper{PaymentId: paymentModel.GetId(), MerchantId: paymentModel.MerchantId})
-	merchantWalletModel.Amount += paymentModel.ReceivedAmount
-	merchantWalletModel.ReceivedAmount += paymentModel.ReceivedAmount
-	merchantwallet.Save(merchantWalletModel, merchantwallet.QueryHelper{})
-
 	logmerchantwallet.FastCreate(
 		paymentModel.MerchantId,
 		paymentModel.MerchantWalletId,
