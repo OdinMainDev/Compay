@@ -3,25 +3,20 @@
 # Сборка образа в Docker для проекта Compay
 #
 # Использование:
-#   ./build.sh                    # Собрать merchant (по умолчанию)
-#   ./build.sh merchant           # Собрать merchant
-#   ./build.sh btc                # Собрать btc
-#   ./build.sh rates              # Собрать rates
-#   ./build.sh all                # Собрать все приложения
 #   ./build.sh <path/to/main.go>  # Собрать произвольное приложение
 #
 
 set -e
 
-# Определение приложения для сборки
-APP_INPUT="${1:-merchant}"
+# Определение приложения для сборки (только полный путь)
+APP_INPUT="${1:-}"
 
 # Функция сборки одного приложения
 build_app() {
     local app_name="$1"
     local app_path="$2"
     # Получить актуальное имя тега для назначения имени версии
-    version=$(git rev-list --count HEAD)
+    version=$(git rev-list --count HEAD 2>/dev/null || true)
 
     echo ""
     echo "=========================================="
@@ -43,10 +38,11 @@ build_app() {
 
     local image_name="compay"
 
-    docker build --platform linux/amd64 \
+    docker buildx build --platform linux/amd64 --load \
         --build-arg VERSION="$version" \
         --build-arg APP_PATH="$app_path" \
         -t "${image_name}:latest" \
+        -t "${image_name}:${version}" \
         .
 
     mkdir -p ./build
@@ -60,5 +56,15 @@ build_app() {
 }
 
 
-app_name=$(basename "$(dirname "$APP_INPUT")")
-build_app "$app_name" "$APP_INPUT"
+if [[ -z "$APP_INPUT" ]]; then
+    echo "Нужно указать путь к main.go, например: ./build.sh ./cmd/merchant/main.go" >&2
+    exit 1
+fi
+
+if [[ -f "$APP_INPUT" ]]; then
+    app_name=$(basename "$(dirname "$APP_INPUT")")
+    build_app "$app_name" "$APP_INPUT"
+else
+    echo "Путь не найден: $APP_INPUT" >&2
+    exit 1
+fi
