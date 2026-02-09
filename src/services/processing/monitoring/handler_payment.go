@@ -49,7 +49,7 @@ func (that *monitoring) loadPayments() {
 			that.addPayment(paymentModel)
 			count++
 
-			logPaymentModels := logtransaction.GetModels(logtransaction.QueryHelper{
+			logTransactionModels := logtransaction.GetModels(logtransaction.QueryHelper{
 				PaymentId: paymentModel.GetId(),
 				QueryHelper: model.QueryHelper{
 					HasPagination: model.HasPagination{
@@ -58,9 +58,9 @@ func (that *monitoring) loadPayments() {
 					},
 				},
 			})
-			for _, logPaymentModel := range logPaymentModels {
-				if !logPaymentModel.IsComplete {
-					that.addLogTransactionAsync(logPaymentModel)
+			for _, logTransactionModel := range logTransactionModels {
+				if !logTransactionModel.IsComplete {
+					that.addLogTransactionAsync(logTransactionModel)
 					countLogs++
 				}
 			}

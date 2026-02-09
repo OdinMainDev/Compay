@@ -8,6 +8,8 @@ import (
 func FastCreate(
 	paymentId types.PaymentId,
 	paymentTrxId string,
+	withdrawId types.WithdrawId,
+	withdrawTrxId string,
 	merchantId types.MerchantId,
 	txData types.TxData,
 	txWithdrawData types.TxWithdrawData,
@@ -15,6 +17,8 @@ func FastCreate(
 	model := &Model{}
 	model.PaymentId = paymentId
 	model.PaymentTrxId = paymentTrxId
+	model.WithdrawId = withdrawId
+	model.WithdrawTrxId = withdrawTrxId
 	model.MerchantId = merchantId
 	model.TxId = txData.TxId
 	model.TxHash = txData.TxHash

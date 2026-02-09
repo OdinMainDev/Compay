@@ -15,6 +15,7 @@ type Entity struct {
 	Address                             types.WithdrawAddress    `json:"address" gorm:"column:address"`
 	Amount                              entity.Amount            `json:"amount" gorm:"column:amount"`
 	AmountUsd                           entity.Amount            `json:"amount_usd" gorm:"column:amount_usd"`
+	Error                               string                   `json:"error" gorm:"column:error"`
 }
 
 func (*Entity) TableName() string { return "withdraws" }

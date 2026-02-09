@@ -31,7 +31,7 @@ func (that *monitoring) startWorkerLogChecker(id int) {
 		case <-that.stopChan:
 			fmt.Println("[Monitoring] STOP worker ", id, " log checker")
 			return
-		case data := <-that.logPaymentsJobChan:
+		case data := <-that.logTransactionsJobChan:
 			that.processLogChecker(data)
 		}
 	}
@@ -40,37 +40,37 @@ func (that *monitoring) startWorkerLogChecker(id int) {
 func (that *monitoring) handleLoopLogChecker() {
 	fmt.Println("[Monitoring] Start log loop checker")
 
-	that.logPaymentsMutex.RLock()
+	that.logTransactionsMutex.RLock()
 	if len(that.activeLogTransactions) == 0 {
-		that.logPaymentsMutex.RUnlock()
+		that.logTransactionsMutex.RUnlock()
 		return
 	}
 
-	for _, logPaymentModel := range that.activeLogTransactions {
-		that.logPaymentsJobChan <- logPaymentModel
+	for _, logTransactionModel := range that.activeLogTransactions {
+		that.logTransactionsJobChan <- logTransactionModel
 	}
-	that.logPaymentsMutex.RUnlock()
+	that.logTransactionsMutex.RUnlock()
 }
 
-func (that *monitoring) processLogChecker(logPaymentModel *logtransaction.Model) {
+func (that *monitoring) processLogChecker(logTransactionModel *logtransaction.Model) {
 	var confirmations int64 = 0
 	currentBlock := that.btc.currentBlock.Load()
-	switch logPaymentModel.Currency {
+	switch logTransactionModel.Currency {
 	case constants.BtcCodeAlpha:
-		confirmations = currentBlock - logPaymentModel.StartBlock + 1
+		confirmations = currentBlock - logTransactionModel.StartBlock + 1
 
 	default:
-		helpers.NotificationError(fmt.Sprint("BAD CONFIGURATION processLogChecker: ", logPaymentModel.Currency))
-		efwlog.Panic("BAD CONFIGURATION processLogChecker: ", logPaymentModel.Currency)
+		helpers.NotificationError(fmt.Sprint("BAD CONFIGURATION processLogChecker: ", logTransactionModel.Currency))
+		efwlog.Panic("BAD CONFIGURATION processLogChecker: ", logTransactionModel.Currency)
 	}
 
-	if confirmations >= int64(logPaymentModel.Data.Conditions.RequiredConfirmations) {
-		that.doSetPaymentReceived(logPaymentModel.PaymentId, logPaymentModel.Currency, logPaymentModel.TxId, logPaymentModel.Data.TxData.Amount)
+	if confirmations >= int64(logTransactionModel.Data.Conditions.RequiredConfirmations) {
+		that.doSetPaymentReceived(logTransactionModel.PaymentId, logTransactionModel.Currency, logTransactionModel.TxId, logTransactionModel.Data.TxData.Amount)
 
 		// Маркируем лог как завершённый
-		logtransaction.UpdateStatus(logPaymentModel.GetId())
+		logtransaction.UpdateStatus(logTransactionModel.GetId())
 
 		// Удаляем из активных
-		that.removeLogTransactionAsync(logPaymentModel.TxId, logPaymentModel.Address)
+		that.removeLogTransactionAsync(logTransactionModel.TxId, logTransactionModel.Address)
 	}
 }

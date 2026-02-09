@@ -35,9 +35,9 @@ type monitoring struct {
 	txParserJobChan chan txParserJob
 
 	// Данные логов платежей
-	activeLogTransactions map[activeTxId]*logtransaction.Model
-	logPaymentsMutex      sync.RWMutex
-	logPaymentsJobChan    chan *logtransaction.Model
+	activeLogTransactions  map[activeTxId]*logtransaction.Model
+	logTransactionsMutex   sync.RWMutex
+	logTransactionsJobChan chan *logtransaction.Model
 
 	// Контроль жизненного цикла
 	stopChan chan struct{}
@@ -48,13 +48,13 @@ var globalMonitor *monitoring
 // newInvoiceMonitor создает новый экземпляр Monitoring
 func newInvoiceMonitor() *monitoring {
 	return &monitoring{
-		checkLogInterval:      30 * time.Second, // Проверяем логи каждые 30 секунд
-		checkNodeInterval:     10 * time.Second, // Проверяем ноды каждые 10 секунд
-		workerCount:           10,
-		txParserJobChan:       make(chan txParserJob),
-		activeLogTransactions: make(map[activeTxId]*logtransaction.Model),
-		logPaymentsMutex:      sync.RWMutex{},
-		logPaymentsJobChan:    make(chan *logtransaction.Model),
+		checkLogInterval:       30 * time.Second, // Проверяем логи каждые 30 секунд
+		checkNodeInterval:      10 * time.Second, // Проверяем ноды каждые 10 секунд
+		workerCount:            10,
+		txParserJobChan:        make(chan txParserJob),
+		activeLogTransactions:  make(map[activeTxId]*logtransaction.Model),
+		logTransactionsMutex:   sync.RWMutex{},
+		logTransactionsJobChan: make(chan *logtransaction.Model),
 		btc: currencyData{
 			blockchainStateModel: nil,
 			currentBlock:         atomic.Int64{},

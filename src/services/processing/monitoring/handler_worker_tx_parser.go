@@ -22,13 +22,13 @@ func (that *monitoring) startWorkerTxParser(id int) {
 
 func (that *monitoring) processTxParse(data txParserJob) {
 	// проверяем наличие транзакции в проверках
-	logPaymentModel := logtransaction.GetModel(logtransaction.QueryHelper{
+	logTransactionModel := logtransaction.GetModel(logtransaction.QueryHelper{
 		PaymentId: data.PaymentModel.GetId(),
 		TxId:      data.TxData.TxId,
 	})
 
 	// если она есть то дальше не обрабатываем тут
-	if logPaymentModel != nil {
+	if logTransactionModel != nil {
 		return
 	}
 
@@ -42,23 +42,23 @@ func (that *monitoring) processTxParse(data txParserJob) {
 		that.doSetPaymentDetected(data.PaymentModel.GetId(), data.TxData.TxId)
 	}
 
-	logPaymentModel = &logtransaction.Model{}
-	logPaymentModel.PaymentId = data.PaymentModel.GetId()
-	logPaymentModel.PaymentTrxId = data.PaymentModel.TrxId
-	logPaymentModel.MerchantId = data.PaymentModel.MerchantId
-	logPaymentModel.Currency = data.PaymentModel.Currency
-	logPaymentModel.IsComplete = false
-	logPaymentModel.StartBlock = data.TxData.BlockHeight
-	logPaymentModel.TxId = data.TxData.TxId
-	logPaymentModel.TxHash = data.TxData.TxHash
-	logPaymentModel.Address = data.TxData.Address
-	logPaymentModel.Data = entityLogtransaction.Data{
+	logTransactionModel = &logtransaction.Model{}
+	logTransactionModel.PaymentId = data.PaymentModel.GetId()
+	logTransactionModel.PaymentTrxId = data.PaymentModel.TrxId
+	logTransactionModel.MerchantId = data.PaymentModel.MerchantId
+	logTransactionModel.Currency = data.PaymentModel.Currency
+	logTransactionModel.IsComplete = false
+	logTransactionModel.StartBlock = data.TxData.BlockHeight
+	logTransactionModel.TxId = data.TxData.TxId
+	logTransactionModel.TxHash = data.TxData.TxHash
+	logTransactionModel.Address = data.TxData.Address
+	logTransactionModel.Data = entityLogtransaction.Data{
 		TxData: *data.TxData,
 		Conditions: entityLogtransaction.Conditions{
 			RequiredConfirmations: data.PaymentModel.RequiredConfirmations,
 		},
 	}
-	logtransaction.Save(logPaymentModel, logtransaction.QueryHelper{})
+	logtransaction.Save(logTransactionModel, logtransaction.QueryHelper{})
 
-	that.addLogTransactionAsync(logPaymentModel)
+	that.addLogTransactionAsync(logTransactionModel)
 }

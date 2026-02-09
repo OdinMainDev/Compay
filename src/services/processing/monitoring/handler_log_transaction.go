@@ -7,23 +7,23 @@ import (
 )
 
 // addLogTransactionAsync добавляет новый лог платежа в пул обработки
-func (that *monitoring) addLogTransactionAsync(logPaymentModel *logtransaction.Model) {
-	that.logPaymentsMutex.Lock()
-	that.addLogTransaction(logPaymentModel)
-	that.logPaymentsMutex.Unlock()
+func (that *monitoring) addLogTransactionAsync(logTransactionModel *logtransaction.Model) {
+	that.logTransactionsMutex.Lock()
+	that.addLogTransaction(logTransactionModel)
+	that.logTransactionsMutex.Unlock()
 
-	fmt.Printf("[Monitoring] LogTransaction with tx_id %s added to monitoring pool\n", logPaymentModel.TxId)
+	fmt.Printf("[Monitoring] LogTransaction with tx_id %s added to monitoring pool\n", logTransactionModel.TxId)
 }
 
-func (that *monitoring) addLogTransaction(logPaymentModel *logtransaction.Model) {
-	that.activeLogTransactions[toTxId(logPaymentModel.TxId, logPaymentModel.Address)] = logPaymentModel
+func (that *monitoring) addLogTransaction(logTransactionModel *logtransaction.Model) {
+	that.activeLogTransactions[toTxId(logTransactionModel.TxId, logTransactionModel.Address)] = logTransactionModel
 }
 
 // removeLogTransactionAsync удаляет лог платежа из пула
 func (that *monitoring) removeLogTransactionAsync(txId types.PaymentTxId, address types.PaymentAddress) {
-	that.logPaymentsMutex.Lock()
+	that.logTransactionsMutex.Lock()
 	that.removeLogTransaction(txId, address)
-	that.logPaymentsMutex.Unlock()
+	that.logTransactionsMutex.Unlock()
 
 	fmt.Printf("[Monitoring] LogTransaction with tx_id %s removed from monitoring pool\n", txId)
 }

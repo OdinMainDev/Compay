@@ -11,7 +11,7 @@ import (
 
 type QueryHelper struct {
 	model.QueryHelper
-	Id        types.LogPaymentId
+	Id        types.LogTransactionId
 	PaymentId types.PaymentId
 	TxId      types.PaymentTxId
 }
@@ -29,7 +29,7 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	return chain.Order("id ASC")
 }
 
-func UpdateStatus(logId types.LogPaymentId) {
+func UpdateStatus(logId types.LogTransactionId) {
 	efw.DBTransaction[Model]().
 		Where("id = ?", logId).
 		Update(context.Background(), "is_complete", true)

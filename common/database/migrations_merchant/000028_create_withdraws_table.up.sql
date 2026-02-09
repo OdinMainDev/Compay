@@ -8,6 +8,7 @@ CREATE TABLE "withdraws" (
     "address" varchar(128),
     "amount" int,
     "amount_usd" int,
+    "error" text,
     "created_at" int,
     "updated_at" int,
     PRIMARY KEY ("id")

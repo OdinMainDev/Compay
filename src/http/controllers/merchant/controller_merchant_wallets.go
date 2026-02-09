@@ -148,7 +148,7 @@ func MerchantWalletsActionWithdraw(context *gin.Context) {
 	})
 
 	handler := processing.NewService(merchantModel, currencyModel)
-	_, err := handler.StartWithdraw(processing.WithdrawData{
+	err := handler.StartWithdraw(processing.WithdrawData{
 		Address:        input.Address,
 		Amount:         input.Amount,
 		MerchantWallet: merchantWalletModel,
