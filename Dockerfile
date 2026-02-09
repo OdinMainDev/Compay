@@ -29,4 +29,4 @@ COPY --from=builder /${APP_NAME} /app
 RUN chmod +x /app
 RUN touch .env
 RUN mkdir -p /resources/logs
-ENTRYPOINT ["/compay"]
+ENTRYPOINT ["/app"]
