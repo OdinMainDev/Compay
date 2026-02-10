@@ -12,3 +12,6 @@ CREATE TABLE "merchants" (
     PRIMARY KEY ("id")
 );
 
+CREATE UNIQUE INDEX idx_merchants_token ON "merchants" ("token");
+CREATE INDEX idx_merchants_creator_id ON "merchants" ("creator_id");
+CREATE INDEX idx_merchants_owner_id ON "merchants" ("owner_id");

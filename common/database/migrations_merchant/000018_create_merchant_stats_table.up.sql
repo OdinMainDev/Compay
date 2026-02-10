@@ -11,3 +11,6 @@ CREATE TABLE "merchant_stats" (
     "updated_at" int,
     PRIMARY KEY ("id")
 );
+
+CREATE INDEX idx_merchant_stats_merchant_id ON "merchant_stats" ("merchant_id");
+CREATE UNIQUE INDEX idx_merchant_stats_merchant_id_currency ON "merchant_stats" ("merchant_id", "currency");

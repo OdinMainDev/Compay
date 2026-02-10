@@ -12,3 +12,7 @@ CREATE TABLE "log_auth" (
     "updated_at" int,
     PRIMARY KEY ("id")
 );
+
+CREATE INDEX idx_log_auth_user_id ON "log_auth" ("user_id");
+CREATE INDEX idx_log_auth_merchant_id ON "log_auth" ("merchant_id");
+CREATE INDEX idx_log_auth_created_at ON "log_auth" ("created_at" DESC);

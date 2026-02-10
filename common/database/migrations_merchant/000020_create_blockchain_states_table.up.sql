@@ -6,3 +6,5 @@ CREATE TABLE "blockchain_states" (
     "updated_at" int,
     PRIMARY KEY ("id")
 );
+
+CREATE UNIQUE INDEX idx_blockchain_states_currency ON "blockchain_states" ("currency");

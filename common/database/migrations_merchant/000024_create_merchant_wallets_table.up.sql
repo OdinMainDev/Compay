@@ -15,3 +15,8 @@ CREATE TABLE "merchant_wallets" (
     "updated_at" int,
     PRIMARY KEY ("id")
 );
+
+CREATE INDEX idx_merchant_wallets_merchant_id ON "merchant_wallets" ("merchant_id");
+CREATE INDEX idx_merchant_wallets_payment_id ON "merchant_wallets" ("payment_id");
+CREATE INDEX idx_merchant_wallets_merchant_id_currency ON "merchant_wallets" ("merchant_id", "currency");
+CREATE INDEX idx_merchant_wallets_address ON "merchant_wallets" ("address");

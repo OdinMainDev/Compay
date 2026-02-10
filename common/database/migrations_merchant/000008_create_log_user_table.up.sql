@@ -10,3 +10,7 @@ CREATE TABLE "log_user" (
     "updated_at" int,
     PRIMARY KEY ("id")
 );
+
+CREATE INDEX idx_log_user_user_id ON "log_user" ("user_id");
+CREATE INDEX idx_log_user_merchant_id ON "log_user" ("merchant_id");
+CREATE INDEX idx_log_user_created_at ON "log_user" ("created_at" DESC);
