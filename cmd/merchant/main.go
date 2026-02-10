@@ -21,6 +21,8 @@ func main() {
 
 		GenericCacheDisabled: true,
 		RabbitMQDisabled:     true,
+
+		ProfilerDisabled: true,
 	}
 
 	initMethods := efw.EfwInitMethods{

@@ -20,6 +20,8 @@ func main() {
 		CacheDisabled:         true,
 		GenericCacheDisabled:  true,
 		RabbitMQDisabled:      true,
+
+		ProfilerDisabled: true,
 	}
 
 	initMethods := efw.EfwInitMethods{
@@ -35,7 +37,13 @@ func main() {
 
 	efwapp.CreateApp(
 		"btc",
-		[]func(){app.StartBtc, app.StartMetrics},
-		[]func(){app.StopBtc, app.StopMetrics},
+		[]func(){
+			app.StartBtc,
+			// app.StartMetrics,
+		},
+		[]func(){
+			app.StopBtc,
+			// app.StopMetrics,
+		},
 	)
 }
