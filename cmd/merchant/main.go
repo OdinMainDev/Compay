@@ -15,7 +15,7 @@ func main() {
 	database.SetMigrationsType(false)
 
 	options := efw.EfwOptions{
-		AppEnvVariables:       []string{"APP_PORT"},
+		AppEnvVariables:       []string{"APP_PORT", "BTC_API_URL"},
 		DatabaseMigrationsDir: database.GetMigrationsDir,
 		ClamavDisabled:        true,
 

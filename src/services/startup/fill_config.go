@@ -11,6 +11,7 @@ func FillConfig() {
 	config.MonitoringLogs = os.Getenv("MONITORING_LOGS") == "true"
 
 	// Bitcoin RPC Configuration
+	config.BtcApiUrl = os.Getenv("BTC_API_URL")
 	config.BtcNodeHost = os.Getenv("BTC_RPC_HOST")
 	config.BtcNodeUsername = os.Getenv("BTC_RPC_USERNAME")
 	config.BtcNodePassword = os.Getenv("BTC_RPC_PASSWORD")

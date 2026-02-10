@@ -13,7 +13,7 @@ import (
 func main() {
 
 	options := efw.EfwOptions{
-		AppEnvVariables:       []string{"APP_PORT"},
+		AppEnvVariables:       []string{"APP_PORT", "BTC_RPC_HOST", "BTC_RPC_USERNAME", "BTC_RPC_PASSWORD", "BTC_NETWORK_MAINNET"},
 		DatabaseMigrationsDir: nil,
 		DatabaseDisabled:      true,
 		ClamavDisabled:        true,

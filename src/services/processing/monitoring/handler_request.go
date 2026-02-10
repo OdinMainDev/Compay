@@ -1,6 +1,7 @@
 package monitoring
 
 import (
+	"compay/common/config"
 	"compay/common/constants"
 	"compay/common/cperrors"
 	"compay/src/helpers"
@@ -48,7 +49,7 @@ func (that *monitoring) doRequest(path requestUrl, codeAlpha entity.CurrencyCode
 func (that *monitoring) getRequestUrl(path requestUrl, codeAlpha entity.CurrencyCodeAlpha) string {
 	switch codeAlpha {
 	case constants.BtcCodeAlpha:
-		return constants.BtcApiUrl + string(path)
+		return config.BtcApiUrl + string(path)
 
 	default:
 		helpers.NotificationError(fmt.Sprint("BAD CONFIGURATION getRequestUrl: ", codeAlpha))

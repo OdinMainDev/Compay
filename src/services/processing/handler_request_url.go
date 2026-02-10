@@ -1,6 +1,7 @@
 package processing
 
 import (
+	"compay/common/config"
 	"compay/common/constants"
 	"efw/core/efwlog"
 )
@@ -19,7 +20,7 @@ func (that *Processing) getRequestUrl(url requestUrl) string {
 func (that *Processing) getRequestHost() string {
 	switch that.getCurrency().CodeAlpha {
 	case constants.BtcCodeAlpha:
-		return constants.BtcApiUrl
+		return config.BtcApiUrl
 
 	default:
 		efwlog.Panic("BAD CONFIGURATION getRequestHost: ", that.getCurrency().CodeAlpha)

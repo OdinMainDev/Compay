@@ -21,8 +21,6 @@ var CurrencyNetworks = []types.CurrencyNetwork{
 
 // BTC
 const (
-	BtcApiUrl                 string                   = "http://localhost:8081"
-	BtcNodeUrl                string                   = "https://bitcoin-testnet.core.chainstack.com/ff918ee18e1e5abbe9267aa44be1d08d"
 	BtcCodeAlpha              entity.CurrencyCodeAlpha = "BTC"
 	BtcMinAmount              entity.Amount            = 10000 // 0.0001
 	BtcMaxAmount              entity.Amount            = 0
