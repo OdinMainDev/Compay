@@ -38,7 +38,7 @@ build_app() {
 
     local image_name="compay"
 
-    docker buildx build --platform linux/amd64 --load \
+    docker build --platform linux/amd64 \
         --build-arg VERSION="$version" \
         --build-arg APP_PATH="$app_path" \
         -t "${image_name}:latest" \
@@ -48,7 +48,8 @@ build_app() {
     mkdir -p ./build
     local tar_file="./build/${image_name}-${version}.tar"
     rm -f "$tar_file"
-    docker save -o "$tar_file" "${image_name}:${version}"
+    # Сохраняем оба тега, чтобы после docker load был доступен compay:latest
+    docker save -o "$tar_file" "${image_name}:latest" "${image_name}:${version}"
     chmod 755 "$tar_file"
 
     echo "Образ создан: ${image_name}:${version}"
