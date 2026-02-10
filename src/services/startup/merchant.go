@@ -1,6 +1,7 @@
 package startup
 
 import (
+	"compay/common/constants"
 	"compay/src/models/blockchainstate"
 	"compay/src/models/currency"
 	"compay/src/models/merchant"
@@ -15,23 +16,24 @@ func StartMerchant() {
 }
 
 func registerMerchantAdminAccounts() {
-	userModel := user.GetModel(user.QueryHelper{
-		Id:                  1,
-		DontCheckMerchantId: true,
-	})
+	for i, id := range constants.AdminIds {
+		userModel := user.GetModel(user.QueryHelper{
+			Id:                  id,
+			DontCheckMerchantId: true,
+		})
 
-	if userModel != nil {
-		if userModel.MerchantId != 0 {
-			panic("BAD ROOT ADMIN MODEL")
+		if userModel != nil {
+			if userModel.MerchantId != 0 {
+				panic("BAD ROOT ADMIN MODEL")
+			}
+			return
 		}
-		return
+		userModel = &user.Model{}
+		userModel.Username = constants.AdminUsernames[i]
+		userModel.NewPassword = constants.AdminUsernames[i]
+		userModel.SetId(id)
+		user.Save(userModel, user.QueryHelper{})
 	}
-
-	userModel = &user.Model{}
-	userModel.Username = "vioriel@developer.com"
-	userModel.NewPassword = "vioriel@developer.com"
-	userModel.SetId(1)
-	user.Save(userModel, user.QueryHelper{})
 	user.ResetSequence()
 }
 
