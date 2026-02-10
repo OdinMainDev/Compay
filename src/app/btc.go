@@ -6,6 +6,7 @@ import (
 	"efw/core/efwlog"
 	"net/http"
 
+	"compay/common/config"
 	"compay/src/helpers"
 	controller "compay/src/http/controllers/btc"
 	"compay/src/services/cryptocurrencies/btc"
@@ -26,9 +27,7 @@ func StartBtc() {
 	router.POST("/get-block-count", controller.GetBlockCount)
 	router.POST("/withdraw", controller.Withdraw)
 
-	// TODO: потом вернуть на конфиг
-	// btcServer = &http.Server{Addr: ":" + config.AppPort, Handler: router.Handler()}
-	btcServer = &http.Server{Addr: ":8081", Handler: router.Handler()}
+	btcServer = &http.Server{Addr: ":" + config.AppPort, Handler: router.Handler()}
 	go func() {
 		if err := btcServer.ListenAndServe(); err != nil {
 			efwlog.LogError("Btc server started with error: ", err.Error())
