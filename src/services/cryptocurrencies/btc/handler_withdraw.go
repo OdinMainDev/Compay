@@ -201,11 +201,13 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		}
 
 		// Создаем witness для SegWit транзакции
+		// Используем efwamount.ToAmount для точной конвертации BTC -> satoshi (избегаем потерю точности float64)
+		utxoAmountSat := int64(efwamount.ToAmount(utxo.Amount, 8))
 		witnessScript, err := txscript.WitnessSignature(
 			tx,
-			txscript.NewTxSigHashes(tx, txscript.NewCannedPrevOutputFetcher(prevPkScript, int64(utxo.Amount*1e8))),
+			txscript.NewTxSigHashes(tx, txscript.NewCannedPrevOutputFetcher(prevPkScript, utxoAmountSat)),
 			i,
-			int64(utxo.Amount*1e8),
+			utxoAmountSat,
 			prevPkScript,
 			txscript.SigHashAll,
 			wif.PrivKey,
