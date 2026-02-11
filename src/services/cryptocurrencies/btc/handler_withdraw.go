@@ -6,7 +6,6 @@ import (
 	"compay/common/types"
 	"efw/components/entity"
 	"efw/core/efwamount"
-	"encoding/hex"
 	"time"
 
 	"github.com/btcsuite/btcd/btcjson"
@@ -45,22 +44,10 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		return nil, cperrors.ErrorBtcWithdrawFailedBadResponseListUnspent(fromAddr.EncodeAddress())
 	}
 
-	// Генерируем scriptPubKey из адреса отправителя
+	// Генерируем scriptPubKey из адреса отправителя (P2WPKH)
 	pkScript, err := txscript.PayToAddrScript(fromAddr)
 	if err != nil {
 		return nil, cperrors.ErrorBtcWithdrawFailedToCreateDestinationScript(err.Error())
-	}
-	pkScriptHex := hex.EncodeToString(pkScript)
-
-	// Конвертируем StoredUTXO в формат btcjson.ListUnspentResult
-	utxos := make([]btcjson.ListUnspentResult, 0, len(storedUTXOs))
-	for _, u := range storedUTXOs {
-		utxos = append(utxos, btcjson.ListUnspentResult{
-			TxID:         u.TxID,
-			Vout:         u.Vout,
-			Amount:       float64(u.Amount) / 1e8, // сатоши -> BTC
-			ScriptPubKey: pkScriptHex,
-		})
 	}
 
 	// Получаем оптимальную ставку комиссии из Bitcoin Core
@@ -80,7 +67,7 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 	}
 
 	// Собираем входы для транзакции
-	var selectedUTXOs []btcjson.ListUnspentResult
+	var selectedUTXOs []StoredUTXO
 	var totalInput btcutil.Amount
 	var estimatedFee btcutil.Amount
 
@@ -90,10 +77,9 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		feeRatePerKB = minRelayFeePerKB
 	}
 
-	for _, utxo := range utxos {
+	for _, utxo := range storedUTXOs {
 		selectedUTXOs = append(selectedUTXOs, utxo)
-		// utxo.Amount уже в BTC, конвертируем в satoshi
-		totalInput += btcutil.Amount(efwamount.ToAmount(utxo.Amount, 8))
+		totalInput += btcutil.Amount(utxo.Amount)
 
 		// Проверяем, достаточно ли средств
 		if totalInput >= amount {
@@ -193,22 +179,15 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 	}
 
 	// Подписываем каждый вход
+	// pkScript — один и тот же для всех входов, т.к. все UTXO принадлежат одному P2WPKH адресу
 	for i, utxo := range selectedUTXOs {
-		// Получаем скрипт предыдущего выхода
-		prevPkScript, err := hex.DecodeString(utxo.ScriptPubKey)
-		if err != nil {
-			return nil, cperrors.ErrorBtcWithdrawFailedToDecodeScriptPublicKey(err.Error())
-		}
-
-		// Создаем witness для SegWit транзакции
-		// Используем efwamount.ToAmount для точной конвертации BTC -> satoshi (избегаем потерю точности float64)
-		utxoAmountSat := int64(efwamount.ToAmount(utxo.Amount, 8))
+		// Используем оригинальную сумму в сатоши напрямую (без float64 конвертации)
 		witnessScript, err := txscript.WitnessSignature(
 			tx,
-			txscript.NewTxSigHashes(tx, txscript.NewCannedPrevOutputFetcher(prevPkScript, utxoAmountSat)),
+			txscript.NewTxSigHashes(tx, txscript.NewCannedPrevOutputFetcher(pkScript, utxo.Amount)),
 			i,
-			utxoAmountSat,
-			prevPkScript,
+			utxo.Amount,
+			pkScript,
 			txscript.SigHashAll,
 			wif.PrivKey,
 			true,
