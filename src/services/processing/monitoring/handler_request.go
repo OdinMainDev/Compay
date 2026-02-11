@@ -28,7 +28,7 @@ func (that *monitoring) doRequest(path requestUrl, codeAlpha entity.CurrencyCode
 		Body:          body,
 		IsLogDisabled: true,
 
-		RequestTimeout: 180,
+		RequestTimeout: 20,
 	})
 
 	if err != nil {

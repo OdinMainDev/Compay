@@ -7,8 +7,8 @@ CREATE TABLE "log_merchant_wallets" (
     "payment_trx_id" varchar(36),
     "withdraw_trx_id" varchar(36),
     "currency" varchar(20),
-    "amount" int,
-    "amount_usd" int,
+    "amount" bigint,
+    "amount_usd" bigint,
     "created_at" int,
     "updated_at" int,
     PRIMARY KEY ("id")

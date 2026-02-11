@@ -9,7 +9,7 @@ CREATE TABLE "log_transactions" (
     "currency" varchar(20),
     "is_complete" boolean,
     "is_spent" boolean,
-    "start_block" int,
+    "start_block" bigint,
     "tx_id" varchar(255),
     "tx_hash" varchar(255),
     "address" varchar(128),
