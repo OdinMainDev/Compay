@@ -2,7 +2,7 @@ CREATE TABLE "log_auth" (
     "id" bigserial,
     "user_id" bigint,
     "merchant_id" int,
-    "action" varchar(20),
+    "action" varchar(60),
     "url" text,
     "ip" varchar(20),
     "fingerprint" varchar(255),

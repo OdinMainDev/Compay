@@ -4,7 +4,7 @@ CREATE TABLE "payments" (
     "merchant_id" int,
     "merchant_wallet_id" bigint,
     "currency" varchar(20),
-    "status" varchar(20),
+    "status" varchar(60),
     "address" varchar(128),
     "amount" int,
     "amount_usd" int,
