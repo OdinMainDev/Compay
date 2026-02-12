@@ -6,6 +6,9 @@ import (
 	"compay/common/types"
 	"efw/components/entity"
 	"efw/core/efwamount"
+	"efw/core/efwlog"
+	"encoding/hex"
+	"fmt"
 	"time"
 
 	"github.com/btcsuite/btcd/btcjson"
@@ -178,6 +181,40 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		tx.AddTxOut(wire.NewTxOut(int64(change), changePkScript))
 	}
 
+	// === DEBUG: логируем все данные перед подписанием ===
+	efwlog.Log(fmt.Sprintf("[BTC_WITHDRAW_DEBUG] fromAddr=%s toAddr=%s amount=%d totalInput=%d fee=%d sendAmount=%d change=%d",
+		fromAddr.EncodeAddress(), toAddress, int64(amount), int64(totalInput), int64(finalFee), int64(finalSendAmount), int64(change)))
+	efwlog.Log(fmt.Sprintf("[BTC_WITHDRAW_DEBUG] pkScript(derived)=%x txVersion=%d numInputs=%d numOutputs=%d",
+		pkScript, tx.Version, len(tx.TxIn), len(tx.TxOut)))
+
+	for i, utxo := range selectedUTXOs {
+		// Получаем реальные данные UTXO из Bitcoin Core
+		utxoHash, _ := chainhash.NewHashFromStr(utxo.TxID)
+		realTxOut, getTxOutErr := client.GetTxOut(utxoHash, utxo.Vout, true)
+
+		if getTxOutErr != nil {
+			efwlog.LogError(fmt.Sprintf("[BTC_WITHDRAW_DEBUG] UTXO[%d] GetTxOut ERROR: %v", i, getTxOutErr))
+		} else if realTxOut == nil {
+			efwlog.LogError(fmt.Sprintf("[BTC_WITHDRAW_DEBUG] UTXO[%d] GetTxOut=nil (UTXO SPENT!) txid=%s vout=%d storedAmount=%d",
+				i, utxo.TxID, utxo.Vout, utxo.Amount))
+		} else {
+			realAmountBTC := realTxOut.Value
+			realAmountSat, _ := btcutil.NewAmount(realAmountBTC)
+			realScriptHex := realTxOut.ScriptPubKey.Hex
+			derivedScriptHex := hex.EncodeToString(pkScript)
+
+			amountMatch := int64(realAmountSat) == utxo.Amount
+			scriptMatch := realScriptHex == derivedScriptHex
+
+			efwlog.Log(fmt.Sprintf("[BTC_WITHDRAW_DEBUG] UTXO[%d] txid=%s vout=%d", i, utxo.TxID, utxo.Vout))
+			efwlog.Log(fmt.Sprintf("[BTC_WITHDRAW_DEBUG] UTXO[%d]   storedAmount=%d realAmount=%d match=%v", i, utxo.Amount, int64(realAmountSat), amountMatch))
+			efwlog.Log(fmt.Sprintf("[BTC_WITHDRAW_DEBUG] UTXO[%d]   derivedScript=%s", i, derivedScriptHex))
+			efwlog.Log(fmt.Sprintf("[BTC_WITHDRAW_DEBUG] UTXO[%d]   realScript   =%s match=%v", i, realScriptHex, scriptMatch))
+			efwlog.Log(fmt.Sprintf("[BTC_WITHDRAW_DEBUG] UTXO[%d]   scriptType=%s confirmations=%d", i, realTxOut.ScriptPubKey.Type, realTxOut.Confirmations))
+		}
+	}
+	// === END DEBUG ===
+
 	// Подписываем каждый вход
 	// pkScript — один и тот же для всех входов, т.к. все UTXO принадлежат одному P2WPKH адресу
 	for i, utxo := range selectedUTXOs {
@@ -205,9 +242,12 @@ func Withdraw(wifStr string, toAddress string, estimatedFeeBlockCount int64, amo
 		return nil, cperrors.ErrorBtcWithdrawFailedToSerializeTransaction(err.Error())
 	}
 
+	efwlog.Log(fmt.Sprintf("[BTC_WITHDRAW_DEBUG] rawTx=%x", buf.Bytes()))
+
 	// Отправляем транзакцию
 	txHash, err := client.SendRawTransaction(tx, false)
 	if err != nil {
+		efwlog.LogError(fmt.Sprintf("[BTC_WITHDRAW_DEBUG] SendRawTransaction FAILED: %v", err))
 		return nil, cperrors.ErrorBtcWithdrawFailedToSendTransaction(err.Error())
 	}
 
