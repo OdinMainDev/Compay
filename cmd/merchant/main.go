@@ -35,6 +35,7 @@ func main() {
 	}
 
 	startup.FillConfig()
+	startup.FillMerchantConfig()
 
 	efwapp.CreateApp(
 		"merchant",

@@ -171,6 +171,7 @@ func merchantAdminApiRoutes(group *gin.RouterGroup) {
 	getGroup.POST("/fee-types", controller.AdminApiFeeTypes)
 
 	actionGroup.POST("/clear-cache", controller.AdminApiClearCache)
+	actionGroup.POST("/init-merchant", controller.AdminApiInitMerchant)
 }
 
 func merchantAdminCurrenciesRoutes(group *gin.RouterGroup) {

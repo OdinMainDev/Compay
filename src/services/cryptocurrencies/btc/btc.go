@@ -22,7 +22,7 @@ func Start() error {
 		User:         config.BtcNodeUsername,
 		Pass:         config.BtcNodePassword,
 		HTTPPostMode: true,
-		DisableTLS:   true,
+		DisableTLS:   false,
 	}, nil)
 	if err != nil {
 		return err

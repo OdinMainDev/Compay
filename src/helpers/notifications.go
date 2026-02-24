@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"compay/common/constants"
+	"compay/common/config"
 	"efw/components/entity"
 	"efw/core/efwamount"
 	"efw/core/efwnotify"
@@ -28,7 +28,7 @@ func NotificationCreateInvoice(paymentId, merchantId int64, uuid, address string
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
-		chatId = constants.NotificationChatLogs
+		chatId = config.NotificationChatLogs
 	}
 
 	efwnotify.NotifyTelegram(text, chatId)
@@ -52,7 +52,7 @@ func NotificationDetectedTransaction(paymentId, merchantId int64, uuid, address 
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
-		chatId = constants.NotificationChatLogs
+		chatId = config.NotificationChatLogs
 	}
 	efwnotify.NotifyTelegram(text, chatId)
 }
@@ -76,7 +76,7 @@ func NotificationFundsReceived(paymentId, merchantId int64, uuid, address string
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
-		chatId = constants.NotificationChatLogs
+		chatId = config.NotificationChatLogs
 	}
 	efwnotify.NotifyTelegram(text, chatId)
 }
@@ -100,7 +100,7 @@ func NotificationCompletedInvoice(paymentId, merchantId int64, uuid, address str
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
-		chatId = constants.NotificationChatLogs
+		chatId = config.NotificationChatLogs
 	}
 	efwnotify.NotifyTelegram(text, chatId)
 }
@@ -122,7 +122,7 @@ func NotificationExpireInvoice(paymentId, merchantId int64, uuid, address string
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
-		chatId = constants.NotificationChatLogs
+		chatId = config.NotificationChatLogs
 	}
 	efwnotify.NotifyTelegram(text, chatId)
 }
@@ -146,18 +146,18 @@ func NotificationInsufficientFunds(paymentId, merchantId int64, uuid, address st
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
-		chatId = constants.NotificationChatLogs
+		chatId = config.NotificationChatLogs
 	}
 	efwnotify.NotifyTelegram(text, chatId)
 }
 
 // SYSTEM NOTIFICATIONS
 func NotificationDebug(text string) {
-	efwnotify.NotifyTelegram(text, constants.NotificationChatDebug)
+	fmt.Println(efwnotify.NotifyTelegram(text, config.NotificationChatDebug))
 }
 
 func NotificationError(text string) {
-	efwnotify.NotifyTelegram(text, constants.NotificationChatError)
+	efwnotify.NotifyTelegram(text, config.NotificationChatError)
 }
 
 func NotificationErrorProcesssingResponse(url, body string) {
@@ -165,5 +165,5 @@ func NotificationErrorProcesssingResponse(url, body string) {
 	text += "<b>Ссылка:</b> " + url + "\n\n"
 	text += "<pre>" + body + "</pre>"
 
-	efwnotify.NotifyTelegram(text, constants.NotificationChatError)
+	efwnotify.NotifyTelegram(text, config.NotificationChatError)
 }

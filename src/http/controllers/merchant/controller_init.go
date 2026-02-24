@@ -1,8 +1,7 @@
 package merchant
 
 import (
-	"compay/src/services/cconverter"
-	"compay/src/services/processing"
+	configApp "compay/common/config"
 	"compay/src/services/startup"
 	"efw/components/entity"
 	"efw/config"
@@ -31,7 +30,7 @@ func InitApp(context *gin.Context) {
 		return
 	}
 
-	if !signVerify("e73afba1-7a42-4a38-b32c-5f1b9a6b6b98", signData{input.Cryptiv, entity.CurrencyCodeAlpha(input.Cryptkey), input.Sign}) {
+	if !signVerify(configApp.AppInitKey, signData{input.Cryptiv, entity.CurrencyCodeAlpha(input.Cryptkey), input.Sign}) {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return
 	}
@@ -41,8 +40,6 @@ func InitApp(context *gin.Context) {
 	config.CrypSalt = input.CryptSalt
 	startup.StartMerchant()
 	startup.FillEfwAmount()
-	cconverter.Start()
-	processing.StartProcessing()
 
 	efwginhelpers.ResponseSuccess(context, nil)
 }
