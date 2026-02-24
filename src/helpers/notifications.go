@@ -153,7 +153,7 @@ func NotificationInsufficientFunds(paymentId, merchantId int64, uuid, address st
 
 // SYSTEM NOTIFICATIONS
 func NotificationDebug(text string) {
-	fmt.Println(efwnotify.NotifyTelegram(text, config.NotificationChatDebug))
+	efwnotify.NotifyTelegram(text, config.NotificationChatDebug)
 }
 
 func NotificationError(text string) {

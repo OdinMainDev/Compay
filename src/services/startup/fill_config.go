@@ -44,6 +44,7 @@ func FillConfig() {
 	config.BtcNodeUsername = os.Getenv("BTC_RPC_USERNAME")
 	config.BtcNodePassword = os.Getenv("BTC_RPC_PASSWORD")
 	config.BtcNetworkMainnet = os.Getenv("BTC_NETWORK_MAINNET") == "true"
+	config.BtcDisableTLS = os.Getenv("BTC_DISABLE_TLS") == "true"
 }
 
 func FillMerchantConfig() {

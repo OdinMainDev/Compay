@@ -6,4 +6,5 @@ var (
 	BtcNodeUsername   = ""
 	BtcNodePassword   = ""
 	BtcNetworkMainnet = true
+	BtcDisableTLS     = true
 )
