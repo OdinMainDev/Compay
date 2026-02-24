@@ -79,6 +79,7 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amo
 		paymentModel.Amount,
 		paymentModel.AmountUsd,
 		amount,
+		amountUsd,
 		string(txId),
 		0,
 	)
@@ -94,6 +95,7 @@ func (that *monitoring) afterSetPaymentReceived(paymentModel *payment.Model, amo
 				paymentModel.Amount,
 				paymentModel.AmountUsd,
 				amount,
+				amountUsd,
 				string(txId),
 				merchantModel.Settings.NotificationSettings.TelegramChatId,
 			)
@@ -200,6 +202,8 @@ func (that *monitoring) afterSetPaymentExpired(paymentModel *payment.Model) {
 		paymentModel.Currency,
 		paymentModel.Amount,
 		paymentModel.AmountUsd,
+		paymentModel.ReceivedAmount,
+		paymentModel.ReceivedAmountUsd,
 		0,
 	)
 
@@ -212,6 +216,8 @@ func (that *monitoring) afterSetPaymentExpired(paymentModel *payment.Model) {
 				paymentModel.Currency,
 				paymentModel.Amount,
 				paymentModel.AmountUsd,
+				paymentModel.ReceivedAmount,
+				paymentModel.ReceivedAmountUsd,
 				merchantModel.Settings.NotificationSettings.TelegramChatId,
 			)
 		}
