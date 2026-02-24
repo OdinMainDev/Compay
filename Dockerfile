@@ -22,4 +22,4 @@ RUN chmod +x /compay
 RUN touch .env
 RUN mkdir -p /storage/logs
 RUN mkdir -p /storage/uploads
-ENTRYPOINT ["/bin/sh", "-c", "logfile=\"/storage/logs/docker_$(date +%d_%m_%Y__%H_%M).log\" && exec /compay > \"$logfile\" 2>&1"]
+ENTRYPOINT ["/bin/sh", "-c", "mkdir -p /storage/logs; logfile=\"/storage/logs/docker_$(date +%d_%m_%Y__%H_%M).log\"; exec > \"$logfile\" 2>&1; exec /compay"]
