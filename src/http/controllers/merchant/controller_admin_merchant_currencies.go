@@ -22,14 +22,14 @@ type requetsAdminMerchantCurrencyProcess struct {
 	Id                types.MerchantCurrencyId `json:"id" binding:"required,gt=0"`
 	MerchantId        types.MerchantId         `json:"merchant_id" binding:"required,gt=0"`
 	MinAmount         float64                  `json:"min_amount" binding:"omitempty,min=0"`
-	MaxAmount         float64                  `json:"max_amount" binding:"required,gt=0"`
+	MaxAmount         float64                  `json:"max_amount" binding:"omitempty,min=0"`
 	Confirms          types.Confirmation       `json:"confirms" binding:"required,gt=0"`
 	InvoiceTime       int64                    `json:"invoice_time" binding:"required,gt=0"`
 	MinAmountWithdraw float64                  `json:"min_amount_withdraw" binding:"required,gt=0"`
 	MaxAmountWithdraw float64                  `json:"max_amount_withdraw" binding:"required,gt=0"`
 	FeeType           types.FeeType            `json:"fee_type" binding:"required,feeTypeExist"`
-	FeeFixed          float64                  `json:"fee_fixed" binding:"required,min=0"`
-	FeePercent        float64                  `json:"fee_percent" binding:"required,min=0,max=100"`
+	FeeFixed          float64                  `json:"fee_fixed" binding:"omitempty,min=0"`
+	FeePercent        float64                  `json:"fee_percent" binding:"omitempty,min=0,max=100"`
 }
 
 func AdminMerchantCurrenciesGet(context *gin.Context) {
