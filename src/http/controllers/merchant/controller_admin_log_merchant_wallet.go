@@ -49,6 +49,6 @@ func AdminLogMerchantWalletList(context *gin.Context) {
 			},
 		},
 		nil,
-		nil,
+		logmerchantwallet.DTO,
 	)
 }
