@@ -39,7 +39,13 @@ func main() {
 
 	efwapp.CreateApp(
 		"merchant",
-		[]func(){app.StartMerchant, app.StartMetrics},
-		[]func(){app.StopMerchant, app.StopMetrics},
+		[]func(){
+			app.StartMerchant,
+			// app.StartMetrics,
+		},
+		[]func(){
+			app.StopMerchant,
+			// app.StopMetrics,
+		},
 	)
 }
