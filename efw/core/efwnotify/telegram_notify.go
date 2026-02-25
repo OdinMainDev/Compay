@@ -3,6 +3,7 @@ package efwnotify
 import (
 	"bytes"
 	"efw/config"
+	"efw/core/efwlog"
 	"encoding/json"
 	"fmt"
 )
@@ -25,7 +26,12 @@ var ErrorTelegramSendMessageResponse = func(err string) error {
 	return fmt.Errorf("%s %s", "[EFW: NOTIFY] TelegramSendMessage:", err)
 }
 
-func NotifyTelegram(message string, args ...int64) error {
+func NotifyTelegram(message string, args ...int64) (rE error) {
+	defer func() {
+		if rE != nil {
+			efwlog.LogNotificationsTelegramError(rE.Error(), message, fmt.Sprint(args))
+		}
+	}()
 	chatId := config.NotifyTelegramChatId
 	if len(args) == 1 && args[0] != 0 {
 		chatId = args[0]

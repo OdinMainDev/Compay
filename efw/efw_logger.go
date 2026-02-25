@@ -36,4 +36,5 @@ func (that *eframework) initBasicsLoggers() {
 	efwlog.NewEfwLog("gorm_warn").SaveLogger()
 	efwlog.NewEfwLog("gin").SaveLogger()
 	efwlog.NewEfwLog("gin_error").SaveLogger()
+	efwlog.NewEfwLog("notifications_telegram_error").SaveLogger()
 }

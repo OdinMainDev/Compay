@@ -24,3 +24,7 @@ func LogWarning(args ...any) {
 func LogDebug(args ...any) {
 	LogByLoggerName("debug", 1, args...)
 }
+
+func LogNotificationsTelegramError(args ...any) {
+	LogByLoggerName("notifications_telegram_error", 1, args...)
+}
