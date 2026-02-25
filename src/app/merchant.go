@@ -6,6 +6,7 @@ import (
 	"efw/core/efwgin"
 	efwmiddleware "efw/core/efwgin/efw_middleware"
 	"efw/core/efwlog"
+	"errors"
 	"net/http"
 
 	controller "compay/src/http/controllers/merchant"
@@ -80,7 +81,7 @@ func StartMerchant() {
 	/* --------------- V1 ROUTES --------------- */
 	merchantServer = &http.Server{Addr: ":" + config.AppPort, Handler: router.Handler()}
 	go func() {
-		if err := merchantServer.ListenAndServe(); err != nil {
+		if err := merchantServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			efwlog.LogError("Merchant server started with error: ", err.Error())
 		}
 	}()

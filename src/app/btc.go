@@ -4,6 +4,7 @@ import (
 	"context"
 	"efw/core/efwgin"
 	"efw/core/efwlog"
+	"errors"
 	"net/http"
 
 	"compay/common/config"
@@ -29,7 +30,7 @@ func StartBtc() {
 
 	btcServer = &http.Server{Addr: ":" + config.AppPort, Handler: router.Handler()}
 	go func() {
-		if err := btcServer.ListenAndServe(); err != nil {
+		if err := btcServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			efwlog.LogError("Btc server started with error: ", err.Error())
 		}
 	}()

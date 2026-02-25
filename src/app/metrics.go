@@ -4,6 +4,7 @@ import (
 	"context"
 	"efw/core/efwgin"
 	"efw/core/efwlog"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +20,7 @@ func StartMetrics() {
 
 	metricsServer = &http.Server{Addr: ":10666", Handler: router.Handler()}
 	go func() {
-		if err := metricsServer.ListenAndServe(); err != nil {
+		if err := metricsServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			efwlog.LogError("Metrics server started with error: ", err.Error())
 		}
 	}()

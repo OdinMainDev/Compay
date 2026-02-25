@@ -6,6 +6,7 @@ import (
 	"context"
 	"efw/core/efwgin"
 	"efw/core/efwlog"
+	"errors"
 	"net/http"
 
 	controller "compay/src/http/controllers/rates"
@@ -22,7 +23,7 @@ func StartRates() {
 
 	ratesServer = &http.Server{Addr: ":" + config.AppPort, Handler: router.Handler()}
 	go func() {
-		if err := ratesServer.ListenAndServe(); err != nil {
+		if err := ratesServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			efwlog.LogError("Rates server started with error: ", err.Error())
 		}
 	}()

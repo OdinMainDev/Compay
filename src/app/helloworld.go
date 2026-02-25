@@ -4,6 +4,7 @@ import (
 	"context"
 	"efw/core/efwgin"
 	"efw/core/efwlog"
+	"errors"
 	"net/http"
 
 	"compay/common/config"
@@ -20,7 +21,7 @@ func StartHelloWorld() {
 
 	helloworldServer = &http.Server{Addr: ":" + config.AppPort, Handler: router.Handler()}
 	go func() {
-		if err := helloworldServer.ListenAndServe(); err != nil {
+		if err := helloworldServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			efwlog.LogError("HelloWorld server started with error: ", err.Error())
 		}
 	}()
