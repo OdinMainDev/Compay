@@ -51,6 +51,7 @@ func StartMerchant() {
 	merchantAdminPaymentsRoutes(adminRoutes)
 	merchantAdminMerchantWithdrawsRoutes(adminRoutes)
 	merchantAdminMerchantWalletsRoutes(adminRoutes)
+	merchantAdminBlockchainStatesRoutes(adminRoutes)
 
 	merchantAdminApiRoutes(adminRoutes)
 
@@ -210,6 +211,15 @@ func merchantAdminMerchantWalletsRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/action/get-private", controller.AdminMerchantActionGetPrivateKey)
 	subGroup.POST("/action/get-public", controller.AdminMerchantActionGetPublicKey)
 	subGroup.POST("/action/get-public-full", controller.AdminMerchantActionGetPublicKeyFull)
+}
+
+func merchantAdminBlockchainStatesRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/dev/blockchain-states")
+
+	subGroup.POST("/list", controller.AdminBlockchainStatesList)
+	subGroup.POST("/list/filters", controller.AdminBlockchainStatesListFilters)
+	subGroup.POST("/get/:id", controller.AdminBlockchainStatesGet)
+	subGroup.POST("/process", controller.AdminBlockchainStatesProcess)
 }
 
 func merchantAdminLogAuthRoutes(group *gin.RouterGroup) {

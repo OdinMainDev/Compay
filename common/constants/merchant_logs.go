@@ -47,6 +47,9 @@ const (
 	LogUserAdminMerchantWalletGetPublicKey     types.LogUserAction = "AdminMerchantWalletGetPublicKey"
 	LogUserAdminMerchantWalletGetPublicKeyFull types.LogUserAction = "AdminMerchantWalletGetPublicKeyFull"
 
+	// DEV ACTIONS
+	LogUserAdminBlockchainStateProcess types.LogUserAction = "AdminBlockchainStateProcess"
+
 	// MERCHANT
 	// MERCHANT SETTINGS
 	LogUserMerchantSettingsProcess        types.LogUserAction = "MerchantSettingsProcess"
