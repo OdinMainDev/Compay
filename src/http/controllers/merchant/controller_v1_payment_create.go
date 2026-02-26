@@ -21,6 +21,11 @@ type requestV1PaymentCreate struct {
 }
 
 func V1PaymentCreate(context *gin.Context) {
+	if !isMerchantStarted() {
+		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorApiV1Maintenance))
+		return
+	}
+
 	var input requestV1PaymentCreate
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
 		return

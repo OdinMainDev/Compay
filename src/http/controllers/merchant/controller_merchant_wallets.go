@@ -2,6 +2,7 @@ package merchant
 
 import (
 	"compay/common/constants"
+	"compay/common/cperrors"
 	"compay/common/types"
 	"compay/src/models/currency"
 	"compay/src/models/merchant"
@@ -103,6 +104,11 @@ func MerchantWalletsGet(context *gin.Context) {
 }
 
 func MerchantWalletsActionWithdraw(context *gin.Context) {
+	if !isMerchantStarted() {
+		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorApiV1Maintenance))
+		return
+	}
+
 	var input requestMerchantWalletsActionWithdraw
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
 		return
