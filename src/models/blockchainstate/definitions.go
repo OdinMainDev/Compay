@@ -11,4 +11,5 @@ var (
 	GetModel  = model.GetModel[*Model, QueryHelper]
 	GetModels = model.GetModels[*Model, QueryHelper]
 	Save      = model.Save[*Model, QueryHelper]
+	Delete    = model.Delete[*Model, QueryHelper]
 )

@@ -49,6 +49,7 @@ const (
 
 	// DEV ACTIONS
 	LogUserAdminBlockchainStateProcess types.LogUserAction = "AdminBlockchainStateProcess"
+	LogUserAdminBlockchainStateDelete  types.LogUserAction = "AdminBlockchainStateDelete"
 
 	// MERCHANT
 	// MERCHANT SETTINGS

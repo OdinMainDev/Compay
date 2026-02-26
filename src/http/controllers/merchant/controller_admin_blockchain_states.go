@@ -76,6 +76,11 @@ func AdminBlockchainStatesProcess(context *gin.Context) {
 		return
 	}
 
+	if isMerchantStarted() {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
 	var input requestAdminBlockchainStatesProcess
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
 		return
@@ -94,4 +99,30 @@ func AdminBlockchainStatesProcess(context *gin.Context) {
 
 	createLogUser(context, adminUserModel, constants.LogUserAdminBlockchainStateProcess)
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": blockchainStateModel})
+}
+
+func AdminBlockchainStatesDelete(context *gin.Context) {
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if !isUserRootAdmin(adminUserModel.GetId()) {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	if isMerchantStarted() {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	_, ok := efwcontroller.DeleteModel(
+		context,
+		blockchainstate.GetModel,
+		blockchainstate.Delete,
+		func(id int64) blockchainstate.QueryHelper {
+			qH := blockchainstate.QueryHelper{Id: types.BlockchainStateId(id)}
+			return qH
+		},
+	)
+	if ok {
+		createLogUser(context, adminUserModel, constants.LogUserAdminBlockchainStateDelete)
+	}
 }

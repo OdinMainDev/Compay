@@ -220,6 +220,7 @@ func merchantAdminBlockchainStatesRoutes(group *gin.RouterGroup) {
 	subGroup.POST("/list/filters", controller.AdminBlockchainStatesListFilters)
 	subGroup.POST("/get/:id", controller.AdminBlockchainStatesGet)
 	subGroup.POST("/process", controller.AdminBlockchainStatesProcess)
+	subGroup.POST("/delete", controller.AdminBlockchainStatesDelete)
 }
 
 func merchantAdminLogAuthRoutes(group *gin.RouterGroup) {
