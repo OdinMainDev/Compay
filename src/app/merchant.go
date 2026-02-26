@@ -72,6 +72,7 @@ func StartMerchant() {
 	merchantMerchantRoutes(merchantRoutes)
 	merchantMerchantWalletRoutes(merchantRoutes)
 	merchantMerchantWithdrawsRoutes(merchantRoutes)
+	merchantMerchantCurrenciesRoutes(merchantRoutes)
 
 	/* --------------- MERCHANT ROUTES --------------- */
 
@@ -274,6 +275,12 @@ func merchantMerchantWithdrawsRoutes(group *gin.RouterGroup) {
 
 	subGroup.POST("/list", controller.MerchantWithdrawsList)
 	subGroup.POST("/list/filters", controller.MerchantWithdrawsListFilters)
+}
+
+func merchantMerchantCurrenciesRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/currencies")
+
+	subGroup.POST("/search", controller.AdminCurrenciesSearch)
 }
 
 // PUBLIC API
