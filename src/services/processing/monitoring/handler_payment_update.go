@@ -13,16 +13,17 @@ import (
 )
 
 // Ставим статус заявки "Обнаружен платеж"
-func (that *monitoring) doSetPaymentDetected(paymentId types.PaymentId, txId types.PaymentTxId) {
+func (that *monitoring) doSetPaymentDetected(paymentId types.PaymentId, txId types.PaymentTxId, amount entity.Amount) {
 	paymentModel := payment.GetModel(payment.QueryHelper{Id: paymentId, DontCheckMerchantId: true})
 	if paymentModel.Status == constants.PaymentStatusCreated {
 		payment.UpdateStatus(paymentId, constants.PaymentStatusFundsDetected)
 	}
 
-	go that.afterSetPaymentDetected(paymentModel, txId)
+	go that.afterSetPaymentDetected(paymentModel, txId, amount)
 }
 
-func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txId types.PaymentTxId) {
+func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txId types.PaymentTxId, amount entity.Amount) {
+	amountUsd := cconverter.Convert(amount, paymentModel.Currency)
 	helpers.NotificationDetectedTransaction(paymentModel.GetIdInt64(),
 		int64(paymentModel.MerchantId),
 		paymentModel.TrxId,
@@ -30,6 +31,8 @@ func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txI
 		paymentModel.Currency,
 		paymentModel.Amount,
 		paymentModel.AmountUsd,
+		amount,
+		amountUsd,
 		string(txId),
 		0,
 	)
@@ -44,6 +47,8 @@ func (that *monitoring) afterSetPaymentDetected(paymentModel *payment.Model, txI
 				paymentModel.Currency,
 				paymentModel.Amount,
 				paymentModel.AmountUsd,
+				amount,
+				amountUsd,
 				string(txId),
 				merchantModel.Settings.NotificationSettings.TelegramChatId,
 			)

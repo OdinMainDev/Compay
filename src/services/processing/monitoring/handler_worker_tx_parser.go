@@ -39,7 +39,7 @@ func (that *monitoring) processTxParse(data txParserJob) {
 
 	// если у платежа статус транзакции "Создана" то тогда обновляем и отправляем уведомление
 	if data.PaymentModel.Status == constants.PaymentStatusCreated {
-		that.doSetPaymentDetected(data.PaymentModel.GetId(), data.TxData.TxId)
+		that.doSetPaymentDetected(data.PaymentModel.GetId(), data.TxData.TxId, data.TxData.Amount)
 	}
 
 	logTransactionModel = &logtransaction.Model{}

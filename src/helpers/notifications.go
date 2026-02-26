@@ -35,9 +35,9 @@ func NotificationCreateInvoice(paymentId, merchantId int64, uuid, address string
 		chatId = config.NotificationChatLogs
 	}
 
-	fmt.Println(efwnotify.NotifyTelegram(text, chatId))
+	efwnotify.NotifyTelegram(text, chatId)
 }
-func NotificationDetectedTransaction(paymentId, merchantId int64, uuid, address string, codeAlpha entity.CurrencyCodeAlpha, amount, amountUsd entity.Amount, txId string, chatId int64) {
+func NotificationDetectedTransaction(paymentId, merchantId int64, uuid, address string, codeAlpha entity.CurrencyCodeAlpha, amount, amountUsd, receivedAmount, receivedAmountUsd entity.Amount, txId string, chatId int64) {
 	invoiceType := "Фиксированная сумма"
 	if amount == 0 {
 		invoiceType = "Произвольная сумма"
@@ -57,6 +57,10 @@ func NotificationDetectedTransaction(paymentId, merchantId int64, uuid, address 
 		text += "<b>Сумма:</b> <code>" + amountFormatted
 		text += " (" + amountUsdFormatted + " $)</code>\n"
 	}
+	receivedAmountFormatted := strconv.FormatFloat(efwamount.ToFloatByCodeAlpha(receivedAmount, codeAlpha), 'f', -1, 64)
+	receivedAmountUsdFormatted := strconv.FormatFloat(efwamount.ToFloat(receivedAmountUsd, 2), 'f', -1, 64)
+	text += "<b>Полученная сумма:</b> <code>" + receivedAmountFormatted
+	text += " (" + receivedAmountUsdFormatted + " $)</code>\n"
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
