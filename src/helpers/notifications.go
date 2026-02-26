@@ -225,9 +225,9 @@ func NotificationWithdrawError(withdrawId, merchantId int64, uuid, address strin
 	text += "<b>Сумма:</b> <code>" + strconv.FormatFloat(efwamount.ToFloatByCodeAlpha(amount, codeAlpha), 'f', -1, 64)
 	text += " (" + strconv.FormatFloat(efwamount.ToFloat(amountUsd, 2), 'f', -1, 64) + " $)</code>\n"
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n\n"
-	text += "<b>ОШИБКА:</b> <pre>" + err + "</pre>\n"
 
 	if chatId == 0 {
+		text += "<b>ОШИБКА:</b> <pre>" + err + "</pre>\n"
 		chatId = config.NotificationChatWithdraws
 	}
 	efwnotify.NotifyTelegram(text, chatId)
