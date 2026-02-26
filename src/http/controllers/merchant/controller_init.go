@@ -2,6 +2,7 @@ package merchant
 
 import (
 	configApp "compay/common/config"
+	"compay/src/services/cconverter"
 	"compay/src/services/startup"
 	"efw/components/entity"
 	"efw/config"
@@ -40,6 +41,7 @@ func InitApp(context *gin.Context) {
 	config.CrypSalt = input.CryptSalt
 	startup.StartMerchant()
 	startup.FillEfwAmount()
+	cconverter.Start()
 
 	efwginhelpers.ResponseSuccess(context, nil)
 }

@@ -3,7 +3,6 @@ package merchant
 import (
 	"compay/common/constants"
 	"compay/src/models/user"
-	"compay/src/services/cconverter"
 	"compay/src/services/processing"
 	"efw/core/efwcache"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
@@ -27,7 +26,7 @@ func AdminApiClearCache(context *gin.Context) {
 	efwginhelpers.ResponseSuccess(context, nil)
 }
 
-func AdminApiInitMerchant(context *gin.Context) {
+func AdminApiStartMerchant(context *gin.Context) {
 	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
 	if !isUserRootAdmin(adminUserModel.GetId()) {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
@@ -41,8 +40,26 @@ func AdminApiInitMerchant(context *gin.Context) {
 		return
 	}
 
-	cconverter.Start()
 	processing.StartProcessing()
 	startMerchantIsStarted = true
+	efwginhelpers.ResponseSuccess(context, nil)
+}
+
+func AdminApiStopMerchant(context *gin.Context) {
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if !isUserRootAdmin(adminUserModel.GetId()) {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	startMerchantMu.Lock()
+	defer startMerchantMu.Unlock()
+	if !startMerchantIsStarted {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
+	processing.StopProcessing()
+	startMerchantIsStarted = false
 	efwginhelpers.ResponseSuccess(context, nil)
 }
