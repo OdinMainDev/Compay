@@ -24,7 +24,7 @@ func ResponseError(context *gin.Context, err any, httpStatus ...int) {
 	}
 
 	if respStatus == http.StatusNotFound {
-		context.JSON(respStatus, gin.H{"status": respStatus, "success": false})
+		context.String(404, "404 page not found")
 		return
 	}
 
