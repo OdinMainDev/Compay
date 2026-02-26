@@ -61,6 +61,7 @@ func StartMerchant() {
 	merchantAdminLogUserRoutes(logGroup)
 	merchantAdminLogTransactionRoutes(logGroup)
 	merchantAdminLogMerchantWalletRoutes(logGroup)
+	merchantAdminLogReaderRoutes(logGroup)
 	/* --------------- ADMIN ROUTES --------------- */
 
 	/* --------------- PANEL ROUTES --------------- */
@@ -248,6 +249,13 @@ func merchantAdminLogMerchantWalletRoutes(group *gin.RouterGroup) {
 	subGroup := group.Group("/merchant-wallet")
 
 	subGroup.POST("/list/:id", controller.AdminLogMerchantWalletList)
+}
+
+func merchantAdminLogReaderRoutes(group *gin.RouterGroup) {
+	subGroup := group.Group("/reader")
+
+	subGroup.POST("/list", controller.AdminLogReaderList)
+	subGroup.POST("/tail", controller.AdminLogReaderTail)
 }
 
 // MERCHANT ROUTES
