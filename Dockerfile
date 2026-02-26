@@ -18,8 +18,9 @@ FROM debian:stable-slim
 
 RUN apt-get update && apt-get install -y ca-certificates curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /compay /compay
-RUN chmod +x /compay
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /compay /entrypoint.sh
 RUN touch .env
 RUN mkdir -p /storage/logs
 RUN mkdir -p /storage/uploads
-ENTRYPOINT ["/bin/sh", "-c", "mkdir -p /storage/logs; logfile=\"/storage/logs/docker_$(date +%d_%m_%Y__%H_%M).log\"; exec > \"$logfile\" 2>&1; exec /compay"]
+ENTRYPOINT ["/entrypoint.sh"]
