@@ -28,6 +28,7 @@ type NotificationSettings struct {
 	DisableCompletedInvoice    bool  `json:"disable_completed_invoice"`
 	DisableExpireInvoice       bool  `json:"disable_expire_invoice"`
 	DisableInsufficientFunds   bool  `json:"disable_insufficient_funds"`
+	DisableWithdraws           bool  `json:"disable_withdraws"`
 }
 
 func (*Entity) TableName() string                  { return "merchants" }

@@ -4,7 +4,6 @@ import (
 	"compay/common/constants"
 	"compay/common/cperrors"
 	"compay/common/types"
-	"compay/src/helpers"
 	"compay/src/models/merchant"
 	"compay/src/models/merchantwallet"
 	"compay/src/models/payment"
@@ -94,30 +93,5 @@ func (that *Processing) StartPayment(amountFloat float64) (*payment.Model, error
 
 func asyncStartPayment(paymentModel *payment.Model, merchantModel *merchant.Model) {
 	monitoring.AddPayment(paymentModel)
-	helpers.NotificationCreateInvoice(
-		paymentModel.GetIdInt64(),
-		int64(paymentModel.MerchantId),
-		paymentModel.TrxId,
-		string(paymentModel.Address),
-		paymentModel.Currency,
-		paymentModel.Amount,
-		paymentModel.AmountUsd,
-		0,
-	)
-
-	// сделать логи сюды
-	if !merchantModel.Settings.NotificationSettings.DisableCreateInvoice {
-		if merchantModel.Settings.NotificationSettings.TelegramChatId != 0 {
-			helpers.NotificationCreateInvoice(
-				paymentModel.GetIdInt64(),
-				int64(paymentModel.MerchantId),
-				paymentModel.TrxId,
-				string(paymentModel.Address),
-				paymentModel.Currency,
-				paymentModel.Amount,
-				paymentModel.AmountUsd,
-				merchantModel.Settings.NotificationSettings.TelegramChatId,
-			)
-		}
-	}
+	notifyCreatePayment(paymentModel, merchantModel)
 }

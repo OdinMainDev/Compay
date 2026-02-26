@@ -29,9 +29,9 @@ type requestMerchantWalletsList struct {
 }
 
 type requestMerchantWalletsActionWithdraw struct {
-	Id      types.MerchantWalletId `json:"id" binding:"required,gt=0"`
-	Address types.PaymentAddress   `json:"address" binding:"required,max=128"`
-	Amount  float64                `json:"amount" binding:"required,gt=0"`
+	Id      string               `json:"id" binding:"required,gt=0"`
+	Address types.PaymentAddress `json:"address" binding:"required,max=128"`
+	Amount  float64              `json:"amount" binding:"required,gt=0"`
 }
 
 func MerchantWalletsList(context *gin.Context) {
@@ -118,8 +118,8 @@ func MerchantWalletsActionWithdraw(context *gin.Context) {
 	userModel := context.MustGet(constants.GinUser).(*user.Model)
 
 	merchantWalletModel := merchantwallet.GetModel(merchantwallet.QueryHelper{
-		Id:         types.MerchantWalletId(input.Id),
-		MerchantId: userModel.MerchantId,
+		PaymentTrxId: input.Id,
+		MerchantId:   userModel.MerchantId,
 	})
 	if merchantWalletModel == nil {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
@@ -131,7 +131,7 @@ func MerchantWalletsActionWithdraw(context *gin.Context) {
 	})
 
 	handler := processing.NewService(merchantModel, currencyModel)
-	err := handler.StartWithdraw(processing.WithdrawData{
+	_, err := handler.StartWithdraw(processing.WithdrawData{
 		Address:        input.Address,
 		Amount:         input.Amount,
 		MerchantWallet: merchantWalletModel,

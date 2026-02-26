@@ -180,14 +180,55 @@ func NotificationInsufficientFunds(paymentId, merchantId int64, uuid, address st
 	}
 	text += "<b>Тип инвойса:</b> <code>" + invoiceType + "</code>\n"
 	text += "<b>Валюта:</b> <code>" + string(codeAlpha) + "</code>\n"
-	text += "<b>Сумма:</b> <code>" + strconv.FormatFloat(efwamount.ToFloatByCodeAlpha(amount, codeAlpha), 'f', -1, 64) + "</code>\n"
-	text += "<b>Сумма в $:</b> <code>" + strconv.FormatFloat(efwamount.ToFloat(amountUsd, 2), 'f', -1, 64) + "</code>\n"
+	text += "<b>Сумма:</b> <code>" + strconv.FormatFloat(efwamount.ToFloatByCodeAlpha(amount, codeAlpha), 'f', -1, 64)
+	text += " (" + strconv.FormatFloat(efwamount.ToFloat(amountUsd, 2), 'f', -1, 64) + " $)</code>\n"
 	text += "<b>Полученная сумма:</b> <code>" + strconv.FormatFloat(efwamount.ToFloatByCodeAlpha(receivedAmount, codeAlpha), 'f', -1, 64) + "</code>\n"
 	text += "<b>Полученная сумма в $:</b> <code>" + strconv.FormatFloat(efwamount.ToFloat(receivedAmountUsd, 2), 'f', -1, 64) + "</code>\n"
 	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
 
 	if chatId == 0 {
 		chatId = config.NotificationChatLogs
+	}
+	efwnotify.NotifyTelegram(text, chatId)
+}
+
+// WITHDRAW NOTIFICATIONS
+func NotificationWithdrawStatus(withdrawId, merchantId int64, uuid, address string, codeAlpha entity.CurrencyCodeAlpha, amount, amountUsd entity.Amount, isSuccess bool, chatId int64) {
+	text := "<b>💸🆕 Новая выплата 🆕💸</b>\n\n"
+	if isSuccess {
+		text = "<b>💸✅ Завершена выплата ✅💸</b>\n\n"
+	}
+
+	text += "<b>Id:</b> <code>" + uuid + "</code>\n"
+	if chatId == 0 {
+		text += "<b>Id системный:</b> <code>" + fmt.Sprint(withdrawId) + "</code>\n"
+		text += "<b>Id мерчанта:</b> <code>" + fmt.Sprint(merchantId) + "</code>\n"
+	}
+	text += "<b>Валюта:</b> <code>" + string(codeAlpha) + "</code>\n"
+	text += "<b>Сумма:</b> <code>" + strconv.FormatFloat(efwamount.ToFloatByCodeAlpha(amount, codeAlpha), 'f', -1, 64)
+	text += " (" + strconv.FormatFloat(efwamount.ToFloat(amountUsd, 2), 'f', -1, 64) + " $)</code>\n"
+	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n"
+
+	if chatId == 0 {
+		chatId = config.NotificationChatWithdraws
+	}
+	efwnotify.NotifyTelegram(text, chatId)
+}
+func NotificationWithdrawError(withdrawId, merchantId int64, uuid, address string, codeAlpha entity.CurrencyCodeAlpha, amount, amountUsd entity.Amount, err string, chatId int64) {
+	text := "<b>💸❌ Выплата завершена ошибкой ❌💸</b>\n\n"
+	text += "<b>Id:</b> <code>" + uuid + "</code>\n"
+	if chatId == 0 {
+		text += "<b>Id системный:</b> <code>" + fmt.Sprint(withdrawId) + "</code>\n"
+		text += "<b>Id мерчанта:</b> <code>" + fmt.Sprint(merchantId) + "</code>\n"
+	}
+	text += "<b>Валюта:</b> <code>" + string(codeAlpha) + "</code>\n"
+	text += "<b>Сумма:</b> <code>" + strconv.FormatFloat(efwamount.ToFloatByCodeAlpha(amount, codeAlpha), 'f', -1, 64)
+	text += " (" + strconv.FormatFloat(efwamount.ToFloat(amountUsd, 2), 'f', -1, 64) + " $)</code>\n"
+	text += "<b>Адрес поступления средств:</b> <code>" + address + "</code>\n\n"
+	text += "<b>ОШИБКА:</b> <pre>" + err + "</pre>\n"
+
+	if chatId == 0 {
+		chatId = config.NotificationChatWithdraws
 	}
 	efwnotify.NotifyTelegram(text, chatId)
 }

@@ -34,16 +34,16 @@ type responseWithdraw struct {
 
 var mutexWithdraws sync.Mutex
 
-func (that *Processing) StartWithdraw(data WithdrawData) error {
+func (that *Processing) StartWithdraw(data WithdrawData) (*withdraw.Model, error) {
 	amount := efwamount.ToAmount(data.Amount, that.getCurrency().MinorUnits)
 	if amount < that.getMerchantCurrency().MinAmountWithdraw {
-		return cperrors.ErrorProcessingWithdrawAmountLessThanMinimal
+		return nil, cperrors.ErrorProcessingWithdrawAmountLessThanMinimal
 	}
 	if that.getMerchantCurrency().MaxAmountWithdraw != 0 && amount > that.getMerchantCurrency().MaxAmountWithdraw {
-		return cperrors.ErrorProcessingWithdrawAmountGreaterThanMaximum
+		return nil, cperrors.ErrorProcessingWithdrawAmountGreaterThanMaximum
 	}
 	if amount > data.MerchantWallet.Amount {
-		return cperrors.ErrorProcessingWithdrawInsufficientFunds
+		return nil, cperrors.ErrorProcessingWithdrawInsufficientFunds
 	}
 
 	mutexWithdraws.Lock()
@@ -55,7 +55,7 @@ func (that *Processing) StartWithdraw(data WithdrawData) error {
 	})
 	if withdrawModel != nil {
 		mutexWithdraws.Unlock()
-		return cperrors.ErrorProcessingWithdrawHasUncompletedWithdraw
+		return nil, cperrors.ErrorProcessingWithdrawHasUncompletedWithdraw
 	}
 	withdrawModel = &withdraw.Model{}
 	withdrawModel.TrxId = uuid.NewString()
@@ -70,8 +70,9 @@ func (that *Processing) StartWithdraw(data WithdrawData) error {
 
 	mutexWithdraws.Unlock()
 
+	notifyWithdrawStatus(withdrawModel, that.getMerchant(), false)
 	go that.asyncStartWithdraw(data, withdrawModel, amount)
-	return nil
+	return withdrawModel, nil
 }
 
 func (that *Processing) asyncStartWithdraw(data WithdrawData, withdrawModel *withdraw.Model, amount entity.Amount) (rE error) {
@@ -80,6 +81,10 @@ func (that *Processing) asyncStartWithdraw(data WithdrawData, withdrawModel *wit
 			withdrawModel.Error = rE.Error()
 			withdrawModel.IsComplete = true
 			withdraw.Save(withdrawModel, withdraw.QueryHelper{})
+
+			notifyCreateWithdrawError(withdrawModel, that.getMerchant(), rE.Error())
+		} else {
+			notifyWithdrawStatus(withdrawModel, that.getMerchant(), true)
 		}
 	}()
 	logTransactionModels := logtransaction.GetModels(logtransaction.QueryHelper{MerchantWalletId: data.MerchantWallet.GetId(), IsComplete: true, IsUnSpent: true})
