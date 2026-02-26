@@ -26,7 +26,7 @@ type requetsAdminMerchantCurrencyProcess struct {
 	Confirms               types.Confirmation       `json:"confirms" binding:"required,gt=0"`
 	InvoiceTime            int64                    `json:"invoice_time" binding:"required,gt=0"`
 	MinAmountWithdraw      float64                  `json:"min_amount_withdraw" binding:"required,gt=0"`
-	MaxAmountWithdraw      float64                  `json:"max_amount_withdraw" binding:"required,gt=0"`
+	MaxAmountWithdraw      float64                  `json:"max_amount_withdraw" binding:"omitempty,min=0"`
 	EstimatedFeeBlockCount int64                    `json:"estimated_fee_block_count" binding:"required,gt=0"`
 	FeeType                types.FeeType            `json:"fee_type" binding:"required,feeTypeExist"`
 	FeeFixed               float64                  `json:"fee_fixed" binding:"omitempty,min=0"`

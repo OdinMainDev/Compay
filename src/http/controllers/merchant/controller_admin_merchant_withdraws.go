@@ -25,7 +25,7 @@ func AdminMerchantWithdrawsGetAll(context *gin.Context) {
 				for _, merchantModel := range merchantModels {
 					merchantIds = append(merchantIds, merchantModel.GetId())
 				}
-				if len(merchantIds) != 0 {
+				if len(merchantIds) == 0 {
 					merchantIds = append(merchantIds, 0)
 				}
 				qH.MerchantIds = merchantIds

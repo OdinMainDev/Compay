@@ -4,11 +4,14 @@ import (
 	"compay/common/constants"
 	"compay/common/types"
 	"compay/src/models/logauth"
+	"compay/src/models/merchant"
+	"compay/src/models/user"
 	"efw/components/entity"
 	"efw/services/efwcontroller"
 	"efw/services/efwdt"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type requestAdminLogAuthList struct {
@@ -24,10 +27,29 @@ type requestAdminLogAuthList struct {
 }
 
 func AdminLogAuthList(context *gin.Context) {
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	merchantIds := []types.MerchantId{}
+	if !isUserRootAdmin(adminUserModel.GetId()) {
+		merchantModels := merchant.GetModels(merchant.QueryHelper{CreatorId: adminUserModel.GetId()})
+		for _, merchantModel := range merchantModels {
+			merchantIds = append(merchantIds, merchantModel.GetId())
+		}
+		if len(merchantIds) == 0 {
+			merchantIds = append(merchantIds, 0)
+		}
+	}
+
 	efwcontroller.Datable[logauth.Model, requestAdminLogAuthList](
 		context,
 		[]string{"id", "user_id", "merchant_id", "action", "url", "fingerprint", "ip", "user_agent", "created_at"},
-		nil,
+		[]efwdt.ChainFilter[*logauth.Model]{
+			func(chain gorm.ChainInterface[*logauth.Model]) gorm.ChainInterface[*logauth.Model] {
+				if len(merchantIds) != 0 {
+					return chain.Where("merchant_id IN (?)", merchantIds)
+				}
+				return chain
+			},
+		},
 		nil,
 		nil,
 	)

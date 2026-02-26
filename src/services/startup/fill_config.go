@@ -3,7 +3,6 @@ package startup
 import (
 	"compay/common/config"
 	"compay/src/helpers"
-	"fmt"
 	"os"
 	"strconv"
 
@@ -49,7 +48,6 @@ func FillConfig() {
 
 func FillMerchantConfig() {
 	config.AppInitKey = uuid.NewString()
-	fmt.Println("TEST SUCC")
 
 	helpers.NotificationDebug("<code>" + config.AppInitKey + "</code>")
 }

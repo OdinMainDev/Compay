@@ -39,7 +39,7 @@ func (that *Processing) StartWithdraw(data WithdrawData) error {
 	if amount < that.getMerchantCurrency().MinAmountWithdraw {
 		return cperrors.ErrorProcessingWithdrawAmountLessThanMinimal
 	}
-	if amount > that.getMerchantCurrency().MaxAmountWithdraw {
+	if that.getMerchantCurrency().MaxAmountWithdraw != 0 && amount > that.getMerchantCurrency().MaxAmountWithdraw {
 		return cperrors.ErrorProcessingWithdrawAmountGreaterThanMaximum
 	}
 	if amount > data.MerchantWallet.Amount {

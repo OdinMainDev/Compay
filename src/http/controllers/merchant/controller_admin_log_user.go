@@ -4,11 +4,14 @@ import (
 	"compay/common/constants"
 	"compay/common/types"
 	"compay/src/models/loguser"
+	"compay/src/models/merchant"
+	"compay/src/models/user"
 	"efw/components/entity"
 	"efw/services/efwcontroller"
 	"efw/services/efwdt"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type requestAdminLogUserList struct {
@@ -21,10 +24,29 @@ type requestAdminLogUserList struct {
 }
 
 func AdminLogUserList(context *gin.Context) {
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	merchantIds := []types.MerchantId{}
+	if !isUserRootAdmin(adminUserModel.GetId()) {
+		merchantModels := merchant.GetModels(merchant.QueryHelper{CreatorId: adminUserModel.GetId()})
+		for _, merchantModel := range merchantModels {
+			merchantIds = append(merchantIds, merchantModel.GetId())
+		}
+		if len(merchantIds) == 0 {
+			merchantIds = append(merchantIds, 0)
+		}
+	}
+
 	efwcontroller.Datable[loguser.Model, requestAdminLogUserList](
 		context,
 		[]string{"id", "user_id", "merchant_id", "action", "url", "created_at"},
-		nil,
+		[]efwdt.ChainFilter[*loguser.Model]{
+			func(chain gorm.ChainInterface[*loguser.Model]) gorm.ChainInterface[*loguser.Model] {
+				if len(merchantIds) != 0 {
+					return chain.Where("merchant_id IN (?)", merchantIds)
+				}
+				return chain
+			},
+		},
 		nil,
 		nil,
 	)

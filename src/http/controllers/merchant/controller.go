@@ -36,7 +36,7 @@ func isAdminCanUpdateUser(adminUserModel, userModel *user.Model) bool {
 }
 
 func isUserCanUpdateMerchant(userModel *user.Model, merchantModel *merchant.Model) bool {
-	return userModel.GetId() == merchantModel.OwnerId
+	return userModel.GetId() == merchantModel.CreatorId
 }
 
 func createNotify(userModel *user.Model, action types.NotificationAction, text types.NotificationText) {

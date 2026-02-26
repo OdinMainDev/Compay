@@ -116,6 +116,13 @@ func AdminUsersCreate(context *gin.Context) {
 		efwginhelpers.ResponseError(context, cperrors.ErrorUserCreateAdminWithMerchantIdIsNotAllowed)
 		return
 	}
+
+	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
+	if !isUserRootAdmin(adminUserModel.GetId()) && input.IsAdmin {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return
+	}
+
 	if !input.IsAdmin && input.MerchantId == 0 {
 		efwginhelpers.ResponseError(context, cperrors.ErrorUserCreateUserWithoutMerchantIdIsNotAllowed)
 		return
@@ -126,8 +133,6 @@ func AdminUsersCreate(context *gin.Context) {
 		efwginhelpers.ResponseError(context, efwginhelpers.NotHiddenError(cperrors.ErrorUserUsernameIsTaken))
 		return
 	}
-
-	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
 
 	userModel := &user.Model{}
 	userModel.Username = input.Username
