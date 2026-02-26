@@ -176,7 +176,7 @@ func AdminMerchantsProcess(context *gin.Context) {
 	}
 
 	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
-	if !isUserRootAdmin(adminUserModel.GetId()) && !isUserCanUpdateMerchant(adminUserModel, merchantModel) {
+	if !isUserRootAdmin(adminUserModel.GetId()) && !isAdminCanUpdateMerchant(adminUserModel, merchantModel) {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return
 	}
@@ -241,7 +241,7 @@ func adminMerchantsActionDisableOrNot(context *gin.Context, action types.LogUser
 	}
 
 	adminUserModel := context.MustGet(constants.GinUser).(*user.Model)
-	if !isUserRootAdmin(adminUserModel.GetId()) && !isUserCanUpdateMerchant(adminUserModel, merchantModel) {
+	if !isUserRootAdmin(adminUserModel.GetId()) && !isAdminCanUpdateMerchant(adminUserModel, merchantModel) {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
 		return
 	}
