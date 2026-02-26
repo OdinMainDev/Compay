@@ -15,7 +15,7 @@ import (
 )
 
 type requestMerchantWithdrawsList struct {
-	Id       types.PaymentId          `json:"id" efwdt:"id" binding:"omitempty,gt=0"`
+	Id       string                   `json:"id" efwdt:"trx_id" binding:"omitempty,gt=0"`
 	Currency entity.CurrencyCodeAlpha `json:"currency" efwdt:"currency" binding:"omitempty,currencyExist"`
 	Address  types.PaymentAddress     `json:"address" efwdt:"address" binding:"omitempty,gt=0"`
 	efwdt.WithCreatedAt
@@ -44,7 +44,7 @@ func MerchantWithdrawsList(context *gin.Context) {
 
 func MerchantWithdrawsListFilters(context *gin.Context) {
 	efwcontroller.DatatableFilters(context, []efwdt.Filter{
-		{Name: "id", Type: types.EFWDT_FilterTypeInteger},
+		{Name: "id", Type: types.EFWDT_FilterTypeText},
 		{Name: "currency", Type: types.EFWDT_FilterTypeCurrency},
 		{Name: "address", Type: types.EFWDT_FilterTypeText},
 		{Name: "created_at", Type: types.EFWDT_FilterTypeDate},
