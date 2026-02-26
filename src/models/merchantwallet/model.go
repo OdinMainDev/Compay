@@ -15,10 +15,12 @@ type Model struct {
 func DTOMerchant(model *Model) gin.H { return dto(model, payment.DTOMerchant, entity.DTOMerchant) }
 func DTOAdmin(model *Model) gin.H    { return dto(model, payment.DTOAdmin, entity.DTOAdmin) }
 
-func dto(model *Model, paymentDtofn func(*payment.Entity) gin.H, dtoFn func(*entity.Entity, gin.H) gin.H) gin.H {
+func dto(model *Model, paymentDtofn func(*payment.Entity) gin.H, dtoFn func(*entity.Entity, gin.H, string) gin.H) gin.H {
 	paymentDTO := gin.H{}
+	paymentId := ""
 	if model.Payment != nil {
 		paymentDTO = paymentDtofn(model.Payment)
+		paymentId = model.Payment.TrxId
 	}
-	return dtoFn(&model.Entity, paymentDTO)
+	return dtoFn(&model.Entity, paymentDTO, paymentId)
 }

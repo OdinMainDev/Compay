@@ -19,6 +19,11 @@ func GetModel[TModel any, TQueryHelper any](
 		return nil, 0, false
 	}
 
+	if input.Id == 0 {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return nil, 0, false
+	}
+
 	model := getModel(constructQueryHelper(input.Id))
 	if model == nil {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
@@ -28,6 +33,37 @@ func GetModel[TModel any, TQueryHelper any](
 	if modelToDto == nil {
 		efwginhelpers.ResponseSuccess(context, gin.H{"data": model})
 		return model, 0, false
+	}
+
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": modelToDto(model)})
+	return model, input.Id, true
+}
+
+func GetModelByStringId[TModel any, TQueryHelper any](
+	context *gin.Context,
+	getModel func(queryHelper TQueryHelper) *TModel,
+	modelToDto func(model *TModel) gin.H,
+	constructQueryHelper func(string) TQueryHelper,
+) (*TModel, string, bool) {
+	var input RequestWithStringId
+	if !efwgin.ShouldBindUri(context, &input) {
+		return nil, "", false
+	}
+
+	if input.Id == "" {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return nil, "", false
+	}
+
+	model := getModel(constructQueryHelper(input.Id))
+	if model == nil {
+		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
+		return nil, "", false
+	}
+
+	if modelToDto == nil {
+		efwginhelpers.ResponseSuccess(context, gin.H{"data": model})
+		return model, "", false
 	}
 
 	efwginhelpers.ResponseSuccess(context, gin.H{"data": modelToDto(model)})

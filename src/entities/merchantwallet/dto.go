@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DTOAdmin(model *Entity, paymentDTO gin.H) gin.H {
+func DTOAdmin(model *Entity, paymentDTO gin.H, _ string) gin.H {
 	return gin.H{
 		"id":              model.Id,
 		"merchant_id":     model.MerchantId,
@@ -22,9 +22,9 @@ func DTOAdmin(model *Entity, paymentDTO gin.H) gin.H {
 	}
 }
 
-func DTOMerchant(model *Entity, paymentDTO gin.H) gin.H {
+func DTOMerchant(model *Entity, paymentDTO gin.H, paymentId string) gin.H {
 	return gin.H{
-		"id":              model.Id,
+		"id":              paymentId,
 		"currency":        model.Currency,
 		"address":         model.Address,
 		"amount":          efwamount.ToFloatByCodeAlpha(model.Amount, model.Currency),

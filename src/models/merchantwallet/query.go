@@ -9,6 +9,7 @@ import (
 	"efw/core/efwlog"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type QueryHelper struct {
@@ -20,6 +21,7 @@ type QueryHelper struct {
 	PaymentId           types.PaymentId
 	Currency            entity.CurrencyCodeAlpha
 	WithPayment         bool
+	PaymentTrxId        string
 }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
@@ -28,10 +30,10 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 		chain = chain.Where("id = ?", helper.Id)
 	}
 	if !helper.DontCheckMerchantId {
-		chain = chain.Where("merchant_id = ?", helper.MerchantId)
+		chain = chain.Where("merchant_wallets.merchant_id = ?", helper.MerchantId)
 	}
 	if len(helper.MerchantIds) != 0 {
-		chain = chain.Where("merchant_id IN (?)", helper.MerchantIds)
+		chain = chain.Where("merchant_wallets.merchant_id IN (?)", helper.MerchantIds)
 	}
 	if helper.PaymentId != 0 {
 		chain = chain.Where("payment_id = ?", helper.PaymentId)
@@ -39,8 +41,26 @@ func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm
 	if helper.Currency != "" {
 		chain = chain.Where("currency = ?", helper.Currency)
 	}
-	if helper.WithPayment {
+	if helper.WithPayment && helper.PaymentTrxId == "" {
 		chain = chain.Preload("Payment", func(db gorm.PreloadBuilder) error { return nil })
+	}
+
+	if helper.PaymentTrxId != "" {
+		chain = chain.Joins(
+			clause.JoinTarget{
+				Association: "Payment",
+				Table:       "payments",
+			},
+			func(db gorm.JoinBuilder, joinTable clause.Table, curTable clause.Table) error {
+				db.Where(
+					clause.Eq{
+						Column: clause.Column{Table: joinTable.Name, Name: "trx_id"},
+						Value:  helper.PaymentTrxId,
+					},
+				)
+				return nil
+			},
+		).Preload("Payment", func(db gorm.PreloadBuilder) error { return nil })
 	}
 	return chain.Order("id DESC")
 }
