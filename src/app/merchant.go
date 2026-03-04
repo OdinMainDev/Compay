@@ -295,4 +295,5 @@ func merchantMerchantCurrenciesRoutes(group *gin.RouterGroup) {
 
 func merchantPublicApiV1Routes(group *gin.RouterGroup) {
 	group.POST("/payment-create", controller.V1PaymentCreate)
+	group.POST("/withdraw", controller.V1Withdraw)
 }

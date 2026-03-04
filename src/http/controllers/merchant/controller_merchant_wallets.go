@@ -29,9 +29,9 @@ type requestMerchantWalletsList struct {
 }
 
 type requestMerchantWalletsActionWithdraw struct {
-	Id      string               `json:"id" binding:"required,gt=0"`
-	Address types.PaymentAddress `json:"address" binding:"required,max=128"`
-	Amount  float64              `json:"amount" binding:"required,gt=0"`
+	Id      string                `json:"id" binding:"required,gt=0"`
+	Address types.WithdrawAddress `json:"address" binding:"required,max=128"`
+	Amount  float64               `json:"amount" binding:"required,gt=0"`
 }
 
 func MerchantWalletsList(context *gin.Context) {

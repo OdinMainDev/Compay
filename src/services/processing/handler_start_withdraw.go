@@ -19,7 +19,7 @@ import (
 )
 
 type WithdrawData struct {
-	Address        types.PaymentAddress
+	Address        types.WithdrawAddress
 	Amount         float64
 	MerchantWallet *merchantwallet.Model
 }
