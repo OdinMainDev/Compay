@@ -18,6 +18,7 @@ func main() {
 		DatabaseDisabled:      true,
 		ClamavDisabled:        true,
 		CacheDisabled:         true,
+		RedisCacheDisabled:    true,
 		GenericCacheDisabled:  true,
 		RabbitMQDisabled:      true,
 

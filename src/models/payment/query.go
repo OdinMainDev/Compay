@@ -24,7 +24,6 @@ type QueryHelper struct {
 }
 
 func (helper QueryHelper) ApplyDBFilters(chain gorm.ChainInterface[*Model]) gorm.ChainInterface[*Model] {
-
 	if helper.Id != 0 {
 		chain = chain.Where("id = ?", helper.Id)
 	}
