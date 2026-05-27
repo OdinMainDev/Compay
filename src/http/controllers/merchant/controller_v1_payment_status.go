@@ -2,6 +2,7 @@ package merchant
 
 import (
 	"compay/common/cperrors"
+	"compay/src/models/merchant"
 	"compay/src/models/payment"
 	"efw/core/efwgin"
 	efwginhelpers "efw/core/efwgin/efwgin_helpers"
@@ -27,8 +28,17 @@ func V1PaymentStatus(context *gin.Context) {
 		return
 	}
 
+	merchantModel := merchant.GetModel(merchant.QueryHelper{
+		Token: input.Token,
+	})
+	if merchantModel == nil {
+		efwginhelpers.ResponseError(context, cperrors.ErrorApiV1BadMerchantToken)
+		return
+	}
+
 	paymentModel := payment.GetModel(payment.QueryHelper{
-		TrxId: input.TrxId,
+		TrxId:      input.TrxId,
+		MerchantId: merchantModel.GetId(),
 	})
 	if paymentModel == nil {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
