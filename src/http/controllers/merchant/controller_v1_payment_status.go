@@ -22,13 +22,13 @@ func V1PaymentStatus(context *gin.Context) {
 		return
 	}
 
-	var input requestV1PaymentCreate
+	var input requestV1PaymentStatus
 	if !efwgin.ShouldBindBodyWithJSON(context, &input) {
 		return
 	}
 
 	paymentModel := payment.GetModel(payment.QueryHelper{
-		TrxId: input.Token,
+		TrxId: input.TrxId,
 	})
 	if paymentModel == nil {
 		efwginhelpers.ResponseError(context, nil, http.StatusNotFound)
