@@ -45,5 +45,5 @@ func V1PaymentStatus(context *gin.Context) {
 		return
 	}
 
-	efwginhelpers.ResponseSuccess(context, gin.H{"data": payment.DTO(paymentModel)})
+	efwginhelpers.ResponseSuccess(context, gin.H{"data": payment.DTOMerchant(paymentModel)})
 }
