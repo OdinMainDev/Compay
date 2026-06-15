@@ -6,7 +6,7 @@ COMPAY - это комбайн из разных программ для обе�
 
 для билда под сервер используем
 
-> xfxs
+> env GOOS=linux GOARCH=amd64 garble build -trimpath -o compayrates ./cmd/rates/main.go
 
 # Wallet
 

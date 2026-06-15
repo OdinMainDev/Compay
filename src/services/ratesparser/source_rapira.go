@@ -41,8 +41,8 @@ func addRapiraRubRate(newRates map[string]map[string]float64) error {
 		if _, ok := newRates["USDT"]; !ok {
 			newRates["USDT"] = make(map[string]float64)
 		}
-		newRates["USD"]["RUB"] = item.Low
-		newRates["USDT"]["RUB"] = item.Low
+		newRates["USD"]["RUB"] = item.Close
+		newRates["USDT"]["RUB"] = item.Close
 		return nil
 	}
 
